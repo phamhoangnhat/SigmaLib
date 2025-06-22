@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>qml;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="SigmaLib.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <QtUic Include="SigmaLib.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <ClCompile Include="SigmaLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomConfirmBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomInputMethod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomMessageBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Feedback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NoticeUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenameDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskAIEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrayIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeWord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Variable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Word.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskAIDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SnippetEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskAIResult.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Clipboard.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeWord.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Variable.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Word.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskAIDatabase.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SigmaLib.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="ConfigUi.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomConfirmBox.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomInputMethod.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomMessageBox.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Feedback.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="NoticeUi.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RenameDialog.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TaskAI.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TaskAIEditor.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TrayIcon.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="GeneralConfig.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SnippetEditor.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TaskAIResult.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SigmaLib.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconAddTaskAI.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconAutoStart.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconAutoUpdate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconConfigInput.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconDeleteTaskAI.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconHelp.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconQuit.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconRenameTaskAI.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconReset.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconTaskAI.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconFeedback.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconGeneralConfig.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconSnippetEdittor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

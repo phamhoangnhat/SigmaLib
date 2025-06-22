@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon.png</file>
+        <file>iconAddTaskAI.png</file>
+        <file>iconAutoStart.png</file>
+        <file>iconAutoUpdate.png</file>
+        <file>iconConfigInput.png</file>
+        <file>iconDeleteTaskAI.png</file>
+        <file>iconHelp.png</file>
+        <file>iconQuit.png</file>
+        <file>iconRenameTaskAI.png</file>
+        <file>iconReset.png</file>
+        <file>iconTaskAI.png</file>
+        <file>iconFeedback.png</file>
+        <file>Sigma User Guide.html</file>
+        <file>iconGeneralConfig.png</file>
+        <file>iconSnippetEdittor.png</file>
+    </qresource>
+</RCC>

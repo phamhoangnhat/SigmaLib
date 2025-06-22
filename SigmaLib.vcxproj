@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3445D176-EB72-4047-97F6-BB1FC943B6CA}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.9.0_msvc2022_64</QtInstall>
+    <QtModules>core;gui;network;widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.9.0_msvc2022_64</QtInstall>
+    <QtModules>core;gui;network;widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <OutDir>D:\Library\Sigma\Sigma\x64\Debug\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutDir>D:\Library\Sigma\Sigma\x64\Release</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>SIGMALIB_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>SIGMALIB_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="GeneralConfig.cpp" />
+    <ClCompile Include="TaskAI.cpp" />
+    <ClCompile Include="TaskAIDatabase.cpp" />
+    <ClCompile Include="TaskAIEditor.cpp" />
+    <ClCompile Include="SnippetEditor.cpp" />
+    <ClCompile Include="TaskAIResult.cpp" />
+    <ClCompile Include="TrayIcon.cpp" />
+    <ClCompile Include="TypeWord.cpp" />
+    <ClCompile Include="Util.cpp" />
+    <ClCompile Include="Variable.cpp" />
+    <ClCompile Include="Word.cpp" />
+    <QtRcc Include="SigmaLib.qrc" />
+    <QtUic Include="SigmaLib.ui" />
+    <QtMoc Include="GeneralConfig.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SigmaLib.h" />
+    <ClCompile Include="Clipboard.cpp" />
+    <ClCompile Include="ConfigUi.cpp" />
+    <ClCompile Include="CustomConfirmBox.cpp" />
+    <ClCompile Include="CustomInputMethod.cpp" />
+    <ClCompile Include="CustomMessageBox.cpp" />
+    <ClCompile Include="Feedback.cpp" />
+    <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="NoticeUi.cpp" />
+    <ClCompile Include="RenameDialog.cpp" />
+    <ClCompile Include="SigmaLib.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Clipboard.h" />
+    <ClInclude Include="Listener.h" />
+    <ClInclude Include="TaskAIDatabase.h" />
+    <QtMoc Include="SnippetEditor.h" />
+    <QtMoc Include="TaskAIResult.h" />
+    <ClInclude Include="TypeWord.h" />
+    <ClInclude Include="Util.h" />
+    <ClInclude Include="Variable.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="Word.h" />
+    <QtMoc Include="TrayIcon.h" />
+    <QtMoc Include="TaskAIEditor.h" />
+    <QtMoc Include="TaskAI.h" />
+    <QtMoc Include="RenameDialog.h" />
+    <QtMoc Include="NoticeUi.h" />
+    <QtMoc Include="Feedback.h" />
+    <QtMoc Include="CustomMessageBox.h" />
+    <QtMoc Include="CustomInputMethod.h" />
+    <QtMoc Include="CustomConfirmBox.h" />
+    <QtMoc Include="ConfigUi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SigmaLib.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.png" />
+    <Image Include="iconAddTaskAI.png" />
+    <Image Include="iconAutoStart.png" />
+    <Image Include="iconAutoUpdate.png" />
+    <Image Include="iconConfigInput.png" />
+    <Image Include="iconDeleteTaskAI.png" />
+    <Image Include="iconFeedback.png" />
+    <Image Include="iconGeneralConfig.png" />
+    <Image Include="iconHelp.png" />
+    <Image Include="iconQuit.png" />
+    <Image Include="iconRenameTaskAI.png" />
+    <Image Include="iconReset.png" />
+    <Image Include="iconSnippetEdittor.png" />
+    <Image Include="iconTaskAI.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

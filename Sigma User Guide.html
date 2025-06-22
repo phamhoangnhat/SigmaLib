@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Hướng dẫn sử dụng Sigma</title>
+	<style>
+		body {
+			font-family: 'Inter', sans-serif;
+			background: linear-gradient(135deg, #091921, #0f2e3c);
+			color: #e0e0e0;
+			margin: 0;
+			padding: 0;
+			line-height: 1.7;
+			user-select: none;
+			transition: background 0.3s ease, color 0.3s ease;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		#toggle-btn {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			background: #f39c12;
+			color: white;
+			border: none;
+			padding: 10px 18px;
+			font-size: 14px;
+			border-radius: 6px;
+			z-index: 1000;
+			cursor: pointer;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+		}
+
+		#toggle-btn:hover {
+			background: #ffb13b;
+			transform: scale(1.05);
+			box-shadow: 0 6px 16px rgba(243, 156, 18, 0.6);
+		}
+
+		#summary-content,
+		#full-content {
+			display: none;
+		}
+
+		.container {
+			max-width: 960px;
+			margin: 40px auto;
+			padding: 30px;
+			background: rgba(28, 46, 64, 0.9);
+			border-radius: 16px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+			border: 1px solid rgba(255, 255, 255, 0.05);
+			backdrop-filter: blur(12px);
+			animation: slideFade 0.6s ease;
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+			margin-left: 240px;
+		}
+
+		.container:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+		}
+
+		h1,
+		h2,
+		h3,
+		h4 {
+			color: #f39c12;
+			margin-top: 1.5em;
+			transition: text-shadow 0.3s ease, transform 0.3s ease;
+			letter-spacing: 0.5px;
+		}
+
+		h1:hover,
+		h2:hover,
+		h3:hover {
+			text-shadow: 0 0 8px #f39c12;
+			transform: scale(1.02);
+		}
+
+		h2 {
+			border-bottom: 2px solid #f39c12;
+			padding-bottom: 5px;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 1em 0;
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		}
+
+		table thead {
+			background: rgba(255, 255, 255, 0.08);
+			color: #f39c12;
+			font-weight: 600;
+			text-align: left;
+		}
+
+		table th,
+		table td {
+			padding: 6px 6px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		}
+
+		table tbody tr:nth-child(even) {
+			background: rgba(255, 255, 255, 0.025);
+		}
+
+		table tbody tr:hover {
+			background: rgba(255, 255, 255, 0.07);
+		}
+
+		code,
+		pre {
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffddaa;
+			padding: 3px 8px;
+			border-radius: 5px;
+			font-family: 'Courier New', monospace;
+			transition: background 0.3s ease, color 0.3s ease;
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			font-weight: bold;
+		}
+
+		code:hover {
+			background: rgba(255, 255, 255, 0.15);
+			color: #ffffff;
+		}
+
+		ul,
+		ol {
+			padding-left: 20px;
+		}
+
+		.section {
+			animation: fadeIn 0.6s ease-in-out;
+		}
+
+		.download-button {
+			color: #ffffff;
+			background: rgba(243, 156, 18, 0.9);
+			backdrop-filter: blur(6px);
+			padding: 10px 20px;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 600;
+			display: inline-block;
+			margin-top: 10px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+			transition: transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.download-button:hover {
+			background: #ffb13b;
+			transform: scale(1.05);
+			box-shadow: 0 6px 16px rgba(243, 156, 18, 0.6);
+		}
+
+		.default-value {
+			color: rgba(243, 156, 18, 0.9);
+			font-weight: bold;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(12px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes slideFade {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.sidebar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 220px;
+			height: 100vh;
+			background: rgba(15, 46, 60);
+			padding: 30px 15px;
+			box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3);
+			z-index: 1000;
+			overflow-y: auto;
+			border-right: 1px solid rgba(255, 255, 255, 0.05);
+			transition: transform 0.8s ease;
+		}
+
+		.sidebar ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.sidebar li {
+			margin: 12px 0;
+		}
+
+		.sidebar a {
+			color: #f39c12;
+			text-decoration: none;
+			font-weight: 600;
+			display: block;
+			padding: 6px 12px;
+			border-radius: 4px;
+			position: relative;
+			transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+		}
+
+		.sidebar a:hover {
+			background: rgba(255, 255, 255, 0.08);
+			color: #ffffff;
+			transform: translateX(4px);
+		}
+
+		.sidebar a::before {
+			content: "";
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 4px;
+			height: 100%;
+			background: transparent;
+			transition: background-color 0.3s ease;
+		}
+
+		.sidebar a:hover::before {
+			background: #f39c12;
+		}
+
+		.menu-toggle {
+			display: none;
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			background: #f39c12;
+			color: #fff;
+			border: none;
+			padding: 10px 14px;
+			border-radius: 6px;
+			font-size: 20px;
+			z-index: 1100;
+			cursor: pointer;
+		}
+
+		.menu-toggle:hover {
+			background: #ffb13b;
+			transform: scale(1.05);
+			box-shadow: 0 6px 16px rgba(243, 156, 18, 0.6);
+		}
+
+		@media (max-width: 768px) {
+			.container {
+				margin-left: 0;
+				margin: 20px;
+				padding: 20px;
+			}
+
+			.sidebar {
+				transform: translateX(-100%);
+				position: fixed;
+				width: 220px;
+				background: rgba(15, 46, 60, 0.3);
+				backdrop-filter: blur(100px);
+				-webkit-backdrop-filter: blur(100px);
+			}
+
+			.sidebar.active {
+				transform: translateX(0);
+			}
+
+			.menu-toggle {
+				display: block;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<div class="sidebar">
+			<ul>
+				<li><a href="#sum-intro">1. Giới thiệu</a></li>
+				<li><a href="#sum-install">2. Cài đặt & cập nhật</a></li>
+				<li><a href="#sum-modes">3. Chế độ gõ</a></li>
+				<li><a href="#sum-maps">4. Bảng mã & kiểu gõ</a></li>
+				<li><a href="#sum-app-config">5. Thiết lập cấu hình</a></li>
+				<li><a href="#sum-advanced">6. Soạn thảo nâng cao</a></li>
+				<li><a href="#sum-ai">7. Tác vụ AI</a></li>
+				<li><a href="#sum-shortcut">8. Bảng phím tắt</a></li>
+				<li><a href="#sum-feedback">9. Đóng góp ý kiến</a></li>
+			</ul>
+		</div>
+		<button class="menu-toggle">☰</button>
+		<div class="container">
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma</h1>
+			<div class="section">
+				<h2 id="sum-intro">1. Giới thiệu</h2>
+				<p><strong>Sigma</strong> là một bộ gõ tiếng Việt hiện đại dành cho <code>Windows 10</code> và
+					<code>Windows 11</code> (64-bit), được phát triển bởi Phạm Hoàng Nhật.
+				</p>
+
+				<p>Sigma được phát triển nhằm khắc phục những bất tiện thường gặp ở các bộ gõ khác:</p>
+				<ul>
+					<li>Khi người dùng gõ nhầm chế độ (Anh/Việt, bảng mã), Sigma cho phép chuyển nhanh thiết lập bằng phím tắt; từ đang gõ sẽ tự động chuyển theo chế độ mới — không cần xóa và gõ lại.</li>
+					<li>Cho phép chuyển đổi tạm thời giữa tiếng Anh và tiếng Việt ngay tại từ đang gõ, giúp hạn chế lỗi khi gõ văn bản tiếng Việt có xen lẫn một vài từ tiếng Anh.</li>
+					<li>Cơ chế bỏ dấu xoay vòng thông minh cho phép thêm, xóa hoặc thay đổi dấu dễ dàng chỉ với một phím duy nhất.</li>
+					<li>Cho phép sử dụng đồng thời nhiều kiểu gõ như Telex, VNI và tùy biến, phù hợp với máy tính dùng chung giữa nhiều người có thói quen khác nhau.</li>
+					<li>Chế độ khôi phục từ tiếng Anh thông minh khi người dùng không chủ đích gõ tiếng Việt, giảm lỗi sai do nhận diện nhầm.</li>
+					<li>Hỗ trợ nhiều phím tắt để chuyển nhanh giữa các chế độ và cấu hình, nâng cao hiệu suất làm việc.</li>
+					<li>Cho phép thiết lập cấu hình riêng cho từng ứng dụng, giúp tối ưu trải nghiệm gõ trong các môi trường hạn chế và giảm thao tác thay đổi chế độ gõ (Anh/Việt, bảng mã) khi làm việc đồng thời với nhiều ứng dụng khác nhau.</li>
+					<li>Tích hợp trí tuệ nhân tạo <code>AI</code> để xử lý ngôn ngữ linh hoạt và thông minh hơn.</li>
+				</ul>
+			</div>
+
+			<div class="section">
+				<h2 id="sum-install">2. Cài đặt và cập nhật Sigma</h2>
+
+				<ul>
+					<li>Nhấn đúp vào <code>SigmaSetup.exe</code> để cài đặt không cần quyền quản trị <code>admin</code>.
+					</li>
+					<li>
+						<strong>
+							<a href="https://www.dropbox.com/scl/fi/tonwmsur6h3ycnm9bf15v/SigmaSetup.exe?rlkey=lpq4al9w142yu83pm5hmxq8nw&st=urfiscwc&dl=1"
+								class="download-button" target="_blank">
+								Tải SigmaSetup.exe
+							</a>
+						</strong>
+					</li>
+				</ul>
+
+				<p>Mỗi khi khởi động (nếu có kết nối Internet), Sigma sẽ tự động kiểm tra và cập nhật lên phiên
+					bản mới nhất nếu có.</p>
+			</div>
+
+			<div class="section">
+				<h2 id="sum-modes">3. Các chế độ gõ và chuyển đổi ngôn ngữ</h2>
+
+				<h3>Chế độ gõ</h3>
+				<ul>
+					<li><code>Tiếng Anh:</code> Gõ nguyên bản, không xử lý dấu.</li>
+					<li><code>Tiếng Việt:</code> Gõ đầy đủ theo kiểu <code>Telex</code>, <code>VNI</code> hoặc
+						<code>Tích hợp</code>.
+					</li>
+				</ul>
+
+				<h3>Chuyển đổi chế độ</h3>
+				<ul>
+					<li><code>Ctrl trái + Shift trái</code>: Luân phiên giữa <code>Tiếng Việt</code> và
+						<code>Tiếng Anh</code>.
+					</li>
+					<li><code>Ctrl trái</code>: Chuyển tạm sang chế độ còn lại cho 1 từ đang gõ.</li>
+				</ul>
+
+				<p>Khi chuyển chế độ, từ đang gõ sẽ được tự động chuyển sang ngôn ngữ mới – không cần xóa và gõ lại.</p>
+				<p>Các chế độ gõ sẽ được lưu và tự động khôi phục khi bạn chuyển đổi giữa các cửa sổ ứng dụng, giúp giảm
+					thao tác chuyển đổi khi làm việc với nhiều ứng dụng khác nhau.</p>
+
+				<h3>Biểu tượng hiển thị</h3>
+				<ul>
+					<li>Biểu tượng màu hồng cam với chữ <code>E</code>: <code>Tiếng Anh</code></li>
+					<li>Biểu tượng màu xanh lá với chữ <code>V</code>: <code>Tiếng Việt</code></li>
+				</ul>
+
+				<h3>Lưu ý</h3>
+				<ul>
+					<li><code>Ctrl trái</code> và <code>Shift trái</code> là hai phím bên góc trái bàn phím.</li>
+					<li>Phím cần được <strong>nhấn và thả nhanh</strong> để có hiệu lực:</li>
+					<ul>
+						<li><code>Ctrl + Shift</code>: trong vòng <strong>1 giây</strong></li>
+						<li><code>Ctrl</code> đơn: trong vòng <strong>0.3 giây</strong></li>
+					</ul>
+					<li>Nếu giữ phím quá lâu, thao tác sẽ bị bỏ qua.</li>
+				</ul>
+			</div>
+
+			<div class="section">
+				<h2 id="sum-maps">4. Bảng mã & kiểu gõ tiếng Việt</h2>
+
+				<h3>Bảng mã</h3>
+				<ul>
+					<li><code>Unicode</code>: Mặc định, khuyến nghị sử dụng.</li>
+					<li><code>VNI Windows</code>: Dành cho văn bản sử dụng font có tiền tố <code>VNI-</code>.</li>
+					<li><code>TCVN3 (ABC)</code>: Dành cho văn bản sử dụng font có tiền tố <code>.VN</code>.</li>
+				</ul>
+
+				<h3>Kiểu gõ</h3>
+				<ul>
+					<li><code>Telex</code>, <code>VNI</code>: Hai kiểu gõ phổ biến.</li>
+					<li><code>Tích hợp</code>: Là kiểu gõ mới của Sigma được kết hợp giữa <code>Telex</code> và
+						<code>VNI</code> đồng thời cho phép tùy biến thêm bởi cá nhân.</li>
+				</ul>
+
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Telex</th>
+							<th>VNI</th>
+							<th>Tích hợp</th>
+							<th>Sigma hiểu là</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>Z</code></td>
+							<td><code>0</code></td>
+							<td><code>Z</code> <code>0</code> <code>...</code> </td>
+							<td><code>Ngang</code></td>
+						</tr>
+						<tr>
+							<td><code>S</code></td>
+							<td><code>1</code></td>
+							<td><code>S</code> <code>1</code> <code>...</code> </td>
+							<td><code>Sắc</code></td>
+						</tr>
+						<tr>
+							<td><code>F</code></td>
+							<td><code>2</code></td>
+							<td><code>F</code> <code>2</code> <code>...</code> </td>
+							<td><code>Huyền</code></td>
+						</tr>
+						<tr>
+							<td><code>R</code></td>
+							<td><code>3</code></td>
+							<td><code>R</code> <code>3</code> <code>...</code> </td>
+							<td><code>Hỏi</code></td>
+						</tr>
+						<tr>
+							<td><code>X</code></td>
+							<td><code>4</code></td>
+							<td><code>X</code> <code>4</code> <code>...</code> </td>
+							<td><code>Ngã</code></td>
+						</tr>
+						<tr>
+							<td><code>J</code></td>
+							<td><code>5</code></td>
+							<td><code>J</code> <code>5</code> <code>...</code> </td>
+							<td><code>Nặng</code></td>
+						</tr>
+						<tr>
+							<td><code>W</code></td>
+							<td><code>8</code></td>
+							<td><code>W</code> <code>8</code> <code>...</code> </td>
+							<td><code>a → ă</code></td>
+						</tr>
+						<tr>
+							<td><code>A</code></td>
+							<td><code>6</code></td>
+							<td><code>A</code> <code>6</code> <code>...</code> </td>
+							<td><code>a → â</code></td>
+						</tr>
+						<tr>
+							<td><code>E</code></td>
+							<td><code>6</code></td>
+							<td><code>E</code> <code>6</code> <code>...</code> </td>
+							<td><code>e → ê</code></td>
+						</tr>
+						<tr>
+							<td><code>O</code></td>
+							<td><code>6</code></td>
+							<td><code>O</code> <code>6</code> <code>...</code> </td>
+							<td><code>o → ô</code></td>
+						</tr>
+						<tr>
+							<td><code>W</code></td>
+							<td><code>7</code></td>
+							<td><code>W</code> <code>7</code> <code>...</code> </td>
+							<td><code>o → ơ</code></td>
+						</tr>
+						<tr>
+							<td><code>W</code></td>
+							<td><code>7</code></td>
+							<td><code>W</code> <code>7</code> <code>...</code> </td>
+							<td><code>u → ư</code></td>
+						</tr>
+						<tr>
+							<td><code>D</code></td>
+							<td><code>9</code></td>
+							<td><code>D</code> <code>9</code> <code>...</code> </td>
+							<td><code>d → đ</code></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p><strong>Ví dụ:</strong> Gõ <code>a</code> <code>F</code> hoặc <code>a</code> <code>2</code> đều cho
+					ra <code>à</code>.</p>
+
+				<p>Bạn có thể tùy biến thêm kiểu gõ <code>Tích hợp</code> bằng cách nhấp vào biểu tượng Sigma ở
+					khay hệ thống (góc dưới bên phải màn hình), sau đó chọn mục <code>Tùy chỉnh kiểu gõ tích hợp</code>
+					(phím tắt
+					<code>Shift → K</code>).
+				</p>
+
+				<p><strong>Khuyến nghị:</strong> Nên sử dụng kiểu gõ <code>Tích hợp</code> trên các máy tính dùng
+					chung để đảm bảo tính linh hoạt cho nhiều người dùng.</p>
+			</div>
+
+
+			<div class="section">
+				<h2 id="sum-app-config">5. Thiết lập cấu hình</h2>
+				<h3>Phân loại</h3>
+				<p>Các thiết lập cấu hình của <strong>Sigma</strong> được chia thành hai loại:</p>
+				<ul>
+					<li><strong>Cấu hình theo từng ứng dụng:</strong> Mỗi ứng dụng có thiết lập riêng. Các thiết lập này
+						được <strong>Sigma</strong> tự động lưu và khôi phục khi bạn chuyển đổi qua lại giữa các ứng
+						dụng.</li>
+					<li><strong>Cấu hình chung:</strong> Áp dụng cho tất cả ứng dụng.</li>
+				</ul>
+				<ul>
+					<li>Nhấn và thả <code>Shift</code>, sau đó nhấn <code>U</code>: Mở bảng cấu hình riêng cho ứng dụng
+						đang sử dụng.</li>
+					<li>Nhấn và thả <code>Shift</code>, sau đó nhấn <code>C</code>: Mở bảng cấu hình chung.</li>
+				</ul>
+
+
+				<h3>Cấu hình ứng dụng</h3>
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Thiết lập</th>
+							<th>Giá trị</th>
+							<th>Phím tắt</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Chế độ gõ</td>
+							<td><code class="default-value">Tiếng Anh</code> <code>Tiếng Việt</code></td>
+							<td><code>Ctrl trái + Shift trái</code></td>
+						</tr>
+						<tr>
+							<td>Bộ mã</td>
+							<td><code class="default-value">Unicode</code> <code>VNI Windows</code>
+								<code>TCVN3 (ABC)</code>
+							</td>
+							<td><code>Shift → M</code></td>
+						</tr>
+						<tr>
+							<td>Tác vụ AI</td>
+							<td><code>Tên các tác vụ AI</code></td>
+							<td><code>Shift → Esc</code></td>
+						</tr>
+						<tr>
+							<td>Sử dụng chế độ tiếng Việt chủ động</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → `</code></td>
+						</tr>
+						<tr>
+							<td>Sử dụng clipboard khi gửi phím</td>
+							<td><code>Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → 1</code></td>
+						</tr>
+						<tr>
+							<td>Tương thích với ứng dụng có gợi ý từ</td>
+							<td><code>Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → 2</code></td>
+						</tr>
+						<tr>
+							<td>Tự động viết hoa thông minh</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 3</code></td>
+						</tr>
+						<tr>
+							<td>Cho phép gõ ký tự Teencode</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 4</code></td>
+						</tr>
+						<tr>
+							<td>Cho phép chèn ký tự bị thiếu</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 5</code></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>Bạn có thể xóa các thiết lập cấu hình đã lưu cho từng cửa sổ và khôi phục giá trị mặc định bằng cách
+					nhấp vào biểu tượng Sigma ở khay hệ thống (góc dưới bên phải màn hình), sau đó chọn mục <code>Xóa
+						các thiết lập đã lưu</code> (phím tắt <code>Shift → X</code>).</p>
+
+
+				<h3>Cấu hình chung</h3>
+
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Thiết lập</th>
+							<th>Giá trị</th>
+							<th>Phím tắt</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Kiểu gõ</td>
+							<td><code>Telex</code> <code>VNI</code> <code class="default-value">Tích hợp</code>
+							</td>
+							<td><code>Shift → G</code></td>
+						</tr>
+						<tr>
+							<td>Khởi động cùng Windows</td>
+							<td><code class="default-value">Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → 6</code></td>
+						</tr>
+						<tr>
+							<td>Cho phép gõ tắt</td>
+							<td><code class="default-value">Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → 7</code></td>
+						</tr>
+						<tr>
+							<td>Cho phép bỏ dấu xoay vòng</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 8</code></td>
+						</tr>
+						<tr>
+							<td>Tự động thêm dấu mũ các vần "iê", "uê", "uô", "uyê", "yê"</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 9</code></td>
+						</tr>
+						<tr>
+							<td>Cho phép gõ tắt các âm cuối "ch", "ng", "nh"</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td><code>Shift → 0</code></td>
+						</tr>
+						<tr>
+							<td>Dùng phím ← → để điều hướng từng từ</td>
+							<td><code class="default-value">Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → -</code></td>
+						</tr>
+						<tr>
+							<td>Tự động chuyển từ tiếng Anh đã ghi nhớ</td>
+							<td><code class="default-value">Bật</code> <code>Tắt</code></td>
+							<td><code>Shift → =</code></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>Cách dùng phím tắt</h3>
+				<p>Để thay đổi nhanh các thiết lập, bạn sử dụng phím <code>Shift</code> kết hợp với một phím tắt cụ thể:
+				</p>
+				<ul>
+					<li>Nhấn và thả nhanh phím <code>Shift</code> (trong vòng <strong>0.3 giây</strong>).</li>
+					<li>Ngay sau đó, nhấn phím tắt tương ứng để thay đổi thiết lập.</li>
+					<li>Khi thiết lập được thay đổi thành công, một biểu tượng thông báo sẽ hiển thị giữa màn hình để
+						xác nhận.</li>
+				</ul>
+				<p><strong>Ví dụ:</strong> Để thay đổi bộ mã đang sử dụng, bạn nhấn và thả <code>Shift</code>, sau đó
+					nhấn <code>M</code> liên tục để luân phiên giữa các bộ mã: <code>Unicode</code>,
+					<code>VNI Windows</code> và <code>TCVN3 (ABC)</code>.
+				</p>
+
+				<h3>Giải thích các tùy chọn cấu hình</h3>
+
+				<h4>Bộ mã</h4>
+				<p>Cho phép chuyển đổi giữa các bảng mã tiếng Việt như <code>Unicode</code>, <code>VNI
+						Windows</code> và <code>TCVN3 (ABC)</code> để tương thích với phần mềm hoặc hệ thống bạn
+					đang sử dụng.</p>
+				<p>Trong các phần mềm yêu cầu làm việc với nhiều bảng mã khác nhau, bạn có thể sử dụng phím tắt: nhấn
+					<code>Shift</code>, sau đó nhấn <code>M</code> liên tục để chuyển tuần tự qua các bộ mã. Mỗi lần
+					nhấn <code>M</code> sẽ chuyển sang bộ mã kế tiếp.
+				</p>
+				<p>Khi bộ mã được thay đổi, từ bạn đang gõ cũng sẽ tự động chuyển sang bộ mã mới ngay lập tức, giúp tiết
+					kiệm thời gian và không cần xóa để gõ lại.</p>
+
+				<h4>Tác vụ AI</h4>
+				<p>Cho phép chọn tác vụ AI mặc định cho từng ứng dụng.</p>
+				<p>Khi cần thực hiện tác vụ, bạn chỉ cần chọn đoạn văn bản đã gõ, sau đó nhấn <code>Shift</code>, rồi
+					nhấn <code>Esc</code>. Sigma sẽ tự động thực hiện tác vụ AI tương ứng trên nội dung đã chọn.</p>
+
+				<h4>Sử dụng chế độ tiếng Việt chủ động</h4>
+				<p>Khi bật chế độ này, Sigma mặc định sẽ gõ ở chế độ tiếng Anh. Để gõ tiếng Việt, bạn cần nhấn tổ hợp
+					<code>Ctrl trái + Shift trái</code>.
+				</p>
+				<p>Trong quá trình gõ tiếng Việt, nếu bạn thực hiện thao tác bằng chuột (nhấp hoặc di chuyển), Sigma sẽ
+					tự động chuyển lại sang tiếng Anh.</p>
+				<p>Chế độ này phù hợp với các phần mềm yêu cầu thao tác nhanh và chủ yếu sử dụng tiếng Anh — ví dụ như
+					game bắn súng, phần mềm lập trình hoặc chuyên ngành kỹ thuật. Khi cần gõ tiếng Việt (như nhập tin
+					nhắn), bạn có thể bật nhanh chế độ tiếng Việt. Sau đó, nếu thao tác chuột diễn ra, Sigma sẽ tự động
+					chuyển về tiếng Anh để tránh nhầm lẫn.</p>
+
+				<h4>Sử dụng clipboard khi gửi phím</h4>
+				<p>Khi bật tùy chọn này, Sigma sẽ gửi văn bản bằng cách sao chép nội dung vào clipboard và dán ra, thay
+					vì mô phỏng từng phím nhấn.</p>
+				<p>Tùy chọn này đặc biệt hữu ích khi làm việc với các ứng dụng không hỗ trợ Unicode hoặc bị lỗi khi nhập
+					tiếng Việt theo cách gõ phím thông thường.</p>
+				<p>Với các ứng dụng được phát hiện là không hỗ trợ gõ ký tự Unicode trực tiếp (ví dụ như
+					<strong>AutoCAD</strong>), Sigma sẽ <strong>tự động bật tùy chọn này làm mặc định</strong> khi bạn
+					sử dụng lần đầu hoặc khôi phục thiết lập gốc. Người dùng vẫn có thể tắt lại nếu muốn.
+				</p>
+				<p><strong>Lưu ý:</strong> Tùy chọn này có thể tạm thời ghi đè nội dung clipboard hiện tại. Tuy nhiên,
+					Sigma có khả năng <em>tự động khôi phục nội dung clipboard gốc</em> sau khi hoàn tất thao tác, giúp
+					hạn chế mất dữ liệu.</p>
+
+				<h4>Tương thích với ứng dụng có gợi ý từ</h4>
+				<p>Khi bật tùy chọn này, Sigma sẽ điều chỉnh cách xử lý phím để đảm bảo hoạt động ổn định trong các ứng
+					dụng có tính năng gợi ý từ.</p>
+				<p>Với các ứng dụng được phát hiện là dễ xảy ra lỗi khi sử dụng gợi ý từ (ví dụ: trình duyệt web, Excel,
+					ứng dụng nhắn tin, trình soạn mã...), Sigma sẽ <strong>tự động bật tùy chọn này làm mặc
+						định</strong> khi bạn sử dụng lần đầu hoặc khôi phục thiết lập gốc. Người dùng vẫn có thể tắt
+					nếu không cần thiết.</p>
+				<p><strong>Lưu ý:</strong> Bật tùy chọn này giúp tránh xung đột và cải thiện độ chính xác khi gõ. Tuy
+					nhiên, trong một số trường hợp, có thể khiến phản hồi nhập liệu hơi chậm.</p>
+
+				<h4>Tự động viết hoa thông minh</h4>
+				<p>Tính năng này giúp bạn tự động viết hoa chữ cái đầu câu hoặc sau dấu câu mà không cần giữ phím
+					<code>Shift</code>.
+				</p>
+				<ul>
+					<li>Khi xuống dòng hoặc nhập các dấu câu như <code>.</code>, <code>!</code>, <code>?</code>, ký tự
+						đầu tiên của câu kế tiếp sẽ được viết hoa tự động.</li>
+					<li>Nếu bạn viết hoa ký tự thứ hai trong một từ (ví dụ: <code>vIệt</code>), Sigma sẽ hiểu rằng bạn
+						muốn viết hoa toàn bộ từ đó và sẽ tự động chuyển thành <code>VIỆT</code>.</li>
+				</ul>
+				<p>Điều này giúp tiết kiệm thao tác khi gõ nhanh, đồng thời vẫn đảm bảo đúng quy tắc chính tả. Tính năng
+					đặc biệt hữu ích khi soạn thảo văn bản hoặc hội thoại.</p>
+
+				<h4>Cho phép gõ ký tự Teencode</h4>
+				<p>Khi bật tùy chọn này, bạn có thể gõ theo phong cách Teencode, thường dùng trong giới trẻ để viết
+					nhanh, ngắn gọn và vui nhộn.</p>
+				<p>Teencode thường sử dụng các ký tự thay thế cho phụ âm đầu và âm cuối:</p>
+				<ul>
+					<li><strong>Phụ âm đầu thường dùng:</strong> <code>f</code>, <code>j</code>, <code>q</code>,
+						<code>w</code>, <code>z</code>
+					</li>
+					<li><strong>Phụ âm cuối thường dùng:</strong> <code>d</code>, <code>g</code>, <code>h</code>,
+						<code>j</code>, <code>k</code>, <code>q</code>, <code>t</code>, <code>v</code>, <code>w</code>,
+						<code>x</code>, <code>z</code>, <code>~</code>
+					</li>
+				</ul>
+
+				<h4>Cho phép chèn ký tự bị thiếu</h4>
+				<p>Gõ thiếu ký tự → chỉ cần bổ sung → Sigma sẽ tự động tìm vị trí hợp lý để chèn và sắp xếp lại vần. Tính năng này cũng hỗ trợ khi bạn gõ sai thứ tự các ký tự do gõ nhanh — Sigma sẽ tự điều chỉnh lại nếu nhận diện được từ hợp lệ.</p>
+				<p><strong>Ví dụ:</strong> Gõ <code>h</code> <code>o</code> <code>n</code> <code>g</code>, gõ thêm <code>a</code> → <code>hoang</code>.</p>
+				<p>Rất hữu ích khi bạn thường xuyên gõ nhanh, giúp hạn chế lỗi chính tả và duy trì tốc độ gõ mạch lạc. Tuy nhiên, khi bật tính năng này, Sigma sẽ trở nên rất “nhạy” với tiếng Việt, nên có thể gây bất tiện trong các ứng dụng gõ nhiều tiếng Anh.</p>
+				<p>Do đó, tính năng này được thiết kế để cấu hình riêng cho từng ứng dụng. Bạn được khuyến khích bật nó cho các phần mềm chuyên gõ tiếng Việt (như trình soạn thảo văn bản, mạng xã hội...) và tắt trong các phần mềm chủ yếu gõ tiếng Anh (như IDE hoặc trình duyệt tài liệu kỹ thuật).</p>
+
+				<hr>
+
+				<h4>Kiểu gõ</h4>
+				<p>Bạn có thể lựa chọn giữa các kiểu gõ phổ biến như <code>Telex</code>, <code>VNI</code>, hoặc
+					<code>Tích hợp</code>.
+				</p>
+				<p>Có thể thay đổi trong bảng cấu hình, hoặc chuyển nhanh bằng phím tắt <code>Shift → G</code>.</p>
+
+				<h4>Khởi động cùng Windows</h4>
+				<p>Tự động mở Sigma mỗi khi khởi động máy tính. Giúp bạn không cần bật thủ công mỗi lần dùng.</p>
+
+				<h4>Cho phép gõ tắt</h4>
+				<p>Khi bật tùy chọn này, Sigma sẽ tự động thay thế các từ gõ tắt thành nội dung đầy đủ nếu từ đó có
+					trong danh sách gõ tắt.</p>
+
+				<ul>
+					<li>
+						<strong>Gõ tắt theo cụm từ:</strong> Từ gõ tắt chỉ được thay thế khi bạn bấm <strong>dấu
+							cách</strong> hoặc <strong>dấu câu</strong>. Phù hợp cho các cụm từ dài, thông dụng.
+					</li>
+					<li>
+						<strong>Gõ tắt theo chuỗi:</strong> Khi chuỗi trùng khớp, từ sẽ được thay thế ngay lập tức,
+						không cần bấm dấu cách. Phù hợp để chèn các ký hiệu đặc biệt, các biểu tượng như: <code>φ</code>
+						<code>π</code> <code>σ</code> <code>√</code>.
+					</li>
+				</ul>
+
+				<ul>
+					<li>Nếu tất cả ký tự trong từ gõ tắt đều viết thường → kết quả giữ nguyên định dạng như đã định
+						nghĩa (không thay đổi chữ hoa/chữ thường).</li>
+					<li>Nếu ký tự <strong>đầu tiên</strong> của từ gõ tắt viết hoa → kết quả được định dạng
+						<strong>Title Case</strong> (chữ cái đầu viết hoa).
+					</li>
+					<li>Nếu ký tự <strong>thứ hai</strong> viết hoa → kết quả được chuyển thành
+						<strong>UPPERCASE</strong> (toàn bộ viết hoa).
+					</li>
+				</ul>
+
+				<ul>
+					<li>Kết quả trả về từ gõ tắt sẽ được <strong>tự động chuyển đổi theo bảng mã hiện tại</strong> mà
+						bạn đang sử dụng, ví dụ <code>Unicode</code>, <code>VNI Windows</code>, <code>TCVN3</code>. Điều
+						này đảm bảo tính tương thích với ứng dụng hoặc định dạng văn bản bạn đang làm việc.</li>
+				</ul>
+				<p>Bạn có thể điều chỉnh danh sách gõ tắt bằng cách nhấp vào biểu tượng Sigma ở khay hệ thống (góc dưới
+					bên phải màn hình), sau đó chọn mục <code>Trình quản lý gõ tắt</code> (phím tắt
+					<code>Shift → T</code>).
+				</p>
+
+				<h4>Cho phép bỏ dấu xoay vòng</h4>
+				<p>Khi bật tùy chọn này, bạn có thể nhấn lặp lại phím dấu như <code>s</code>, <code>f</code>,
+					<code>r</code>, <code>x</code>, <code>j</code> để luân phiên qua các trạng thái:
+				</p>
+				<ul>
+					<li><strong>Không dấu → Có dấu → Không dấu</strong></li>
+				</ul>
+				<p>Ví dụ: Gõ <code>a</code> <code>s</code> → <code>á</code>, gõ thêm <code>s</code> → <code>a</code>.
+				</p>
+				<p>Phù hợp khi bạn cần chỉnh sửa dấu nhanh mà không phải xóa và gõ lại từ đầu.</p>
+				<p>Với người mới dùng Sigma, chưa quen chuyển ngôn ngữ bằng phím <code>Ctrl</code>, bạn có thể tắt tùy
+					chọn này để dùng cách quen thuộc: gõ lặp lại phím dấu để chuyển sang tiếng Anh.</p>
+				<p>Ví dụ: Gõ <code>e</code> <code>x</code> → <code>ẽ</code>, gõ thêm <code>x</code> → <code>ex</code>
+					(tức là bỏ dấu và giữ lại chữ gốc).</p>
+
+				<h4>Tự động thêm dấu mũ các vần “iê” “uê” “uô” “uyê” “yê”</h4>
+				<p>Khi bật tùy chọn này, bạn chỉ cần gõ vần chính đơn giản. Sigma sẽ tự động bổ sung dấu mũ phù hợp để
+					đảm bảo đúng chính tả tiếng Việt.</p>
+				<ul>
+					<li>Gõ <code>t</code> <code>i</code> <code>e</code> <code>n</code> → <code>tiên</code>.
+					<li>Gõ <code>y</code> <code>e</code> <code>u</code> → <code>yêu</code>.
+				</ul>
+				<p>Rất hữu ích khi bạn muốn gõ nhanh mà vẫn đảm bảo chính tả đúng.</p>
+
+				<h4>Cho phép gõ tắt các âm cuối “ch” “ng” “nh”</h4>
+				<p>Khi bật, bạn có thể chỉ cần gõ một ký tự thay cho âm cuối phổ biến như <code>ch</code>,
+					<code>ng</code>, <code>nh</code>. Sigma sẽ tự động mở rộng thành âm đầy đủ nếu khớp với ngữ cảnh.
+				</p>
+
+				<ul>
+					<li>Gõ <code>h</code> <code>a</code>, gõ thêm <code>h</code> → <code>hanh</code> </li>
+					<li>Gõ <code>h</code> <code>a</code>, gõ thêm <code>g</code> → <code>hang</code> </li>
+					<li>Gõ <code>t</code> <code>i</code>, gõ thêm <code>c</code> → <code>tich</code> </li>
+				</ul>
+				<p>Tùy chọn này rất hữu ích để gõ nhanh hơn, đặc biệt trong các từ phổ biến có âm cuối dạng kép.</p>
+
+				<h4>Dùng phím ← → để điều hướng từng từ</h4>
+				<p>Cho phép dùng các phím mũi tên để chọn từng phần trong cụm từ đang gõ, rất tiện cho việc sửa từ
+					nhanh.</p>
+
+				<h4>Tự động chuyển từ tiếng Anh đã ghi nhớ</h4>
+				<p>Khi bật tùy chọn này, Sigma sẽ ghi nhớ các từ <code>tiếng Anh</code> mà bạn từng tự chuyển ngôn ngữ thủ công trong quá trình gõ. Những lần sau, khi bạn gõ lại các từ đó, Sigma sẽ tự động chuyển sang chế độ <code>tiếng Anh</code> để giữ nguyên chính tả.</p>
+
+				<p>Tùy chọn này đặc biệt hữu ích khi bạn sử dụng kiểu gõ <code>Telex</code> hoặc <code>Tích hợp</code> kết hợp với hai tính năng nâng cao: <code>Khôi phục từ gốc nếu gõ không hợp lệ</code> và <code>Cho phép chèn ký tự bị thiếu</code>.</p>
+
+				<p><code>Cho phép chèn ký tự bị thiếu</code> là một tính năng tiên tiến của Sigma, giúp bạn gõ nhanh và linh hoạt, kể cả khi thứ tự hoặc vị trí ký tự không chính xác. Tuy nhiên, tính năng này có thể khiến Sigma trở nên quá “nhạy” với tiếng Việt, dễ hiểu nhầm các từ tiếng Anh thành từ có dấu.</p>
+
+				<p>Với tùy chọn này, bạn chỉ cần chuyển sang <code>tiếng Anh</code> một lần bằng <code>Ctrl trái</code> khi gặp từ bị hiểu nhầm. Sigma sẽ ghi nhớ hành động đó và tự động áp dụng <code>tiếng Anh</code> cho từ này ở những lần gõ sau. Càng sử dụng, hệ thống càng học chính xác hơn và trở nên thông minh hơn theo thói quen của bạn.</p>
+
+				<p><strong>Ví dụ:</strong></p>
+				<ul>
+					<li>Gõ <code>t</code> <code>e</code> <code>s</code> <code>t</code> → <code>tét</code></li>
+					<li>Gõ <code>e</code> <code>x</code> <code>t</code> <code>r</code> <code>e</code> <code>m</code> <code>e</code> → <code>mểt</code></li>
+					<li>Gõ <code>o</code> <code>k</code> <code>e</code> → <code>koe</code></li>
+					<li>Gõ <code>a</code> <code>h</code> → <code>ha</code></li>
+					<li>Gõ <code>e</code> <code>x</code> <code>t</code> <code>r</code> <code>i</code> <code>m</code> → <code>miểt</code></li>
+				</ul>
+				<p>Nếu bạn nhấn <code>Ctrl trái</code> để chuyển sang <code>tiếng Anh</code> khi gõ các từ trên, Sigma sẽ ghi nhớ hành động đó. Những lần sau, từ sẽ được gõ đúng bằng <code>tiếng Anh</code> mà không cần bạn chuyển thủ công nữa.</p>
+				<p>Nếu sau này bạn chuyển lại từ đó bằng <code>tiếng Việt</code>, Sigma sẽ tự động xóa khỏi danh sách đã ghi nhớ để đảm bảo tính linh hoạt.</p>
+				<p>Danh sách các từ tiếng Anh đã ghi nhớ sẽ được lưu riêng cho từng ứng dụng. Điều này có nghĩa là mỗi ứng dụng (ví dụ: trình duyệt, phần mềm chat, phần mềm lập trình...) sẽ có một danh sách từ ghi nhớ riêng biệt. Sigma sẽ tự động áp dụng chuyển ngôn ngữ phù hợp tùy theo ứng dụng bạn đang sử dụng.</p>
+
+			</div>
+
+			<div class="section">
+				<h2 id="sum-advanced">6. Thao tác soạn thảo nâng cao</h2>
+
+				<p><strong>Sigma</strong> cung cấp một số phím hỗ trợ giúp bạn soạn thảo nhanh và chính xác hơn.</p>
+
+				<h3>Phím tắt hữu ích</h3>
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Phím</th>
+							<th>Tác dụng</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>←</code></td>
+							<td>Di chuyển con trỏ sang từ bên trái để sửa nhanh</td>
+						</tr>
+						<tr>
+							<td><code>→</code></td>
+							<td>Di chuyển con trỏ sang từ bên phải để sửa nhanh</td>
+						</tr>
+						<tr>
+							<td><code>Shift + Backspace</code></td>
+							<td>Xoá nhanh toàn bộ từ bên trái con trỏ</td>
+						</tr>
+						<tr>
+							<td><code>Ctrl trái + Shift trái</code></td>
+							<td>Chuyển đổi chế độ ngôn ngữ <code>Tiếng Anh</code> <code>Tiếng Việt</code>. Từ đang gõ
+								cũng chuyển sang ngôn ngữ mới</td>
+						</tr>
+						<tr>
+							<td><code>Ctrl trái</code></td>
+							<td>Chuyển tạm thời ngôn ngữ <code>Tiếng Anh</code> hoặc <code>Tiếng Việt</code> cho từ đang
+								gõ.</td>
+						</tr>
+						<tr>
+							<td><code>Shift → H</code></td>
+							<td>Luân phiên giữa <code>lowercase</code> <code>Titlecase</code> <code>UPPERCASE</code> cho
+								từ đang gõ</td>
+						</tr>
+						<tr>
+							<td><code>Shift → M</code></td>
+							<td>Chuyển đổi giữa các bảng mã. Từ đang gõ cũng chuyển theo bảng mã mới</td>
+						</tr>
+						<tr>
+							<td><code>Shift → Tab</code></td>
+							<td>
+								Bật chế độ gõ các từ tiếng Việt dính liền, phù hợp khi bạn muốn gõ liền các cụm viết tắt hoặc từ ghép không có dấu cách như
+								<code>NĐCP</code>, <code>BộGõTiếngViệt</code>. Chế độ này sẽ tự động tắt khi bạn nhấn <code>dấu cách</code>, <code>Enter</code>, <code>Tab</code>, hoặc <code>kích chuột</code>.
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="section">
+				<h2 id="sum-ai">7. Tác vụ AI tích hợp</h2>
+
+				<h3>Tác vụ AI</h3>
+				<p>Các tác vụ AI giúp bạn xử lý nhanh nội dung đang gõ như: kiểm tra chính tả, dịch thuật, chuyển mã... mà không cần rời tay khỏi bàn phím.</p>
+
+				<h4>Các tác vụ mặc định:</h4>
+				<ol>
+					<li>Kiểm tra chính tả tiếng Việt</li>
+					<li>Kiểm tra chính tả tiếng Anh</li>
+					<li>Dịch sang tiếng Việt</li>
+					<li>Dịch sang tiếng Anh</li>
+					<li>Chuyển mã Unicode</li>
+				</ol>
+
+				<h3>Ứng dụng thực tế</h3>
+				<ul>
+					<li>Viết email, báo cáo, nội dung nhanh và chuyên nghiệp.</li>
+					<li>Viết lại đoạn văn, tóm tắt, hoặc chuyển đổi phong cách.</li>
+					<li>Dịch nhanh tài liệu, chuyển mã văn bản cũ.</li>
+				</ul>
+
+				<h3>Tùy chỉnh tác vụ AI</h3>
+				<ul>
+					<li>Nhấp phải vào biểu tượng <strong>Sigma</strong> ở khay hệ thống.</li>
+					<li>Chọn mục <code>Trình chỉnh sửa tác vụ AI</code>.</li>
+					<li>Hoặc nhấn <code>Shift → A</code>.</li>
+					<li>Có thể thêm các tác vụ như: <code>Tóm tắt nội dung dài</code>, <code>Viết lại đoạn văn</code>, <code>Chuyển thành văn nói hài hước</code>…</li>
+				</ul>
+				<p><strong>Lưu ý:</strong> Các tác vụ mặc định không thể chỉnh sửa hoặc xóa.</p>
+
+				<h4>Gọi nhanh tác vụ AI chuyên biệt bằng phím tắt</h4>
+				<p>Danh sách tên tác vụ AI được sắp xếp theo thứ tự chữ cái (alphabet). Các phím <code>Shift → F1</code> đến <code>Shift → F12</code> sẽ gọi lần lượt các tác vụ thứ 1 đến 12 trong danh sách.</p>
+
+				<p>Để dễ quản lý và ghi nhớ thứ tự, bạn nên đặt <strong>tiền tố số</strong> trước tên tác vụ (ví dụ: <code>01. Kiểm tra chính tả tiếng Việt</code>, <code>02. Kiểm tra chính tả tiếng Anh</code>, …). Việc này giúp:</p>
+				<ul>
+					<li>Giữ thứ tự cố định trong danh sách.</li>
+					<li>Dễ liên kết với phím tắt tương ứng <code>Shift → F#</code>.</li>
+				</ul>
+
+				<h4>Cách nhận kết quả khi gọi tác vụ AI</h4>
+				<p>Người dùng có thể dùng <strong>Shift trái</strong> hoặc <strong>Shift phải</strong> để gọi tác vụ AI. Tùy vào ngữ cảnh, kết quả sẽ được xử lý như sau:</p>
+				<ul>
+					<li><strong>Shift trái</strong>: Kết quả sẽ <strong>thay thế trực tiếp đoạn văn bản đang chọn</strong>. Cách này chỉ áp dụng với các ô có thể chỉnh sửa nội dung (như vùng soạn thảo văn bản, khung nhập liệu, trình chỉnh sửa...).</li>
+					<li><strong>Shift phải</strong>: Dùng khi con trỏ đang ở các vùng <strong>không phải ô nhập văn bản</strong> (ví dụ: tên tệp, menu, tiêu đề...), kết quả sẽ được hiển thị trong <strong>bảng giao diện riêng</strong> để bạn xem hoặc sao chép thủ công.</li>
+				</ul>
+
+				<h4>Phím tắt gọi tác vụ AI</h4>
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Phím</th>
+							<th>Tác dụng</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>Shift → Esc</code></td>
+							<td>Thực hiện tác vụ AI mặc định của ứng dụng</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F1</code></td>
+							<td>Thực hiện tác vụ AI thứ 1 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F2</code></td>
+							<td>Thực hiện tác vụ AI thứ 2 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F3</code></td>
+							<td>Thực hiện tác vụ AI thứ 3 trong danh sách</td>
+						</tr>
+						<tr>
+							<td>...</td>
+							<td>...</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F12</code></td>
+							<td>Thực hiện tác vụ AI thứ 12 trong danh sách</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p><strong>→ Sigma không chỉ là bộ gõ, mà còn là trợ lý AI giúp bạn viết hiệu quả và chuyên nghiệp hơn.</strong></p>
+			</div>
+
+
+
+			<div class="section">
+				<h2 id="sum-shortcut">8. Bảng tổng hợp phím tắt</h2>
+
+
+				<table border="1" cellpadding="5" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Phím</th>
+							<th>Tác dụng</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><code>Ctrl trái + Shift trái</code></td>
+							<td>Chuyển đổi chế độ ngôn ngữ <code>Tiếng Anh</code> <code>Tiếng Việt</code> cho ứng dụng
+							</td>
+						</tr>
+						<tr>
+							<td><code>Ctrl trái</code></td>
+							<td>Chuyển tạm thời ngôn ngữ <code>Tiếng Anh</code> <code>Tiếng Việt</code> cho từ đang gõ
+							</td>
+						</tr>
+						<tr>
+							<td><code>Shift → M</code></td>
+							<td>Chuyển đổi bộ mã <code>Unicode</code> <code>VNI Windows</code> <code>TCVN3 (ABC)</code>
+								cho ứng dụng</td>
+						</tr>
+						<tr>
+							<td><code>Shift → G</code></td>
+							<td>Chuyển đổi kiểu gõ <code>Telex</code> <code>VNI</code> <code>Tích hợp</code></td>
+						</tr>
+						<tr>
+							<td><code>←</code></td>
+							<td>Di chuyển con trỏ trong từ bên trái để sửa nhanh</td>
+						</tr>
+						<tr>
+							<td><code>→</code></td>
+							<td>Di chuyển con trỏ trong từ bên phải để sửa nhanh</td>
+						</tr>
+						<tr>
+							<td><code>Shift → H</code></td>
+							<td>Luân phiên giữa <code>lowercase</code> <code>Titlecase</code> <code>UPPERCASE</code>
+								cho từ đang gõ</td>
+						</tr>
+						<tr>
+							<td><code>Shift + Backspace</code></td>
+							<td>Xoá nhanh toàn bộ từ bên trái con trỏ</td>
+						</tr>
+						<tr>
+							<td><code>Shift → Tab</code></td>
+							<td>Bật chế độ gõ các từ tiếng Việt dính liền</td>
+						</tr>
+						<tr>
+							<td><code>Shift → U</code></td>
+							<td>Gọi bảng <code>cấu hình ứng dụng</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → C</code></td>
+							<td>Gọi bảng <code>Cấu hình chung</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → K</code></td>
+							<td>Gọi bảng <code>Tùy chỉnh kiểu gõ tích hợp</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → A</code></td>
+							<td>Gọi bảng <code>Trình chỉnh sửa tác vụ AI</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → T</code></td>
+							<td>Gọi bảng <code>Trình quản lý gõ tắt</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → X</code></td>
+							<td>Xóa các thiết lập đã lưu cho từng cửa sổ ứng dụng</td>
+						</tr>
+						<tr>
+							<td><code>Shift → Y</code></td>
+							<td>Gọi bảng <code>Đóng góp ý kiến</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → S</code></td>
+							<td>Gọi bảng <code>Hướng dẫn sử dụng</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → `</code></td>
+							<td>Bật / Tắt tùy chọn <code>Sử dụng chế độ tiếng Việt chủ động</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 1</code></td>
+							<td>Bật / Tắt tùy chọn <code>Sử dụng clipboard khi gửi phím</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 2</code></td>
+							<td>Bật / Tắt tùy chọn <code>Tương thích với ứng dụng có gợi ý từ</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 3</code></td>
+							<td>Bật / Tắt tùy chọn <code>Tự động viết hoa thông minh</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 4</code></td>
+							<td>Bật / Tắt tùy chọn <code>Cho phép gõ ký tự Teencode</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 5</code></td>
+							<td>Bật / Tắt tùy chọn <code>Cho phép chèn ký tự bị thiếu</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → 6</code></td>
+							<td>Bật / Tắt tùy chọn <code>Khởi động cùng Windows</code> cho ứng dụng </td>
+						</tr>
+						<tr>
+							<td><code>Shift → 7</code></td>
+							<td>Bật / Tắt tùy chọn <code>Cho phép gõ tắt</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → 8</code></td>
+							<td>Bật / Tắt tùy chọn <code>Cho phép bỏ dấu xoay vòng</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → 9</code></td>
+							<td>Bật / Tắt tùy chọn
+								<code>Tự động thêm dấu mũ các vần "iê", "uê", "uô", "uyê", "yê"</code>
+							</td>
+						</tr>
+						<tr>
+							<td><code>Shift → 0</code></td>
+							<td>Bật / Tắt tùy chọn <code>Cho phép gõ tắt các âm cuối "ch", "ng", "nh"</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → -</code></td>
+							<td>Bật / Tắt tùy chọn <code>Dùng phím ← → để điều hướng từng từ</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → =</code></td>
+							<td>Bật / Tắt tùy chọn <code>Tự động chuyển từ tiếng Anh đã ghi nhớ</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → Esc</code></td>
+							<td>Thực hiện tác vụ AI mặc định của ứng dụng</code></td>
+						</tr>
+						<tr>
+							<td><code>Shift → F1</code></td>
+							<td>Thực hiện tác vụ AI thứ 1 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F2</code></td>
+							<td>Thực hiện tác vụ AI thứ 2 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F3</code></td>
+							<td>Thực hiện tác vụ AI thứ 3 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F4</code></td>
+							<td>Thực hiện tác vụ AI thứ 4 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F5</code></td>
+							<td>Thực hiện tác vụ AI thứ 5 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F6</code></td>
+							<td>Thực hiện tác vụ AI thứ 6 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F7</code></td>
+							<td>Thực hiện tác vụ AI thứ 7 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F8</code></td>
+							<td>Thực hiện tác vụ AI thứ 8 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F9</code></td>
+							<td>Thực hiện tác vụ AI thứ 9 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F10</code></td>
+							<td>Thực hiện tác vụ AI thứ 10 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F11</code></td>
+							<td>Thực hiện tác vụ AI thứ 11 trong danh sách</td>
+						</tr>
+						<tr>
+							<td><code>Shift → F12</code></td>
+							<td>Thực hiện tác vụ AI thứ 12 trong danh sách</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="section">
+				<h2 id="sum-feedback">9. Đóng góp ý kiến</h2>
+
+				<p>Bạn có thể gửi góp ý, báo lỗi hoặc đề xuất tính năng cho <strong>Sigma</strong> trực tiếp trong phần
+					mềm.</p>
+
+				<h3>Cách gửi góp ý</h3>
+				<ul>
+					<li>Nhấp phải chuột vào biểu tượng <code>Sigma</code> ở góc dưới bên phải màn hình.</li>
+					<li>Chọn <code>Đóng góp ý kiến</code> và điền nội dung cần gửi.</li>
+					<li>Hoặc bấm phím tắt <code>Shift → Y</code> để mở nhanh cửa sổ gửi góp ý.</li>
+				</ul>
+
+				<h3>Nội dung có thể gửi</h3>
+				<ul>
+					<li>Ý tưởng cải tiến, tính năng mong muốn.</li>
+					<li>Báo lỗi trong quá trình sử dụng.</li>
+					<li>Thông tin liên hệ (nếu muốn được phản hồi).</li>
+				</ul>
+
+				<p><strong>Góp ý của bạn giúp Sigma tốt hơn mỗi ngày.</strong></p>
+			</div>
+
+		</div>
+		<script>
+			const sumToggle = document.querySelector('.menu-toggle');
+			const sumSidebar = document.querySelector('.sidebar');
+
+			sumToggle.addEventListener('click', () => {
+				sumSidebar.classList.toggle('active');
+			});
+
+			let sumTimeout;
+
+			sumSidebar.addEventListener('mouseleave', () => {
+				if (sumSidebar.classList.contains('active')) {
+					sumTimeout = setTimeout(() => {
+						sumSidebar.classList.remove('active');
+					}, 200);
+				}
+			});
+
+			sumSidebar.addEventListener('mouseenter', () => {
+				clearTimeout(sumTimeout);
+			});
+
+			document.addEventListener('mousemove', (e) => {
+				if (e.clientX <= 10 && !sumSidebar.classList.contains('active')) {
+					sumSidebar.classList.add('active');
+				}
+			});
+		</script>
+	</div>
+</body>
+
+</html>
