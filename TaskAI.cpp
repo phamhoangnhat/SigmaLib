@@ -31,65 +31,10 @@ TaskAI& TaskAI::getInstance() {
 
 TaskAI::TaskAI(QObject* parent) : QObject(parent) {
 	listKeyAPI = {
-		"AIzaSyBR5HZThIVgaX_lGeHUYCHgGU4z8qyYGpU",
-		"AIzaSyCGdRvUsP9STjffXwEosziGkeyfRi-OLI4",
-		"AIzaSyBjVKq1sL4D04crFsixhl-SR-qf9tsSYvs",
-		"AIzaSyDTq25nwRJl_AdWzKoz6YLOyHnT0SMrHv4",
-		"AIzaSyDWTIdDCUky1WvWxCCj-dUjFtmK20fcA10",
-
-		"AIzaSyBAgwb-Y5lhWJYjG84uO_aW1w8bJXx-3qg",
-		"AIzaSyBfHMgivHaXKFbq2CdQJ36XQAA4dI2nS_A",
-		"AIzaSyAiVWU07_6HcGtj_qUeHPk-zNi2Kj5hmG8",
-		"AIzaSyCV-QCic55XqIU0bOTSeh6tb5awkfInXgg",
-		"AIzaSyDrb6jLSDZvyY8oOd0pkKuPK4jIvP-5pTI",
-
-		"AIzaSyDr15OiNpTDMAQ12AvpjD2KBTw-vAwARpo",
-		"AIzaSyBjfQOzbn-akMO8WC2xDiLqL91NR91E_1U",
-		"AIzaSyDZSibe4jLStI1vPn-2k9hpnPh0E2yP37A",
-		"AIzaSyBXfEnl6VvMPcNlDiAkwB2PtpgDPcTuLZU",
-		"AIzaSyD80sR_yaaiz08sF2haW46aAR_wfG9jRs0",
-
-		"AIzaSyAmZ2l4IHvMd7R3dIYsAUJq7K50ckoI4Bw",
-		"AIzaSyDxVfqIJSUHwuuZnjreeLZhiuFdaNSoPK4",
-		"AIzaSyBlXNOJYGEDoEShLwtTQUdvVf14GYlJCCk",
-		"AIzaSyBhXRpRS-71x52615oqc-vQUyZcrT2mzZ4",
-		"AIzaSyDlttUhAVdqw3BuoDdogvvkb0pi4P9KIwI",
-
-		"AIzaSyBiMje7QE62FO-GhtCpUQCOUOfXIqGNEwM",
-		"AIzaSyC4ZEwn496U3I88mMFex-B_K1PVL8jxyOY",
-		"AIzaSyDReHlbVqmNHiikBTEqLr9jF3dgeDo0VZ4",
-		"AIzaSyBXXYYR2dlg5dMRf-XI_RBTe_4WZpLggig",
-		"AIzaSyBLFjBheHJQKQm1eURLl4-qn3KOtJQQCuo",
-
-		"AIzaSyB037J61HLZDF2sAjUhBOjIROJCbCCXxOk",
-		"AIzaSyBv8hNzk9uSfRtSCmY2LJ4pqiTMXqBqI30",
-		"AIzaSyCP99OUKEg6h-KAChcNynRrOrt3rVF1-f4",
-		"AIzaSyC-fH6o7izhgkRscqGd-pZb_Xv4NWauG0c",
-		"AIzaSyAWrtDh7VHnbmh_Gq7Bacfrzyzc6Dv-WhA",
-
-		"AIzaSyCKRdaSMDVNzD99NifhKtOKxFZRvu7EPT4",
-		"AIzaSyAirM_SlfhLDs82rT6YzrOYG1M1rbxfeAA",
-		"AIzaSyC19rqXxfbieevu3hh7caZwSzTf7aUuwLc",
-		"AIzaSyCW18f-O3cbYGuCbSRbYiR8NqQckVNILJ0",
-		"AIzaSyA78XG2asgtrXv9zrXSlABXdx7hPqTs8yQ",
-
-		"AIzaSyC1bgcoVPhptukyHf7r7p4QA17jce4Uf30",
-		"AIzaSyBMeT5GPTHmVkahlfVqtu5AuPmk8hL6eRM",
-		"AIzaSyDLAHCsKrcp2by6xezmTlFMWVIFtsion90",
-		"AIzaSyAPxCiWMrlnyqz0za3Wlg1DmUjRBo9mfwI",
-		"AIzaSyBoFLa4AxiR6s8o24u7ypI-Pq8_DO27ecE",
-
-		"AIzaSyBj2ti5HIwPtdG7dLMuo0h_MR1lJ91mCdA",
-		"AIzaSyBFdQuH53GuNeVBgOBv7-iHq8fppXI9Nqk",
-		"AIzaSyA2dOopBlumtSsPicmbRBrQgQxlabz7LMc",
-		"AIzaSyBXxp2yLgTR3T4dK-Z5vsWxF3AQQWn2V84",
-		"AIzaSyBcamKaAc1ornzBrowWm-FcrFUHqWf6WbI",
-
-		"AIzaSyDqLfI2HaY1tH87kCQJqPoJx-73pscskzE",
-		"AIzaSyC3L5viSAKdwxxs8dD_aMkJJPn_Gt9jlnU",
-		"AIzaSyBfgNxCJRhakeCl1zUI42QztjKAta61ufw",
-		"AIzaSyCy-82CS3y9gv2D0Xq4Sy5AK9U2pF7WTYA",
-		"AIzaSyBDIJoXkOeDpXE-2xKSXT7-R7XwyosUnV8"
+		//"KEY API GEMINI 1",
+		//"KEY API GEMINI 2",
+		//"KEY API GEMINI 3",
+		//...
 	};
 }
 
