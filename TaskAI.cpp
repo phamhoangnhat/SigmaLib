@@ -99,21 +99,21 @@ TaskAI::~TaskAI() {
 void TaskAI::run(QString keyTaskAI) {
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
+	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 
 	if (popup) {
 		popup->hide();
 	}
 	interrupted = false;
 
-	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
-
-	if (!taskAIDatabase.dataTaskAI.contains(keyTaskAI)) {
+	if (!taskAIDatabase.dataTaskAI.contains(keyTaskAI) || flagIsSending) {
 		return;
 	}
+	flagIsSending = true;
+
 	QPair<QString, QString> dataTemp = taskAIDatabase.dataTaskAI[keyTaskAI];
 	QString nameTaskAI = dataTemp.first;
 	QString promptTaskAI = dataTemp.second;
-	
 	QString input;
 
 	TaskAIResult* taskAIResult = TaskAIResult::getInstance();
@@ -185,6 +185,8 @@ void TaskAI::sendRequest(const QString& prompt) {
 
 			reply->abort();
 			reply->deleteLater();
+
+			flagIsSending = false;
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 			clipboard.setBaseClipboard();
 			return;
@@ -202,10 +204,10 @@ void TaskAI::sendRequest(const QString& prompt) {
 			while (result.endsWith('\n') || result.endsWith('\r')) {
 				result.chop(1);
 			}
-
 			if (result.startsWith('\"') && result.endsWith('\"') && result.length() >= 2) {
 				result = result.mid(1, result.length() - 2);
 			}
+			result = removeMarkdownFormatting(result);
 
 			if (!interrupted) {
 				TaskAIResult* taskAIResult = TaskAIResult::getInstance();
@@ -230,6 +232,8 @@ void TaskAI::sendRequest(const QString& prompt) {
 			popup->setMessage("Kết nối tới máy chủ thất bại.\nHãy kiểm tra Internet và thử lại.");
 			popup->showWindow();
 		}
+
+		flagIsSending = false;
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		clipboard.setBaseClipboard();
 		reply->deleteLater();
@@ -249,4 +253,15 @@ void TaskAI::showNotice(QString& name) {
 	notice.iconWidth = fm.horizontalAdvance(notice.displayText) + 100;
 
 	NoticeUi::updateWindow();
+}
+
+QString TaskAI::removeMarkdownFormatting(const QString& input) {
+	QString output = input;
+	output.replace(QRegularExpression(R"(\*\*(.*?)\*\*)"), "\\1");
+	output.replace(QRegularExpression(R"(\*(.*?)\*)"), "\\1");
+	output.replace(QRegularExpression(R"(__([^_]+)__)"), "\\1");
+	output.replace(QRegularExpression(R"(_([^_]+)_)"), "\\1");
+	output.replace(QRegularExpression(R"(`([^`]+)`)"), "\\1");
+	output.replace(QRegularExpression(R"(~~([^~]+)~~)"), "\\1");
+	return output;
 }

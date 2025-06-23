@@ -18,6 +18,7 @@ public:
     void closeWindow();
     bool flagOpenWindow = false;
     bool flagInWindow = false;
+    bool flagIsSending = false;
     bool interrupted = false;
 
 private:
@@ -26,6 +27,7 @@ private:
 
     void sendRequest(const QString& prompt);
     void showNotice(QString& name);
+    QString removeMarkdownFormatting(const QString& input);
 
     QStringList listKeyAPI;
     QNetworkAccessManager networkManager;
