@@ -13,10 +13,6 @@ Xem hướng dẫn chi tiết cách sử dụng và cài đặt phần mềm t�
 
 ## Giới thiệu
 
-## Giới thiệu
-
-## Giới thiệu
-
 SigmaLib được thiết kế như một **thư viện động độc lập**, giúp tách phần xử lý logic khỏi file thực thi chính của phần mềm Sigma. Mục tiêu là để có thể **cập nhật các tính năng mà không cần build lại toàn bộ phần mềm Sigma**, chỉ cần thay thế file `SigmaLib.dll`.
 
 Thiết kế này không chỉ giúp **đơn giản hóa quá trình bảo trì, cập nhật và phát triển mở rộng**, mà còn cho phép **tự động cập nhật ứng dụng mà không cần cài đặt lại thủ công**, mang lại trải nghiệm liền mạch cho người dùng.
