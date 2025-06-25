@@ -1,6 +1,6 @@
 # SigmaLib – Thư viện xử lý tiếng Việt cho Sigma
 
-**SigmaLib** là thư viện động (`.dll`) phục vụ cho phần mềm gõ tiếng Việt **[Sigma](https://github.com/phamhoangnhat/Sigma)**, cung cấp các chức năng xử lý văn bản, kiểm tra ngữ âm, cấu hình bộ gõ, và hỗ trợ AI gợi ý từ.
+**SigmaLib** là thư viện động (`.dll`) phục vụ cho phần mềm gõ tiếng Việt **[Sigma](https://github.com/phamhoangnhat/Sigma)**, cung cấp toàn bộ các chức năng chính của ứng dụng.
 
 ---
 
@@ -13,7 +13,10 @@ Xem hướng dẫn chi tiết cách sử dụng và cài đặt phần mềm t�
 
 ## Giới thiệu
 
-SigmaLib được thiết kế như một **thư viện độc lập**, giúp tách phần xử lý logic khỏi giao diện người dùng của phần mềm Sigma. Mục tiêu là giúp dễ dàng tái sử dụng, bảo trì và mở rộng các thuật toán xử lý tiếng Việt trong môi trường Qt.
+## Giới thiệu
+
+SigmaLib được thiết kế như một **thư viện động độc lập**, giúp tách phần xử lý logic khỏi file thực thi chính của phần mềm Sigma. Mục tiêu là để có thể **cập nhật các tính năng mà không cần build lại toàn bộ phần mềm Sigma**, chỉ cần thay thế `SigmaLib.dll`. Điều này giúp đơn giản hóa quá trình bảo trì, cập nhật và phát triển mở rộng.
+
 
 ---
 
@@ -39,4 +42,4 @@ SigmaLib được thiết kế như một **thư viện độc lập**, giúp t�
 ```bash
 git clone https://github.com/phamhoangnhat/SigmaLib.git
 cd SigmaLib
-# Mở project bằng Qt Creator hoặc Visual Studio để build SigmaLib.dll
+# Mở project bằng Visual Studio để build SigmaLib.dll
