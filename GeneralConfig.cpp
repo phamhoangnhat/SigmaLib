@@ -1,6 +1,7 @@
 ﻿#include "GeneralConfig.h"
 #include "Variable.h"
 #include <Util.h>
+#include <ShortcutKeyEditor.h>
 
 #include <QPropertyAnimation>
 #include <QPushButton>
@@ -23,6 +24,7 @@ void GeneralConfig::showWindow() {
 	GeneralConfig* ui = getInstance();
 	if (!ui->isVisible()) {
 		ui->loadWindow();
+		ui->updateShortcutLabels();
 		ui->fadeIn();
 		ui->show();
 		ui->raise();
@@ -68,7 +70,7 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 	setWindowTitle("Cấu hình chung");
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 	setWindowIcon(QIcon(":/icon.png"));
-	resize(450, 300);
+	resize(400, 260);
 	setAttribute(Qt::WA_DeleteOnClose, false);
 	setWindowOpacity(0.0);
 
@@ -79,15 +81,15 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 			border-radius: 10px;
 		}
 
-		QLabel {
-			color: #222222; /* Chữ đen xám đậm */
-			font-weight: bold;
-			background-color: #e0e0e0; /* Nền xám nhạt */
-			padding-left: 5px;
-			padding-right: 5px;
-			border-radius: 10px;
-			min-height: 25px;
-		}
+        QLabel {
+            background: transparent;
+            color: #000000;
+            font-weight: bold;
+            border-radius: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
+            min-height: 25px;
+        }
 
 		QComboBox {
 			background-color: #D0D0D0;
@@ -240,6 +242,10 @@ GeneralConfig::GeneralConfig(QWidget* parent)
         QPushButton:pressed {
             background-color: #B0B0B0;
         }
+
+        QFrame {
+            background-color: #CCCCCC;
+        }
 	)");
 
 	QPalette palette = this->palette();
@@ -249,18 +255,23 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	auto addComboBoxRow = [&](QComboBox*& comboBox, const QString& labelText, const QString& shortcutText) {
+	auto addComboBoxRow = [&](QComboBox*& comboBox, QLabel*& labelShortcut, const QString& labelText) {
 		QHBoxLayout* row = new QHBoxLayout();
 
 		QLabel* label = new QLabel(labelText, this);
-		label->setFixedWidth(70);
+		label->setFixedWidth(60);
+		label->setFixedHeight(25);
+		label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+		label->setStyleSheet("font-weight: bold; background: transparent;");
 
 		comboBox = new QComboBox(this);
-		
-		QLabel* labelShortcut = new QLabel(shortcutText, this);
+		comboBox->setFixedHeight(25);
+	
+		labelShortcut = new QLabel(this);
+		labelShortcut->setFixedHeight(25);
 		labelShortcut->setFixedWidth(75);
-		labelShortcut->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-		labelShortcut->setStyleSheet("color: #666666; font-weight: normal;");
+		labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+		labelShortcut->setStyleSheet("color: #888888; font-weight: normal; background: transparent;");
 
 		row->addWidget(label);
 		row->addWidget(comboBox, 1);
@@ -268,35 +279,37 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 
 		layout->addLayout(row);
 		};
+	
+	addComboBoxRow(comboInputMethod, labelShortcutInputMethod, "Kiểu gõ");
 
-	addComboBoxRow(comboInputMethod, "Kiểu gõ", "Shift → G");
-
-	auto addCheckboxRow = [&](QCheckBox*& checkbox, const QString& labelText, const QString& shortcutText) {
+	auto addCheckboxRow = [&](QCheckBox*& checkbox, QLabel*& labelShortcut, const QString& labelText) {
 		QHBoxLayout* row = new QHBoxLayout();
 		checkbox = new QCheckBox(labelText, this);
-		QLabel* labelShortcut = new QLabel(shortcutText, this);
-		labelShortcut->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+		checkbox->setFixedHeight(25);
+
+		labelShortcut = new QLabel(this);
+		labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+		labelShortcut->setFixedHeight(25);
 		labelShortcut->setFixedWidth(75);
-		labelShortcut->setStyleSheet("color: #666666; font-weight: normal;");
+		labelShortcut->setStyleSheet("color: #888888; font-weight: normal; background: transparent;");
+
 		row->addWidget(checkbox);
 		row->addWidget(labelShortcut, 1);
 		layout->addLayout(row);
 		};
 
-	addCheckboxRow(checkBoxAutoStart, "Khởi động cùng Windows", "Shift → 6");
-	// addCheckboxRow(checkBoxAutoUpdate,  "Tự động cập nhật khi khởi động", "");
-	addCheckboxRow(checkBoxUseSnippet, "Cho phép gõ tắt", "Shift → 7");
-	addCheckboxRow(checkBoxLoopDiacTone, "Cho phép bỏ dấu xoay vòng", "Shift → 8");
-	addCheckboxRow(checkBoxAutoAddVowel, "Tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"", "Shift → 9");
-	addCheckboxRow(checkBoxShortcutLast, "Cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"", "Shift → 0");
-	addCheckboxRow(checkBoxUseLeftRight, "Dùng phím ← → để điều hướng từng từ", "Shift → -");
-	addCheckboxRow(checkBoxAutoChangeLang, "Tự động chuyển từ tiếng Anh đã ghi nhớ", "Shift → =");
+	addCheckboxRow(checkBoxAutoStart, labelShortcutAutoStart, "Khởi động cùng Windows");
+	//addCheckboxRow(checkBoxAutoUpdate, labelShortcutAutoUpdate, "Tự động cập nhật khi khởi động");
+	addCheckboxRow(checkBoxUseSnippet, labelShortcutUseSnippet, "Cho phép gõ tắt");
+	addCheckboxRow(checkBoxLoopDiacTone, labelShortcutLoopDiacTone, "Cho phép bỏ dấu xoay vòng");
+	addCheckboxRow(checkBoxAutoAddVowel, labelShortcutAutoAddVowel, "Tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"");
+	addCheckboxRow(checkBoxShortcutLast, labelShortcutShortcutLast, "Cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"");
+	addCheckboxRow(checkBoxAutoChangeLang, labelShortcutAutoChangeLang, "Tự động chuyển từ tiếng Anh đã ghi nhớ");
 
 	auto* separator = new QFrame(this);
 	separator->setFrameShape(QFrame::HLine);
 	separator->setFrameShadow(QFrame::Plain);
 	separator->setFixedHeight(1);
-	separator->setStyleSheet("background-color: #CCCCCC;");
 	layout->addWidget(separator);
 	layout->addSpacing(5);
 
@@ -344,7 +357,6 @@ void GeneralConfig::loadWindow() {
 	checkBoxLoopDiacTone->setChecked(variable.modeLoopDiacTone);
 	checkBoxAutoAddVowel->setChecked(variable.modeAutoAddVowel);
 	checkBoxShortcutLast->setChecked(variable.modeShortcutLast);
-	checkBoxUseLeftRight->setChecked(variable.modeUseLeftRight);
 	checkBoxAutoChangeLang->setChecked(variable.modeAutoChangeLang);
 }
 
@@ -368,6 +380,29 @@ void GeneralConfig::fadeOut() {
 	anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
+void GeneralConfig::updateShortcutLabels() {
+	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
+
+	auto updateLabel = [&](QLabel* label, const QString& actionName) {
+		QString shortcut = shortcutKeyEditor->getShortcutKey(actionName);
+		if (shortcut.isEmpty()) {
+			label->hide();
+		}
+		else {
+			label->setText(shortcut);
+			label->show();
+		}
+		};
+
+	updateLabel(labelShortcutInputMethod, "Chuyển đổi kiểu gõ");
+	updateLabel(labelShortcutAutoStart, "Bật / tắt khởi động cùng Windows");
+	updateLabel(labelShortcutUseSnippet, "Bật / tắt cho phép gõ tắt");
+	updateLabel(labelShortcutLoopDiacTone, "Bật / tắt cho phép bỏ dấu xoay vòng");
+	updateLabel(labelShortcutAutoAddVowel, "Bật / tắt tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"");
+	updateLabel(labelShortcutShortcutLast, "Bật / tắt cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"");
+	updateLabel(labelShortcutAutoChangeLang, "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
+}
+
 void GeneralConfig::onSaveButtonClicked() {
 	Variable& variable = Variable::getInstance();
 
@@ -378,7 +413,6 @@ void GeneralConfig::onSaveButtonClicked() {
 	variable.modeLoopDiacTone = checkBoxLoopDiacTone->isChecked();
 	variable.modeAutoAddVowel = checkBoxAutoAddVowel->isChecked();
 	variable.modeShortcutLast = checkBoxShortcutLast->isChecked();
-	variable.modeUseLeftRight = checkBoxUseLeftRight->isChecked();
 	variable.modeAutoChangeLang = checkBoxAutoChangeLang->isChecked();
 
 	QSettings settings(variable.appName, "Config");
@@ -390,7 +424,6 @@ void GeneralConfig::onSaveButtonClicked() {
 	settings.setValue("modeLoopDiacTone", variable.modeLoopDiacTone);
 	settings.setValue("modeAutoAddVowel", variable.modeAutoAddVowel);
 	settings.setValue("modeShortcutLast", variable.modeShortcutLast);
-	settings.setValue("modeUseLeftRight", variable.modeUseLeftRight);
 	settings.setValue("modeAutoChangeLang", variable.modeAutoChangeLang);
 
 	variable.update();
@@ -410,7 +443,6 @@ void GeneralConfig::onDefaultButtonClicked()
 	checkBoxLoopDiacTone->setChecked(variable.MODELOOPDIACTONE);
 	checkBoxAutoAddVowel->setChecked(variable.MODEAUTOADDVOWEL);
 	checkBoxShortcutLast->setChecked(variable.MODESHORTCUTLAST);
-	checkBoxUseLeftRight->setChecked(variable.MODEUSELEFTRIGHT);
 	checkBoxAutoChangeLang->setChecked(variable.MODEAUTOCHANGELANG);
 }
 

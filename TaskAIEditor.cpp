@@ -231,15 +231,15 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
             background-color: #B0B0B0;
         }
 
-		QLabel {
-			color: #222222;
-			font-weight: bold;
-			background-color: #D0D0D0;
-			padding-left: 5px;
-			padding-right: 5px;
-			border-radius: 10px;
-			min-height: 25px;
-		}
+        QLabel {
+            background: transparent;
+            color: #000000;
+            font-weight: bold;
+            border-radius: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
+            min-height: 25px;
+        }
 
         QTextEdit {
             background-color: #DADADA;

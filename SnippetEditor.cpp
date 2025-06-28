@@ -26,6 +26,8 @@ SnippetEditor* SnippetEditor::getInstance() {
 void SnippetEditor::showWindow() {
 	SnippetEditor* ui = getInstance();
 	if (!ui->isVisible()) {
+		ui->loadSnippetFromFile();
+		ui->loadWindow(0);
 		ui->fadeIn();
 		ui->show();
 		ui->raise();

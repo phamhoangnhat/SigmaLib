@@ -24,7 +24,6 @@ public:
     const bool MODEINSERTCHAR = false;
     const bool MODEAUTOADDVOWEL = false;
     const bool MODESHORTCUTLAST = false;
-    const bool MODEUSELEFTRIGHT = true;
     const bool MODECHECKCASE = false;
     const bool MODETEENCODE = false;
     const bool MODEAUTOCHANGELANG = true;
@@ -103,6 +102,7 @@ public:
 
     QSet<QString> listAppUseClipboard;
     QSet<QString> listAppFixAutoSuggest;
+    QSet<QString> listAppNotUseLeftRight;
 
     static Variable& getInstance() {
         static Variable instance;

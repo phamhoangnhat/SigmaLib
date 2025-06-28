@@ -91,12 +91,12 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
         }
 
         QLabel {
-            background: transparent; /* Trong suốt */
-            color: #000000; /* Chữ đen */
+            background: transparent;
+            color: #000000;
             font-weight: bold;
             border-radius: 10px;
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
             min-height: 25px;
         }
 
@@ -135,8 +135,9 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
             background-color: #B0B0B0;
         }
 
-        QFrame {
-            background-color: #E0E0E0;
+        QFrame#separatorLine {
+            background-color: #CCCCCC;
+            border: none;
         }
     )");
 
@@ -199,10 +200,10 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
     }
 
     auto* separator = new QFrame(this);
+    separator->setObjectName("separatorLine");
     separator->setFrameShape(QFrame::HLine);
     separator->setFrameShadow(QFrame::Plain);
     separator->setFixedHeight(1);
-    separator->setStyleSheet("background-color: #CCCCCC;");
     layout->addWidget(separator, 7, 0, 1, 4);
 
     saveBtn = new QPushButton("Lưu");

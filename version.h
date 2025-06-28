@@ -6,7 +6,7 @@
 
 #define APP_VERSION_MAJOR  1
 #define APP_VERSION_MINOR  5
-#define APP_VERSION_PATCH  3
+#define APP_VERSION_PATCH  5
 
 // Tạo chuỗi version: "1.0.0"
 #define STRINGIFY2(x) #x

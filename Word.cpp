@@ -14,7 +14,7 @@
 Word::Word() {
 	Variable& variable = Variable::getInstance();
 	flagLangViet = variable.flagLangVietGlobal;
-	flagSwitchLang = false;
+	numSwitchLang = 0;
 	flagAddCharSpace = true;
 	flagAddCharInvalid = false;
 	stateAdd = 0;
@@ -50,7 +50,7 @@ bool Word::addChar(wchar_t character) {
 		flagAddCharSpace = false;
 	}
 
-	if (!(flagSwitchLang && !flagLangViet)) {
+	if (!(numSwitchLang && !flagLangViet)) {
 		if (!flagAddCharSpace && flagCharKeyValid) {
 			if (!flagAddCharInvalid) {
 				if (!result && (stateAdd == 0)) {
@@ -154,7 +154,7 @@ bool Word::addChar(wchar_t character) {
 		}
 	}
 
-	if (!(flagSwitchLang && flagLangViet)) {
+	if (!(numSwitchLang && flagLangViet)) {
 		if (!flagAddCharSpace) {
 			listCharOrigin.push_back(std::wstring(1, character));
 		}
@@ -410,16 +410,22 @@ bool Word::checkCharGI(wchar_t character) {
 	Variable& variable = Variable::getInstance();
 
 	std::vector<std::wstring> listCharVietTemp;
+	std::vector<std::wstring> listCharVietTempLower;
 	listCharVietTemp.insert(listCharVietTemp.end(), listCharVietStart.begin(), listCharVietStart.end());
 	listCharVietTemp.insert(listCharVietTemp.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
+	listCharVietTempLower = listCharVietTemp;
+	convertVectorToLower(listCharVietTempLower);
 	std::wstring stringCharVietTemp = listCharToString(listCharVietTemp);
-	std::wstring stringCharVietTempLower = toLowerCase(stringCharVietTemp);
+	std::wstring stringCharVietTempLower = listCharToString(listCharVietTempLower);
 
 	std::vector<std::wstring> listCharTemp;
+	std::vector<std::wstring> listCharTempLower;
 	listCharTemp.insert(listCharTemp.end(), listCharVietStart.begin(), listCharVietStart.end());
 	listCharTemp.insert(listCharTemp.end(), listCharVowel.begin(), listCharVowel.end());
+	listCharTempLower = listCharTemp;
+	convertVectorToLower(listCharTempLower);
 	std::wstring stringCharTemp = listCharToString(listCharTemp);
-	std::wstring stringCharTempLower = toLowerCase(stringCharTemp);
+	std::wstring stringCharTempLower = listCharToString(listCharTempLower);
 
 	int pos = 0;
 	if (stringCharTempLower.substr(0, 2) == L"gi") {
@@ -599,13 +605,13 @@ void Word::removeChar() {
 		removeCharSpace();
 	}
 
-	if (!flagSwitchLang || !flagLangViet) {
+	if (!numSwitchLang || !flagLangViet) {
 		if (!listCharOrigin.empty()) {
 			listCharOrigin.pop_back();
 		}
 	}
 
-	if (!flagSwitchLang || flagLangViet) {
+	if (!numSwitchLang || flagLangViet) {
 		bool result = false;
 		result = removeCharInvalid();
 		if (!result) {
@@ -636,7 +642,7 @@ void Word::removeChar() {
 
 	if (listCharDisplayNew.empty()) {
 		Variable& variable = Variable::getInstance();
-		flagSwitchLang = false;
+		numSwitchLang = 0;
 		flagAddCharSpace = true;
 		flagAddCharInvalid = false;
 		stateAdd = 0;
@@ -860,7 +866,7 @@ void Word::checkAutoChangeLang()
 	TypeWord& typeWord = TypeWord::getInstance();
 
 	if(variable.modeAutoChangeLang &&
-		!flagSwitchLang &&
+		!numSwitchLang &&
 		flagLangViet)
 	{
 		std::wstring stringWordEng = listCharToString(listCharOrigin);
@@ -868,8 +874,10 @@ void Word::checkAutoChangeLang()
 		std::wstring lowerWord(reinterpret_cast<const wchar_t*>(qWord.utf16()), qWord.length());
 		if (variable.dataAutoChangeLang.find(lowerWord) != variable.dataAutoChangeLang.end()) {
 			flagLangViet = false;
-			flagSwitchLang = true;
-			//typeWord.showLanguage();
+			numSwitchLang++;
+			if (numSwitchLang >= 2) {
+				typeWord.showLanguage();
+			}
 			updateListCharDisplay();
 		}
 	}
@@ -993,6 +1001,9 @@ void Word::calStepChangeDisplay() {
 
 void Word::switchLang(bool* flagLangVietTemp)
 {
+	TypeWord& typeWord = TypeWord::getInstance();
+
+	bool flagLangVietOld = flagLangViet;
 	if (flagLangVietTemp == nullptr) {
 		if (flagLangViet) {
 			flagLangViet = false;
@@ -1010,10 +1021,15 @@ void Word::switchLang(bool* flagLangVietTemp)
 	calStepChangeDisplay();
 
 	if (listCharDisplayNew.empty()) {
-		flagSwitchLang = false;
+		numSwitchLang = 0;
 	}
 	else {
-		flagSwitchLang = true;
+		if (flagLangVietOld != flagLangViet) {
+			numSwitchLang++;
+			if (numSwitchLang >= 2) {
+				typeWord.showLanguage();
+			}
+		}
 	}
 }
 

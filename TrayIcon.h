@@ -20,6 +20,7 @@ public slots:
     void onGeneralConfig();
     void onConfigInput();
     void onConfigTaskAI();
+    void onShortcutKeyEditor();
     void onConfigSnippetEditor();
     void onResetConfigUi();
     void onFeedback();
@@ -33,7 +34,8 @@ private:
     TrayIcon(const TrayIcon&) = delete;
     TrayIcon& operator=(const TrayIcon&) = delete;
 
-    QAction* addActionToMenu(const QString& text, const QString& shortcut, const QString& iconPath, const QObject* receiver, const char* slot);
+    QAction* addActionToMenu(const QString& text, const QString& iconPath, const QObject* receiver, const char* slot);
+    void updateMenuShortcutText();
     void doShow();
     void doHide();
     void doClose();
@@ -42,4 +44,14 @@ private:
     QMenu* menu = nullptr;
 
     QPointer<CustomConfirmBox> confirmResetConfigUi;
+
+    QAction* actionGeneralConfig = nullptr;
+    QAction* actionConfigInput = nullptr;
+    QAction* actionConfigTaskAI = nullptr;
+    QAction* actionShortcutKeyEditor = nullptr;
+    QAction* actionSnippetEditor = nullptr;
+    QAction* actionResetConfigUi = nullptr;
+    QAction* actionFeedback = nullptr;
+    QAction* actionHelp = nullptr;
+    QAction* actionQuit = nullptr;
 };

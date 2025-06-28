@@ -11,9 +11,9 @@
 class Word {
 public:
     bool flagLangViet;
-    bool flagSwitchLang;
     bool flagAddCharSpace;
     bool flagAddCharInvalid;
+    int numSwitchLang;
     int stateAdd;
     int numCharD;
     wchar_t stateD;

@@ -6,6 +6,7 @@
 #include <QCloseEvent>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QLabel>
 
 class GeneralConfig : public QDialog {
     Q_OBJECT
@@ -24,7 +25,6 @@ public:
     QCheckBox* checkBoxAutoAddVowel;
     QCheckBox* checkBoxShortcutLast;
     QCheckBox* checkBoxAutoChangeLang;
-    QCheckBox* checkBoxUseLeftRight;
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -41,10 +41,18 @@ private:
     void onSaveButtonClicked();
     void onDefaultButtonClicked();
     void onCancelButtonClicked();
+    void updateShortcutLabels();
 
     QPushButton* saveBtn;
     QPushButton* defaultBtn;
     QPushButton* cancelBtn;
+    QLabel* labelShortcutInputMethod = nullptr;
+    QLabel* labelShortcutAutoStart = nullptr;
+    QLabel* labelShortcutUseSnippet = nullptr;
+    QLabel* labelShortcutLoopDiacTone = nullptr;
+    QLabel* labelShortcutAutoAddVowel = nullptr;
+    QLabel* labelShortcutShortcutLast = nullptr;
+    QLabel* labelShortcutAutoChangeLang = nullptr;
 
     static QPointer<GeneralConfig> m_instance;
 };

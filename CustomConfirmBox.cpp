@@ -42,9 +42,12 @@ CustomConfirmBox::CustomConfirmBox(const QString& title, const QString& message,
     setStyleSheet(R"(
         QLabel {
             background: transparent;
-            color: #222;
+            color: #000000;
             font-weight: bold;
-            font-size: 14px;
+            border-radius: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
+            min-height: 25px;
         }
 
         QPushButton {

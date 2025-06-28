@@ -8,6 +8,8 @@
 #include "TaskAIDatabase.h"
 #include "NoticeUi.h"
 #include "TrayIcon.h"
+#include <ShortcutKeyEditor.h>
+
 #include <windows.h>
 #include <chrono>
 #include <thread>
@@ -126,6 +128,7 @@ bool Listener::addChar(int vkCode)
 			wchar_t keyChar = buffer[0];
 			typeWord.addChar(keyChar);
 		}
+
 		return true;
 	}
 	else
@@ -309,16 +312,8 @@ bool Listener::checkFunction(int vkCode)
 {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
+	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
 	TaskAI& taskAI = TaskAI::getInstance();
-
-	if ((vkCode == 0x1B) && (numHotkey == 0))
-	{
-		QString keyTaskAI = variable.nameTaskAI.toUpper();
-		taskAI.run(keyTaskAI);
-		numHotkey = -1;
-		flagRejectHook = true;
-		return true;
-	}
 
 	if ((vkCode >= 0x70) && (vkCode <= 0x7B) && (numHotkey == 0))
 	{
@@ -331,7 +326,7 @@ bool Listener::checkFunction(int vkCode)
 			std::advance(it, index);
 			keyTaskAI = it.key();
 		}
-		else{
+		else {
 			numHotkey = -1;
 			return false;
 		}
@@ -342,7 +337,43 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x55) && (numHotkey == 0))
+	if ((vkCode == VK_DELETE) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		TypeWord& typeWord = TypeWord::getInstance();
+		typeWord.removeWordBack();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	QString nameAction = shortcutKeyEditor->getAction(vkCode);
+
+	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeCharSet();
+
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi kiểu gõ") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeInputMethod();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi dạng chữ viết hoa thường") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeCase();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Gọi bảng cấu hình ứng dụng") && (numHotkey == 0))
 	{
 		QTimer::singleShot(0, []() {
 			if (ConfigUi::getInstance().isVisible()) {
@@ -359,7 +390,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x43) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng cấu hình chung") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onGeneralConfig();
@@ -369,7 +400,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x4B) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng tùy chỉnh kiểu gõ tích hợp") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onConfigInput();
@@ -379,7 +410,16 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x41) && (numHotkey == 0))
+	if ((nameAction == "Bật chế độ gõ các từ tiếng Việt dính liền") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		variable.modeRestore = !variable.modeRestore;
+		typeWord.showChangeConfig("modeRestore");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Gọi bảng trình chỉnh sửa tác vụ AI") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onConfigTaskAI();
@@ -389,7 +429,17 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x54) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng trình quản lý phím tắt") && (numHotkey == 0))
+	{
+		TrayIcon& trayIcon = TrayIcon::getInstance();
+		trayIcon.onShortcutKeyEditor();
+		typeWord.reset(true);
+		numHotkey = -1;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Gọi bảng trình quản lý gõ tắt") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onConfigSnippetEditor();
@@ -399,7 +449,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x58) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onResetConfigUi();
@@ -409,7 +459,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x59) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng đóng góp ý kiến") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onFeedback();
@@ -419,7 +469,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x53) && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng hướng dẫn sử dụng") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
 		trayIcon.onHelp();
@@ -429,33 +479,26 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x48) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Đóng ứng dụng Sigma") && (numHotkey == 0))
 	{
-		typeWord.changeCase();
-		numHotkey = vkCode;
+		TrayIcon& trayIcon = TrayIcon::getInstance();
+		trayIcon.onQuit();
+		typeWord.reset(true);
+		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
 	}
 
-	if ((vkCode == 0x4D) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Thực hiện tác vụ AI mặc định") && (numHotkey == 0))
 	{
-		typeWord.changeCharSet();
-
-		numHotkey = vkCode;
+		QString keyTaskAI = variable.nameTaskAI.toUpper();
+		taskAI.run(keyTaskAI);
+		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
 	}
 
-	if ((vkCode == VK_DELETE) && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		TypeWord& typeWord = TypeWord::getInstance();
-		typeWord.removeWordBack();
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((vkCode == VK_OEM_3) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt sử dụng chế độ tiếng Việt chủ động") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeUseDynamic");
 		numHotkey = vkCode;
@@ -463,7 +506,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x31) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt Sử dụng clipboard khi gửi phím") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeClipboard");
 		numHotkey = vkCode;
@@ -471,7 +514,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x32) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt tương thích với ứng dụng có gợi ý từ") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeFixAutoSuggest");
 		numHotkey = vkCode;
@@ -479,7 +522,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x33) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt tự động viết hoa thông minh") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeCheckCase");
 		numHotkey = vkCode;
@@ -487,7 +530,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x34) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép gõ ký tự Teencode") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeTeenCode");
 		numHotkey = vkCode;
@@ -495,7 +538,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x35) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép chèn ký tự bị thiếu") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeInsertChar");
 		numHotkey = vkCode;
@@ -503,15 +546,15 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x47) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt dùng phím ← → để điều hướng từng từ") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
-		typeWord.changeInputMethod();
+		typeWord.changeConfigUi("modeUseLeftRight");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
 	}
 
-	if ((vkCode == 0x36) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt khởi động cùng Windows") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeAutoStart");
 		numHotkey = vkCode;
@@ -519,7 +562,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x37) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép gõ tắt") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeUseSnippet");
 		numHotkey = vkCode;
@@ -527,7 +570,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x38) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép bỏ dấu xoay vòng") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeLoopDiacTone");
 		numHotkey = vkCode;
@@ -535,7 +578,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x39) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeAutoAddVowel");
 		numHotkey = vkCode;
@@ -543,7 +586,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0x30) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeShortcutLast");
 		numHotkey = vkCode;
@@ -551,26 +594,9 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((vkCode == 0xBD) && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeGeneralConfig("modeUseLeftRight");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((vkCode == 0xBB) && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeAutoChangeLang");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((vkCode == VK_TAB) && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		variable.modeRestore = !variable.modeRestore;
-		typeWord.showChangeConfig("modeRestore");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;

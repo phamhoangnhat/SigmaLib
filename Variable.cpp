@@ -91,7 +91,6 @@ void Variable::initGeneralConfig()
 	modeAutoAddVowel = settings.value("modeAutoAddVowel", MODEAUTOADDVOWEL).toBool();
 	modeShortcutLast = settings.value("modeShortcutLast", MODESHORTCUTLAST).toBool();
 	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
-	modeUseLeftRight = settings.value("modeUseLeftRight", MODEUSELEFTRIGHT).toBool();
 	modeRestore = true;
 
 	listAppUseClipboard = { "acad" };
@@ -119,6 +118,11 @@ void Variable::initGeneralConfig()
 
 		//Thiết kế / sáng tạo (có nhập chữ)
 		"acad", "photoshop", "illustrator", "coreldraw", "blender", "krita", "sketchup"
+	};
+
+	listAppNotUseLeftRight = {
+		//IDE & Editor (trình soạn mã, lập trình)
+		"code", "devenv", "notepad++", "sublime_text", "atom", "eclipse", "pycharm64", "idea64", "webstorm64", "phpstorm64", "clion64", "studio64", "netbeans64", "codeblocks", "devcpp", "arduino", "thonny", "rstudio", "geany", "vscode-insiders",
 	};
 }
 
@@ -1414,6 +1418,7 @@ bool Variable::loadSettingsWindow()
 
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
+		bool modeUseLeftRightDefault = listAppNotUseLeftRight.contains(nameCurrentWindow.toLower()) ? false : true;
 
 		QSettings settings(appName, "ConfigUi");
 		settings.beginGroup(nameCurrentWindow);
@@ -1425,6 +1430,7 @@ bool Variable::loadSettingsWindow()
 		modeCheckCase = settings.value("modeCheckCase", MODECHECKCASE).toBool();
 		modeTeenCode = settings.value("modeTeenCode", MODETEENCODE).toBool();
 		modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
+		modeUseLeftRight = settings.value("modeUseLeftRight", modeUseLeftRightDefault).toBool();
 		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
 		settings.endGroup();
 

@@ -29,8 +29,13 @@ RenameDialog::RenameDialog(QWidget* parent)
         }
 
         QLabel {
+            background: transparent;
+            color: #000000;
             font-weight: bold;
-            color: #222;
+            border-radius: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
+            min-height: 25px;
         }
 
         QLineEdit {

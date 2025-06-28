@@ -94,6 +94,9 @@
     <ClCompile Include="TaskAIResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShortcutKeyEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clipboard.h">
@@ -167,6 +170,9 @@
     <QtMoc Include="TaskAIResult.h">
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ShortcutKeyEditor.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SigmaLib.rc">
@@ -214,6 +220,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconSnippetEdittor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconShortcutKey.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

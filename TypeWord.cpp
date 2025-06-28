@@ -442,6 +442,11 @@ void TypeWord::changeConfigUi(QString nameMode)
 		valueMode = variable.modeInsertChar;
 	}
 
+	if (nameMode == "modeUseLeftRight") {
+		variable.modeUseLeftRight = !variable.modeUseLeftRight;
+		valueMode = variable.modeUseLeftRight;
+	}
+
 	QSettings settings(variable.appName, "ConfigUi");
 	settings.beginGroup(variable.nameCurrentWindow);
 	settings.setValue(nameMode, valueMode);
@@ -487,11 +492,6 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 	if (nameMode == "modeShortcutLast") {
 		variable.modeShortcutLast = !variable.modeShortcutLast;
 		valueMode = variable.modeShortcutLast;
-	}
-
-	if (nameMode == "modeUseLeftRight") {
-		variable.modeUseLeftRight = !variable.modeUseLeftRight;
-		valueMode = variable.modeUseLeftRight;
 	}
 
 	if (nameMode == "modeAutoChangeLang") {
@@ -724,6 +724,11 @@ void TypeWord::showChangeConfig(QString nameMode)
 		displayText = "Cho phép chèn ký tự bị thiếu";
 	}
 
+	if (nameMode == "modeUseLeftRight") {
+		valueMode = variable.modeUseLeftRight;
+		displayText = "Dùng phím ← → để điều hướng từng từ";
+	}
+
 	if (nameMode == "modeAutoStart") {
 		valueMode = variable.modeAutoStart;
 		displayText = "Khởi động cùng Windows";
@@ -747,11 +752,6 @@ void TypeWord::showChangeConfig(QString nameMode)
 	if( nameMode == "modeShortcutLast") {
 		valueMode = variable.modeShortcutLast;
 		displayText = "Cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"";
-	}
-
-	if (nameMode == "modeUseLeftRight") {
-		valueMode = variable.modeUseLeftRight;
-		displayText = "Dùng phím ← → để điều hướng từng từ";
 	}
 
 	if (nameMode == "modeAutoChangeLang") {
@@ -889,7 +889,7 @@ void TypeWord::updateDataChangeLang(Word& word)
 {
 	Variable& variable = Variable::getInstance();
 	std::wstring stringWordEng = listCharToString(word.listCharOrigin);
-	if (word.flagSwitchLang) {
+	if (word.numSwitchLang) {
 		QString qWord = QString::fromStdWString(stringWordEng).toLower();
 		std::wstring lowerWord(reinterpret_cast<const wchar_t*>(qWord.utf16()), qWord.length());
 		if (word.flagLangViet) {

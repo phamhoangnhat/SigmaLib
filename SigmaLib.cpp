@@ -14,6 +14,7 @@
 #include "TaskAI.h"
 #include "Feedback.h"
 #include "SnippetEditor.h"
+#include "ShortcutKeyEditor.h"
 
 #include <QApplication>
 #include <QTimer>
@@ -102,6 +103,7 @@ void SigmaLib::stop() {
     TaskAI::getInstance().closeWindow();
     Clipboard::getInstance().stop();
     Listener::getInstance().stop();
+    ShortcutKeyEditor::closeWindow();
     QTimer::singleShot(1500, qApp, &QCoreApplication::quit);
 }
 

@@ -5,6 +5,7 @@
 #include "TaskAIEditor.h"
 #include "TypeWord.h"
 #include "TaskAIDatabase.h"
+#include "ShortcutKeyEditor.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -43,7 +44,7 @@ ConfigUi::ConfigUi(QWidget* parent)
 	Variable& variable = Variable::getInstance();
 
 	setWindowTitle(variable.appNameFull);
-	setFixedSize(400, 320);
+	setFixedSize(400, 350);
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 	setAttribute(Qt::WA_DeleteOnClose, false);
 	setFocusPolicy(Qt::StrongFocus);
@@ -57,15 +58,15 @@ ConfigUi::ConfigUi(QWidget* parent)
 			border-radius: 10px;
 		}
 
-		QLabel {
-			color: #222222;
-			font-weight: bold;
-			background-color: #e0e0e0;
-			padding-left: 5px;
-			padding-right: 5px;
-			border-radius: 10px;
-			min-height: 25px;
-		}
+        QLabel {
+            background: transparent;
+            color: #000000;
+            font-weight: bold;
+            border-radius: 10px;
+            padding-left: 0px;
+            padding-right: 0px;
+            min-height: 25px;
+        }
 
 		QComboBox {
 			background-color: #D0D0D0;
@@ -222,18 +223,23 @@ ConfigUi::ConfigUi(QWidget* parent)
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(10, 10, 10, 10);
 
-	auto addComboBoxRow = [&](QComboBox*& comboBox, const QString& labelText, const QString& shortcutText) {
+	auto addComboBoxRow = [&](QComboBox*& comboBox, QLabel*& labelShortcut, const QString& labelText) {
 		QHBoxLayout* row = new QHBoxLayout();
 
 		QLabel* label = new QLabel(labelText, this);
-		label->setFixedWidth(70);
+		label->setFixedHeight(25);
+		label->setFixedWidth(60);
+		label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+		label->setStyleSheet("font-weight: bold; background: transparent;");
 
 		comboBox = new QComboBox(this);
+		comboBox->setFixedHeight(25);
 
-		QLabel* labelShortcut = new QLabel(shortcutText, this);
+		labelShortcut = new QLabel(this);
+		labelShortcut->setFixedHeight(25);
 		labelShortcut->setFixedWidth(70);
-		labelShortcut->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-		labelShortcut->setStyleSheet("color: #666666; font-weight: normal;");
+		labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+		labelShortcut->setStyleSheet("color: #888888; font-weight: normal; background: transparent;");
 
 		row->addWidget(label);
 		row->addWidget(comboBox, 1);
@@ -242,12 +248,12 @@ ConfigUi::ConfigUi(QWidget* parent)
 		layout->addLayout(row);
 		};
 
-	addComboBoxRow(m_comboCharacterSet, "Bộ mã", "Shift → M");
+	addComboBoxRow(m_comboCharacterSet, m_labelShortcutCharacterSet, "Bộ mã");
 	connect(m_comboCharacterSet, &QComboBox::currentTextChanged, this, [this](const QString& characterSet) {
 		saveSettings(m_AppNameConfig, "characterSet", characterSet);
 		});
 
-	addComboBoxRow(m_comboNameTaskAI, "Tác vụ AI", "Shift → Esc");
+	addComboBoxRow(m_comboNameTaskAI, m_labelShortcutTaskAI, "Tác vụ AI");
 	connect(m_comboNameTaskAI, &QComboBox::currentTextChanged, this, [this](const QString& nameTaskAI) {
 		saveSettings(m_AppNameConfig, "nameTaskAI", nameTaskAI);
 		});
@@ -256,24 +262,28 @@ ConfigUi::ConfigUi(QWidget* parent)
 	spacer->setFixedHeight(0);
 	layout->addWidget(spacer);
 
-	auto addCheckboxRow = [&](QCheckBox*& checkbox, const QString& labelText, const QString& shortcutText) {
+	auto addCheckboxRow = [&](QCheckBox*& checkbox, QLabel*& labelShortcut,  const QString& labelText) {
 		QHBoxLayout* row = new QHBoxLayout();
 		checkbox = new QCheckBox(labelText, this);
-		QLabel* labelShortcut = new QLabel(shortcutText, this);
-		labelShortcut->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+		checkbox->setFixedHeight(25);
+
+		labelShortcut = new QLabel(this);
+		labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+		labelShortcut->setFixedHeight(25);
 		labelShortcut->setFixedWidth(70);
-		labelShortcut->setStyleSheet("color: #666666; font-weight: normal;");
+		labelShortcut->setStyleSheet("color: #888888; font-weight: normal; background: transparent;");
 		row->addWidget(checkbox);
 		row->addWidget(labelShortcut, 1);
 		layout->addLayout(row);
 		};
 
-	addCheckboxRow(m_checkBoxModeUseDynamic, "Sử dụng chế độ tiếng Việt chủ động", "Shift → `");
-	addCheckboxRow(m_checkBoxModeClipboard, "Sử dụng clipboard khi gửi phím", "Shift → 1");
-	addCheckboxRow(m_checkBoxModeFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ", "Shift → 2");
-	addCheckboxRow(m_checkBoxModeCheckCase, "Tự động viết hoa thông minh", "Shift → 3");
-	addCheckboxRow(m_checkBoxModeTeenCode, "Cho phép gõ ký tự Teencode", "Shift → 4");
-	addCheckboxRow(m_checkBoxModeInsertChar, "Cho phép chèn ký tự bị thiếu", "Shift → 5");
+	addCheckboxRow(m_checkBoxModeUseDynamic, m_labelShortcutModeUseDynamic, "Sử dụng chế độ tiếng Việt chủ động");
+	addCheckboxRow(m_checkBoxModeClipboard, m_labelShortcutModeClipboard, "Sử dụng clipboard khi gửi phím");
+	addCheckboxRow(m_checkBoxModeFixAutoSuggest, m_labelShortcutModeFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ");
+	addCheckboxRow(m_checkBoxModeCheckCase, m_labelShortcutModeCheckCase, "Tự động viết hoa thông minh");
+	addCheckboxRow(m_checkBoxModeTeenCode, m_labelShortcutModeTeenCode, "Cho phép gõ ký tự Teencode");
+	addCheckboxRow(m_checkBoxModeInsertChar, m_labelShortcutModeInsertChar, "Cho phép chèn ký tự bị thiếu");
+	addCheckboxRow(m_checkBoxModeUseLeftRight, m_labelShortcutModeUseLeftRight, "Dùng phím ← → để điều hướng từng từ");
 
 	auto* separator = new QFrame(this);
 	separator->setFrameShape(QFrame::HLine);
@@ -313,6 +323,9 @@ ConfigUi::ConfigUi(QWidget* parent)
 	connect(m_checkBoxModeInsertChar, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeInsertChar", state == Qt::Checked ? "true" : "false");
 		});
+	connect(m_checkBoxModeUseLeftRight, &QCheckBox::checkStateChanged, this, [this](int state) {
+		saveSettings(m_AppNameConfig, "modeUseLeftRight", state == Qt::Checked ? "true" : "false");
+		});
 	connect(resetBtn, &QPushButton::clicked, this, &ConfigUi::onResetButtonClicked);
 	connect(resetAllBtn, &QPushButton::clicked, this, &ConfigUi::onResetAllButtonClicked);
 
@@ -332,6 +345,7 @@ void ConfigUi::doShow(QWidget* parent) {
 	}
 
 	loadSettings();
+	updateShortcutLabels();
 	setWindowTitle("Cấu hình ứng dụng -  " + toTitle(getFileName(m_AppNameConfig)));
 
 	HWND hwndFocused = GetForegroundWindow();
@@ -448,6 +462,31 @@ void ConfigUi::onResetAllButtonClicked()
 	loadSettings();
 }
 
+void ConfigUi::updateShortcutLabels() {
+	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
+
+	auto updateLabel = [&](QLabel* label, const QString& actionName) {
+		QString shortcut = shortcutKeyEditor->getShortcutKey(actionName);
+		if (shortcut.isEmpty()) {
+			label->hide();
+		}
+		else {
+			label->setText(shortcut);
+			label->show();
+		}
+		};
+
+	updateLabel(m_labelShortcutCharacterSet, "Chuyển đổi bộ mã");
+	updateLabel(m_labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
+	updateLabel(m_labelShortcutModeUseDynamic, "Bật / tắt sử dụng chế độ tiếng Việt chủ động");
+	updateLabel(m_labelShortcutModeClipboard, "Bật / tắt Sử dụng clipboard khi gửi phím");
+	updateLabel(m_labelShortcutModeFixAutoSuggest, "Bật / tắt tương thích với ứng dụng có gợi ý từ");
+	updateLabel(m_labelShortcutModeCheckCase, "Bật / tắt tự động viết hoa thông minh");
+	updateLabel(m_labelShortcutModeTeenCode, "Bật / tắt cho phép gõ ký tự Teencode");
+	updateLabel(m_labelShortcutModeInsertChar, "Bật / tắt cho phép chèn ký tự bị thiếu");
+	updateLabel(m_labelShortcutModeUseLeftRight, "Bật / tắt dùng phím ← → để điều hướng từng từ");
+}
+
 void ConfigUi::closeEvent(QCloseEvent* event) {
 	doHide();
 	event->ignore();
@@ -490,6 +529,7 @@ void ConfigUi::loadSettings() {
 
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
+	bool modeUseLeftRightDefault = variable.listAppNotUseLeftRight.contains(m_AppNameConfig.toLower()) ? false : true;
 
 	QSettings settings(variable.appName, "ConfigUi");
 	settings.beginGroup(m_AppNameConfig);
@@ -501,6 +541,7 @@ void ConfigUi::loadSettings() {
 	bool modeCheckCase = settings.value("modeCheckCase", variable.MODECHECKCASE).toBool();
 	bool modeTeenCode = settings.value("modeTeenCode", variable.MODETEENCODE).toBool();
 	bool modeInsertChar = settings.value("modeInsertChar", variable.MODEINSERTCHAR).toBool();
+	bool modeUseLeftRight = settings.value("modeUseLeftRight", modeUseLeftRightDefault).toBool();
 	settings.endGroup();
 
 	if (variable.mapCharacterSetBase.find(characterSet) == variable.mapCharacterSetBase.end()) {
@@ -525,4 +566,5 @@ void ConfigUi::loadSettings() {
 	m_checkBoxModeCheckCase->setChecked(modeCheckCase);
 	m_checkBoxModeTeenCode->setChecked(modeTeenCode);
 	m_checkBoxModeInsertChar->setChecked(modeInsertChar);
+	m_checkBoxModeUseLeftRight->setChecked(modeUseLeftRight);
 }

@@ -5,6 +5,7 @@
 #include "CustomInputMethod.h"
 #include "CustomConfirmBox.h"
 #include "TaskAIEditor.h"
+#include "ShortcutKeyEditor.h"
 #include "SnippetEditor.h"
 #include "Feedback.h"
 #include "GeneralConfig.h"
@@ -33,15 +34,17 @@ TrayIcon::TrayIcon(QObject* parent)
 
 	menu = new QMenu();
 
-	addActionToMenu("Cấu hình chung", "Shift → C", ":/iconGeneralConfig.png", this, SLOT(onGeneralConfig()));
-	addActionToMenu("Tùy chỉnh kiểu gõ tích hợp", "Shift → K", ":/iconConfigInput.png", this, SLOT(onConfigInput()));
-	addActionToMenu("Trình chỉnh sửa tác vụ AI", "Shift → A", ":/iconTaskAI.png", this, SLOT(onConfigTaskAI()));
-	addActionToMenu("Trình quản lý gõ tắt", "Shift → T", ":/iconSnippetEdittor.png", this, SLOT(onConfigSnippetEditor()));
-	addActionToMenu("Xóa thiết lập đã lưu", "Shift → X", ":/iconReset.png", this, SLOT(onResetConfigUi()));
-	addActionToMenu("Đóng góp ý kiến", "Shift → Y", ":/iconFeedback.png", this, SLOT(onFeedback()));
-	addActionToMenu("Hướng dẫn sử dụng", "Shift → S", ":/iconHelp.png", this, SLOT(onHelp()));
-	addActionToMenu("Đóng ứng dụng Sigma", "", ":/iconQuit.png", this, SLOT(onQuit()));
+	actionGeneralConfig = addActionToMenu("Cấu hình chung", ":/iconGeneralConfig.png", this, SLOT(onGeneralConfig()));
+	actionConfigInput = addActionToMenu("Tùy chỉnh kiểu gõ tích hợp", ":/iconConfigInput.png", this, SLOT(onConfigInput()));
+	actionConfigTaskAI = addActionToMenu("Trình chỉnh sửa tác vụ AI", ":/iconTaskAI.png", this, SLOT(onConfigTaskAI()));
+	actionShortcutKeyEditor = addActionToMenu("Trình quản lý phím tắt", ":/iconShortcutKey.png", this, SLOT(onShortcutKeyEditor()));
+	actionSnippetEditor = addActionToMenu("Trình quản lý gõ tắt", ":/iconSnippetEdittor.png", this, SLOT(onConfigSnippetEditor()));
+	actionResetConfigUi = addActionToMenu("Xóa thiết lập đã lưu", ":/iconReset.png", this, SLOT(onResetConfigUi()));
+	actionFeedback = addActionToMenu("Đóng góp ý kiến", ":/iconFeedback.png", this, SLOT(onFeedback()));
+	actionHelp = addActionToMenu("Hướng dẫn sử dụng", ":/iconHelp.png", this, SLOT(onHelp()));
+	actionQuit = addActionToMenu("Đóng ứng dụng Sigma", ":/iconQuit.png", this, SLOT(onQuit()));
 
+	connect(menu, &QMenu::aboutToShow, this, &TrayIcon::updateMenuShortcutText);
 	tray->setContextMenu(menu);
 }
 
@@ -97,15 +100,38 @@ void TrayIcon::doClose() {
 	}
 }
 
-QAction* TrayIcon::addActionToMenu(const QString& text, const QString& shortcut, const QString& iconPath, const QObject* receiver, const char* slot)
+QAction* TrayIcon::addActionToMenu(const QString& text, const QString& iconPath, const QObject* receiver, const char* slot)
 {
-	QString textDisplay = text + "\t" + shortcut;
-	QAction* action = new QAction(QIcon(iconPath), textDisplay, const_cast<QObject*>(receiver));
+	QAction* action = new QAction(QIcon(iconPath), text, const_cast<QObject*>(receiver));
 	connect(action, SIGNAL(triggered()), receiver, slot);
 	menu->addAction(action);
 	menu->addSeparator();
 	return action;
 }
+
+void TrayIcon::updateMenuShortcutText() {
+	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
+
+	auto updateAction = [&](QAction* action, const QString& title, const QString& keyName) {
+		QString text = title;
+		QString shortcutText = shortcutKeyEditor->getShortcutKey(keyName);
+		if (!shortcutText.isEmpty()) {
+			text += "\t" + shortcutText;
+		}
+		action->setText(text);
+		};
+
+	updateAction(actionGeneralConfig, "Cấu hình chung", "Gọi bảng cấu hình chung");
+	updateAction(actionConfigInput, "Tùy chỉnh kiểu gõ tích hợp", "Gọi bảng tùy chỉnh kiểu gõ tích hợp");
+	updateAction(actionConfigTaskAI, "Trình chỉnh sửa tác vụ AI", "Gọi bảng trình chỉnh sửa tác vụ AI");
+	updateAction(actionShortcutKeyEditor, "Trình quản lý phím tắt", "Gọi bảng trình quản lý phím tắt");
+	updateAction(actionSnippetEditor, "Trình quản lý gõ tắt", "Gọi bảng trình quản lý gõ tắt");
+	updateAction(actionResetConfigUi, "Xóa thiết lập đã lưu", "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng");
+	updateAction(actionFeedback, "Đóng góp ý kiến", "Gọi bảng đóng góp ý kiến");
+	updateAction(actionHelp, "Hướng dẫn sử dụng", "Gọi bảng hướng dẫn sử dụng");
+	updateAction(actionQuit, "Đóng ứng dụng Sigma", "Đóng ứng dụng Sigma");
+}
+
 
 void TrayIcon::onGeneralConfig() {
 	GeneralConfig::showWindow();
@@ -117,6 +143,11 @@ void TrayIcon::onConfigInput() {
 
 void TrayIcon::onConfigTaskAI() {
 	TaskAIEditor::showWindow();
+}
+
+void TrayIcon::onShortcutKeyEditor()
+{
+	ShortcutKeyEditor::showWindow();
 }
 
 void TrayIcon::onConfigSnippetEditor()

@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QString>
 #include <QPushButton>
+#include <QLabel>
 
 class ConfigUi : public QWidget {
     Q_OBJECT
@@ -30,6 +31,17 @@ public:
     QCheckBox* m_checkBoxModeCheckCase = nullptr;
     QCheckBox* m_checkBoxModeTeenCode = nullptr;
     QCheckBox* m_checkBoxModeInsertChar = nullptr;
+    QCheckBox* m_checkBoxModeUseLeftRight = nullptr;
+
+    QLabel* m_labelShortcutCharacterSet;
+    QLabel* m_labelShortcutTaskAI;
+    QLabel* m_labelShortcutModeUseDynamic;
+    QLabel* m_labelShortcutModeClipboard;
+    QLabel* m_labelShortcutModeFixAutoSuggest;
+    QLabel* m_labelShortcutModeCheckCase;
+    QLabel* m_labelShortcutModeTeenCode;
+    QLabel* m_labelShortcutModeInsertChar;
+    QLabel* m_labelShortcutModeUseLeftRight;
     QString m_AppNameConfig;
 
 protected:
@@ -45,6 +57,7 @@ private:
     void doClose();
     void onResetButtonClicked();
     void onResetAllButtonClicked();
+    void updateShortcutLabels();
 
     QPushButton* resetBtn;
     QPushButton* resetAllBtn;

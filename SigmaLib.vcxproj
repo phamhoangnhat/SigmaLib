@@ -105,6 +105,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GeneralConfig.cpp" />
+    <ClCompile Include="ShortcutKeyEditor.cpp" />
     <ClCompile Include="TaskAI.cpp" />
     <ClCompile Include="TaskAIDatabase.cpp" />
     <ClCompile Include="TaskAIEditor.cpp" />
@@ -119,6 +120,7 @@
     <QtUic Include="SigmaLib.ui" />
     <QtMoc Include="GeneralConfig.h" />
     <ClInclude Include="resource.h" />
+    <QtMoc Include="ShortcutKeyEditor.h" />
     <ClInclude Include="SigmaLib.h" />
     <ClCompile Include="Clipboard.cpp" />
     <ClCompile Include="ConfigUi.cpp" />
@@ -157,6 +159,7 @@
     <ResourceCompile Include="SigmaLib.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bitmap1.bmp" />
     <Image Include="icon.png" />
     <Image Include="iconAddTaskAI.png" />
     <Image Include="iconAutoStart.png" />
@@ -169,6 +172,7 @@
     <Image Include="iconQuit.png" />
     <Image Include="iconRenameTaskAI.png" />
     <Image Include="iconReset.png" />
+    <Image Include="iconShortcutKey.png" />
     <Image Include="iconSnippetEdittor.png" />
     <Image Include="iconTaskAI.png" />
   </ItemGroup>

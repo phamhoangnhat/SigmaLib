@@ -15,5 +15,6 @@
         <file>Sigma User Guide.html</file>
         <file>iconGeneralConfig.png</file>
         <file>iconSnippetEdittor.png</file>
+        <file>iconShortcutKey.png</file>
     </qresource>
 </RCC>
