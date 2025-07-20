@@ -177,6 +177,88 @@ bool setAutoStartApp(bool enable) {
     return true;
 }
 
+void createAdminTaskInScheduler(bool modeAutoStart, bool modeAdmin)
+{
+    setAutoStartApp(false);
+    QString taskName = "SigmaRunAsAdmin";
+
+    if (!modeAutoStart) {
+        QStringList args = { "/Delete", "/F", "/TN", "\"" + taskName + "\"" };
+        runTaskHidden("schtasks.exe", args);
+    }
+    else {
+        wchar_t exePath[MAX_PATH];
+        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+        QString exeStr = QString::fromWCharArray(exePath);
+        QStringList args;
+
+        if (modeAdmin) {
+            args << "/Create" << "/F" << "/RL" << "HIGHEST"
+                << "/SC" << "ONLOGON"
+                << "/TN" << "\"" + taskName + "\""
+                << "/TR" << "\"" + exeStr + "\"";
+        }
+        else {
+            args << "/Create" << "/F"
+                << "/SC" << "ONLOGON"
+                << "/TN" << "\"" + taskName + "\""
+                << "/TR" << "\"" + exeStr + "\"";
+        }
+
+        runTaskHidden("schtasks.exe", args);
+    }
+}
+
+bool runTaskHidden(const QString& exe, const QStringList& arguments) {
+    QString fullCommand = exe + " " + arguments.join(" ");
+    std::wstring cmd = fullCommand.toStdWString();
+    wchar_t* cmdLine = &cmd[0];
+
+    STARTUPINFOW si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+
+    BOOL success = CreateProcessW(
+        nullptr,
+        cmdLine,
+        nullptr,
+        nullptr,
+        FALSE,
+        CREATE_NO_WINDOW,
+        nullptr,
+        nullptr,
+        &si,
+        &pi
+    );
+
+    if (success) {
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        return true;
+    }
+    return false;
+}
+
+bool isRunningAsAdmin()
+{
+    BOOL isAdmin = FALSE;
+    PSID adminGroup = nullptr;
+    SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
+
+    if (AllocateAndInitializeSid(&authority, 2,
+        SECURITY_BUILTIN_DOMAIN_RID,
+        DOMAIN_ALIAS_RID_ADMINS,
+        0, 0, 0, 0, 0, 0,
+        &adminGroup))
+    {
+        CheckTokenMembership(nullptr, adminGroup, &isAdmin);
+        FreeSid(adminGroup);
+    }
+
+    return isAdmin;
+}
+
 QString getActiveWindowTitle() {
     HWND hwnd = GetForegroundWindow();
     if (!hwnd) return "Unknown";

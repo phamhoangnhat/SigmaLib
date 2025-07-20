@@ -30,7 +30,7 @@ Word::Word() {
 	flagChangeLangEng = false;
 }
 
-bool Word::addChar(wchar_t character) {
+bool Word::addChar(wchar_t character, bool flagMustAdd) {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
 
@@ -41,9 +41,9 @@ bool Word::addChar(wchar_t character) {
 	}
 
 	std::unordered_set<wchar_t>& dataAddCharSpace = variable.dataAddCharSpace;
-	bool flagCharKeyValid = (dataAddCharSpace.find(character) != dataAddCharSpace.end());
+	bool flagCharSpace = (dataAddCharSpace.find(character) == dataAddCharSpace.end());
 
-	if (flagAddCharSpace && !flagCharKeyValid) {
+	if (flagAddCharSpace && flagCharSpace) {
 		result = addCharSpace(character);
 	}
 	else {
@@ -51,7 +51,7 @@ bool Word::addChar(wchar_t character) {
 	}
 
 	if (!(numSwitchLang && !flagLangViet)) {
-		if (!flagAddCharSpace && flagCharKeyValid) {
+		if (!flagAddCharSpace && !flagCharSpace) {
 			if (!flagAddCharInvalid) {
 				if (!result && (stateAdd == 0)) {
 					result = (
@@ -83,7 +83,7 @@ bool Word::addChar(wchar_t character) {
 				}
 
 				if (!result && (stateAdd == 3)) {
-					if ((variable.modeInsertChar) && (variable.modeRestore)) {
+					if (variable.modeInsertChar) {
 						result = (
 							addKeyRemoveDiacToneD(character) ||
 							addKeyTone(character) ||
@@ -105,49 +105,33 @@ bool Word::addChar(wchar_t character) {
 					}
 				}
 
-				if (result) {
+				if (result && !flagAddCharInvalid) {
 					listCharViet.push_back(std::wstring(1, character));
 				}
 
 				if (flagChangeLangEng) {
 					flagChangeLangEng = false;
-					if (stateD == variable.listStateBase[14]) {
-						if (numCharD == 1) {
-							listCharVietStart = { L"d" };
-						}
-						else {
-							listCharVietStart = { L"D" };
-						}
-					}
-					listCharViet.clear();
-					listCharViet.insert(listCharViet.end(), listCharVietStart.begin(), listCharVietStart.end());
-					if ((charQuickVowel != std::tolower(character)) || (!listCharVietEnd.empty())) {
-						listCharViet.insert(listCharViet.end(), listCharVowel.begin(), listCharVowel.end());
-					}
-					listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
-					flagAddCharInvalid = true;
-					addCharInvalid(character);
 					result = true;
 				}
-
 			}
 		}
 
 		if (!result) {
-			if (variable.modeRestore) {
+
+			std::unordered_set<wchar_t>& dataCheckModeRestore = variable.dataCheckModeRestore;
+			bool flagRestore = (dataCheckModeRestore.find(character) != dataCheckModeRestore.end());
+			if (variable.modeRestore && flagRestore) {
 				flagAddCharInvalid = true;
 				result = addCharInvalid(character);
 			}
 			else {
-				std::unordered_set<wchar_t>& dataCharKeyStartValid = variable.dataCharKeyStartValid;
-				if (dataCharKeyStartValid.find(character) == dataCharKeyStartValid.end()) {
-					flagAddCharInvalid = true;
+				if (flagMustAdd) {
 					result = addCharInvalid(character);
 				}
 				else {
 					typeWord.addWord(typeWord.posWord + 1);
 					Word& word = typeWord.listWord[typeWord.posWord];
-					result = word.addChar(character);
+					result = word.addChar(character, true);
 					return result;
 				}
 			}
@@ -275,6 +259,7 @@ bool Word::addCharSpace(wchar_t character) {
 }
 
 bool Word::addCharInvalid(wchar_t character) {
+	flagAddCharInvalid = true;
 	listCharVietInvalid.push_back(std::wstring(1, character));
 	listCharVietInvalidTemp = listCharVietInvalid;
 	return true;
@@ -282,6 +267,13 @@ bool Word::addCharInvalid(wchar_t character) {
 
 bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, std::vector<wchar_t>>& dataAddChar, bool (Word::* callBackCheckKey)(wchar_t, wchar_t)) {
 	Variable& variable = Variable::getInstance();
+
+	int numCharDTemp = numCharD;
+	wchar_t stateDTemp = stateD;
+	wchar_t stateToneTemp = stateTone;
+	wchar_t stateDiacTemp = stateDiac;
+	std::vector<std::wstring> listCharVietStartTemp = listCharVietStart;
+	std::vector<std::wstring> listCharVietMiddleTemp = listCharVietMiddle;
 
 	bool result = false;
 	wchar_t key = towupper(character);
@@ -307,8 +299,38 @@ bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, st
 				if (flagLangViet && (!variable.modeLoopDiacTone))
 				{
 					if (pos >= length) {
-						(this->*callBackCheckKey)(character, stateOld);
-						flagChangeLangEng = true;
+						if (variable.modeRemoveDiacTone) {
+							checkKeyTone(L'\0', variable.listStateBase[0]);
+							checkKeyDiac(L'\0', variable.listStateBase[6]);
+							checkKeyD(L'\0', variable.listStateBase[13]);
+						}
+						else {
+							if ((state >= variable.listStateBase[0]) && (state <= variable.listStateBase[5])) {
+								checkKeyTone(L'\0', variable.listStateBase[0]);
+							}
+							if ((state >= variable.listStateBase[6]) && (state <= variable.listStateBase[12])) {
+								checkKeyDiac(L'\0', variable.listStateBase[6]);
+							}
+							if ((state >= variable.listStateBase[13]) && (state <= variable.listStateBase[14])) {
+								checkKeyD(L'\0', variable.listStateBase[13]);
+							}
+
+						}
+						listCharViet.clear();
+						listCharViet.insert(listCharViet.end(), listCharVietStart.begin(), listCharVietStart.end());
+						if ((charQuickVowel != std::tolower(character)) || (!listCharVietEnd.empty())) {
+							listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
+						}
+						listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
+						addCharInvalid(character);
+
+						//numCharD = numCharDTemp;
+						//stateD = stateDTemp;
+						//stateTone = stateToneTemp;
+						//stateDiac = stateDiacTemp;
+						//listCharVietStart = listCharVietStartTemp;
+						//listCharVietMiddle = listCharVietMiddleTemp;
+						//flagChangeLangEng = true;
 					}
 				}
 				return result;
@@ -323,8 +345,12 @@ bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, st
 bool Word::addKeyRemoveDiacToneD(wchar_t character)
 {
 	Variable& variable = Variable::getInstance();
-
 	bool result = false;
+
+	if (checkKeyNumpad()) {
+		return false;
+	}
+
 	wchar_t key = towupper(character);
 	if (variable.dataAddKeyRemoveDiacToneD.count(key)) {
 		if (stateTone != variable.listStateBase[0]) {
@@ -332,25 +358,43 @@ bool Word::addKeyRemoveDiacToneD(wchar_t character)
 			result = true;
 		}
 
-		//if (stateDiac != variable.listStateBase[6]) {
-		//	checkKeyDiac(L'\0', variable.listStateBase[6]);
-		//	result = true;
-		//}
+		if (variable.modeRemoveDiacTone) {
+			if (stateDiac != variable.listStateBase[6]) {
+				checkKeyDiac(L'\0', variable.listStateBase[6]);
+				result = true;
+			}
 
-		//if (stateD != variable.listStateBase[13]) {
-		//	checkKeyD(L'\0', variable.listStateBase[13]);
-		//	result = true;
-		//}
+			if (stateD != variable.listStateBase[13]) {
+				checkKeyD(L'\0', variable.listStateBase[13]);
+				result = true;
+			}
+		}
+		if (!result) {
+			listCharViet.clear();
+			listCharViet.insert(listCharViet.end(), listCharVietStart.begin(), listCharVietStart.end());
+			if ((charQuickVowel != std::tolower(character)) || (!listCharVietEnd.empty())) {
+				listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
+			}
+			listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
+			addCharInvalid(character);
+			result = true;
+		}
 	}
 	return result;
 }
 
 bool Word::addKeyD(wchar_t character) {
+	if (checkKeyNumpad()) {
+		return false;
+	}
 	return addKeyTemplate(character, stateD, Variable::getInstance().dataAddKeyD, &Word::checkKeyD);
 }
 
 bool Word::addKeyDiac(wchar_t character) {
 	bool result = false;
+	if (checkKeyNumpad()) {
+		return false;
+	}
 	if (keyPassDiac.find(towupper(character)) != keyPassDiac.end()) {
 		keyPassDiac.clear();
 		return true;
@@ -359,7 +403,11 @@ bool Word::addKeyDiac(wchar_t character) {
 	checkEndInvalid();
 	return result;
 }
+
 bool Word::addKeyTone(wchar_t character) {
+	if (checkKeyNumpad()) {
+		return false;
+	}
 	return addKeyTemplate(character, stateTone, Variable::getInstance().dataAddKeyTone, &Word::checkKeyTone);
 }
 
@@ -860,6 +908,13 @@ bool Word::changeCharSet()
 	return true;
 }
 
+bool Word::checkKeyNumpad()
+{
+	Variable& variable = Variable::getInstance();
+	int vkCodeCurrent = variable.vkCodeCurrent;
+	return ((vkCodeCurrent >= 0x60) && (vkCodeCurrent <= 0x6F));
+}
+
 void Word::checkAutoChangeLang()
 {
 	Variable& variable = Variable::getInstance();
@@ -884,6 +939,7 @@ void Word::checkAutoChangeLang()
 }
 
 void Word::updateListCharDisplay() {
+	TypeWord& typeWord = TypeWord::getInstance();
 	Variable& variable = Variable::getInstance();
 
 	if (variable.modeCheckCase) {
@@ -901,16 +957,19 @@ void Word::updateListCharDisplay() {
 			numChangeCase = 1;
 		}
 
-		if ((listCharSpaceNew.size() >= 2) && (listCharDisplayNew.size() == 0)) {
-			std::wstring lastTwo = listCharSpaceNew[listCharSpaceNew.size() - 2] + listCharSpaceNew.back();
-			if (variable.setPunctuation.count(lastTwo)) {
-				numChangeCase = 2;
+		if ((listCharSpaceNew.size() == 1) && (listCharSpaceNew[0] == L" ") && (listCharDisplayNew.size() == 0)) {
+			if (typeWord.listWord.size() > 1) {
+				Word& wordPrevious = typeWord.listWord[typeWord.posWord - 1];
+				std::wstring stringCurrent = listCharToString(wordPrevious.listCharSpaceCurrent) + listCharToString(wordPrevious.listCharDisplayCurrent);
+				if (variable.setPunctuation.count(stringCurrent)) {
+					numChangeCase = 2;
+				}
 			}
 		}
 
 		if (listCharDisplayNew.size() == 2) {
-			std::wstring secondChar = listCharDisplayNew[1];
-			if (((secondChar.size() == 1) && iswupper(secondChar[0])) || (variable.dataChangeCaseLower.count(secondChar))) {
+			std::wstring lastChar = listCharOrigin.back();
+			if (iswupper(lastChar[0])) {
 				numChangeCase = 3;
 			}
 		}
@@ -927,26 +986,14 @@ void Word::updateListCharDisplay() {
 	}
 
 	findListCharDisplay();
-	TypeWord& typeWord = TypeWord::getInstance();
 	typeWord.calStringSnippet();
 }
 
 void Word::findListCharDisplay()
 {
 	Variable& variable = Variable::getInstance();
-
 	if (flagLangViet) {
-		bool flagRestore = false;
-		if (!listCharVietInvalid.empty() && (Variable::getInstance().modeRestore)) {
-			for (std::wstring& string : listCharVietInvalid) {
-				if (variable.dataCheckRetore.count(toLowerCase(string))) {
-					flagRestore = true;
-					break;
-				}
-			}
-		}
-
-		if (flagRestore) {
+		if (flagAddCharInvalid) {
 			listCharDisplayNew = listCharViet;
 			listCharDisplayNew.insert(listCharDisplayNew.end(), listCharVietInvalid.begin(), listCharVietInvalid.end());
 		}
@@ -970,7 +1017,7 @@ void Word::calStepChangeDisplay() {
 	std::wstring stringCurrent = listCharToString(listCharSpaceCurrent) + listCharToString(listCharDisplayCurrent);
 	std::wstring stringNew = listCharToString(listCharSpaceNew) + listCharToString(listCharDisplayNew);
 
-	if (variable.modeUseSnippet && (typeWord.stringSnippet != L"")) {
+	if (typeWord.stringSnippet != L"") {
 		numBackspace = typeWord.numKeySnippet - static_cast<int>(stringNew.size()) + static_cast<int>(stringCurrent.size());
 		stringAdd = typeWord.stringSnippet;
 		return;

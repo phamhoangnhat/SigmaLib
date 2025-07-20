@@ -41,7 +41,7 @@ public:
     bool flagChangeLangEng;
 
     Word();
-    bool addChar(wchar_t character);
+    bool addChar(wchar_t character, bool flagMustAdd = false);
     bool addCharSpace(wchar_t character);
     bool addCharStart(wchar_t character, bool flagAddBack);
     bool addCharTemplate(wchar_t character, bool flagAddBack, std::vector<std::wstring>& listChar, bool (Word::* callBackCheckChar)(wchar_t, std::vector<std::wstring>&, std::vector<wchar_t>*), std::vector<wchar_t>* listParam = nullptr);
@@ -76,6 +76,7 @@ public:
     bool changeUpperCase();
     bool changeTitleCase();
     bool changeCharSet();
+    bool checkKeyNumpad();
     void checkAutoChangeLang();
     void updateListCharDisplay();
     void findListCharDisplay();

@@ -16,7 +16,6 @@
 #include <QTimer>
 #include <qsettings>
 
-
 HHOOK Listener::keyboardHook = NULL;
 HHOOK Listener::mouseHook = NULL;
 
@@ -287,7 +286,6 @@ bool Listener::passResetBuffer(int vkCode)
 bool Listener::resetBuffer(int vkCode)
 {
 	TypeWord& typeWord = TypeWord::getInstance();
-
 	typeWord.reset();
 	flagRejectHook = false;
 	return true;
@@ -330,8 +328,9 @@ bool Listener::checkFunction(int vkCode)
 			numHotkey = -1;
 			return false;
 		}
-
-		taskAI.run(keyTaskAI);
+		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
+		taskAI.run(keyTaskAI, stringBase);
+		typeWord.reset(true);
 		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
@@ -347,6 +346,7 @@ bool Listener::checkFunction(int vkCode)
 	}
 
 	QString nameAction = shortcutKeyEditor->getAction(vkCode);
+
 
 	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
@@ -406,15 +406,6 @@ bool Listener::checkFunction(int vkCode)
 		trayIcon.onConfigInput();
 		typeWord.reset(true);
 		numHotkey = -1;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Bật chế độ gõ các từ tiếng Việt dính liền") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		variable.modeRestore = !variable.modeRestore;
-		typeWord.showChangeConfig("modeRestore");
-		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
 	}
@@ -492,7 +483,9 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Thực hiện tác vụ AI mặc định") && (numHotkey == 0))
 	{
 		QString keyTaskAI = variable.nameTaskAI.toUpper();
-		taskAI.run(keyTaskAI);
+		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
+		taskAI.run(keyTaskAI, stringBase);
+		typeWord.reset(true);
 		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
@@ -506,7 +499,7 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Bật / tắt Sử dụng clipboard khi gửi phím") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt sử dụng clipboard khi gửi phím") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeClipboard");
 		numHotkey = vkCode;
@@ -530,17 +523,9 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Bật / tắt cho phép gõ ký tự Teencode") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeTeenCode");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Bật / tắt cho phép chèn ký tự bị thiếu") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeConfigUi("modeInsertChar");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
@@ -562,9 +547,17 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Bật / tắt cho phép gõ tắt") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt khôi phục từ gốc khi gõ sai chính tả") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
-		typeWord.changeGeneralConfig("modeUseSnippet");
+		typeWord.changeGeneralConfig("modeRestore");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Bật / tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeGeneralConfig("modeRemoveDiacTone");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
@@ -578,17 +571,9 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Bật / tắt tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	if ((nameAction == "Bật / tắt cho phép chèn ký tự bị thiếu") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
-		typeWord.changeGeneralConfig("modeAutoAddVowel");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Bật / tắt cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeGeneralConfig("modeShortcutLast");
+		typeWord.changeGeneralConfig("modeInsertChar");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
@@ -650,15 +635,6 @@ void Listener::updateKeyPress(int vkCode)
 	}
 	keyNormalFull.insert(vkCode);
 	keyNormal.insert(vkCode);
-}
-
-bool Listener::checkModeRestore(int vkCode)
-{
-	Variable& variable = Variable::getInstance();
-	if ((vkCode == VK_RETURN) || (vkCode == VK_TAB) || (vkCode == VK_SPACE)) {
-		variable.modeRestore = true;
-	}
-	return false;
 }
 
 void Listener::updateKeyRelease(int vkCode)
@@ -757,7 +733,6 @@ void Listener::checkKeyMouse(WPARAM wParam)
 
 		if (wParam != WM_MOUSEMOVE) {
 			numHotkey = -1;
-			variable.modeRestore = true;
 		}
 
 		if ((wParam != WM_MOUSEMOVE) || (variable.modeUseDynamic && mouseMovedEnough(wParam)))
@@ -844,10 +819,11 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 
 		if (wParam == WM_KEYDOWN) {
 			variable.flagSendingKey = true;
+			variable.vkCodeCurrent = vkCode;
+
 			listener.updateKeyPress(vkCode);
 			(
 				listener.checkFunction(vkCode)
-				|| listener.checkModeRestore(vkCode)
 				|| listener.addChar(vkCode)
 				|| listener.removeChar(vkCode)
 				|| listener.moveLeft(vkCode)

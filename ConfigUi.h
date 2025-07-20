@@ -23,25 +23,29 @@ public:
     void loadSettings();
 
     bool m_isLoading = false;
-    QComboBox* m_comboCharacterSet = nullptr;
-    QComboBox* m_comboNameTaskAI = nullptr;
-    QCheckBox* m_checkBoxModeClipboard = nullptr;
-    QCheckBox* m_checkBoxModeUseDynamic = nullptr;
-    QCheckBox* m_checkBoxModeFixAutoSuggest = nullptr;
-    QCheckBox* m_checkBoxModeCheckCase = nullptr;
-    QCheckBox* m_checkBoxModeTeenCode = nullptr;
-    QCheckBox* m_checkBoxModeInsertChar = nullptr;
-    QCheckBox* m_checkBoxModeUseLeftRight = nullptr;
+    QComboBox* comboLangVietGlobal = nullptr;
+    QComboBox* comboCharacterSet = nullptr;
+    QComboBox* comboNameTaskAI = nullptr;
+    QComboBox* comboNameSnippetString = nullptr;
+    QComboBox* comboNameSnippetWords = nullptr;
+    QCheckBox* checkBoxUseDynamic = nullptr;
+    QCheckBox* checkBoxClipboard = nullptr;
+    QCheckBox* checkBoxFixAutoSuggest = nullptr;
+    QCheckBox* checkBoxCheckCase = nullptr;
+    QCheckBox* checkBoxTeenCode = nullptr;
+    QCheckBox* checkBoxUseLeftRight = nullptr;
 
-    QLabel* m_labelShortcutCharacterSet;
-    QLabel* m_labelShortcutTaskAI;
-    QLabel* m_labelShortcutModeUseDynamic;
-    QLabel* m_labelShortcutModeClipboard;
-    QLabel* m_labelShortcutModeFixAutoSuggest;
-    QLabel* m_labelShortcutModeCheckCase;
-    QLabel* m_labelShortcutModeTeenCode;
-    QLabel* m_labelShortcutModeInsertChar;
-    QLabel* m_labelShortcutModeUseLeftRight;
+    QLabel* labelShortcutLangVietGlobal;
+    QLabel* labelShortcutCharacterSet;
+    QLabel* labelShortcutTaskAI;
+    QLabel* labelShortcutNameSnippetString;
+    QLabel* labelShortcutNameSnippetWords;
+    QLabel* labelShortcutUseDynamic;
+    QLabel* labelShortcutClipboard;
+    QLabel* labelShortcutFixAutoSuggest;
+    QLabel* labelShortcutCheckCase;
+    QLabel* labelShortcutTeenCode;
+    QLabel* labelShortcutUseLeftRight;
     QString m_AppNameConfig;
 
 protected:
@@ -58,6 +62,7 @@ private:
     void onResetButtonClicked();
     void onResetAllButtonClicked();
     void updateShortcutLabels();
+    void updateCheckBoxStyle(QCheckBox* checkBox, QString stringWarning);
 
     QPushButton* resetBtn;
     QPushButton* resetAllBtn;

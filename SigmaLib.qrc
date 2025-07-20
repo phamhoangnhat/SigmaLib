@@ -1,14 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>icon.png</file>
-        <file>iconAddTaskAI.png</file>
         <file>iconAutoStart.png</file>
         <file>iconAutoUpdate.png</file>
         <file>iconConfigInput.png</file>
-        <file>iconDeleteTaskAI.png</file>
         <file>iconHelp.png</file>
         <file>iconQuit.png</file>
-        <file>iconRenameTaskAI.png</file>
         <file>iconReset.png</file>
         <file>iconTaskAI.png</file>
         <file>iconFeedback.png</file>
@@ -16,5 +13,8 @@
         <file>iconGeneralConfig.png</file>
         <file>iconSnippetEdittor.png</file>
         <file>iconShortcutKey.png</file>
+        <file>iconAddItem.png</file>
+        <file>iconDeleteItem.png</file>
+        <file>iconRenameItem.png</file>
     </qresource>
 </RCC>

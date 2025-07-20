@@ -97,6 +97,12 @@
     <ClCompile Include="ShortcutKeyEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenameSnippetDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyAPIManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clipboard.h">
@@ -173,6 +179,12 @@
     <QtMoc Include="ShortcutKeyEditor.h">
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="RenameSnippetDialog.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="KeyAPIManage.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SigmaLib.rc">
@@ -183,7 +195,7 @@
     <Image Include="icon.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="iconAddTaskAI.png">
+    <Image Include="iconAddItem.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconAutoStart.png">
@@ -195,7 +207,7 @@
     <Image Include="iconConfigInput.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="iconDeleteTaskAI.png">
+    <Image Include="iconDeleteItem.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconHelp.png">
@@ -204,7 +216,7 @@
     <Image Include="iconQuit.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="iconRenameTaskAI.png">
+    <Image Include="iconRenameItem.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconReset.png">
@@ -223,9 +235,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconShortcutKey.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

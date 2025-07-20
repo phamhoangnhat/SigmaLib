@@ -86,22 +86,19 @@ void TypeWord::addChar(wchar_t character)
 		flagTypeWord = false;
 	}
 
-	std::unordered_set<wchar_t> dataAddCharSpace = Variable::getInstance().dataAddCharSpace;
-	bool flagCharKeyValid = (dataAddCharSpace.find(character) != dataAddCharSpace.end());
-	if (flagTypeWord) {
-		if (!flagCharKeyValid) {
-			flagTypeWord = false;
-			addWord(posWord + 1);
-		}
+	std::unordered_set<wchar_t> dataAddNewWord = Variable::getInstance().dataAddNewWord;
+	bool flagAddNewWord = (dataAddNewWord.find(character) == dataAddNewWord.end());
+
+	if (flagAddNewWord) {
+		flagTypeWord = false;
+		addWord(posWord + 1);
 	}
 	else {
-		if (flagCharKeyValid) {
-			flagTypeWord = true;
-		}
+		flagTypeWord = true;
 	}
 
 	Word& wordAddChar = listWord[posWord];
-	wordAddChar.addChar(character);
+	wordAddChar.addChar(character, false);
 
 	Word& wordDisplay = listWord[posWord];
 	std::wstring stringAdd = wordDisplay.stringAdd;
@@ -217,7 +214,8 @@ void TypeWord::moveLeft() {
 
 	if (posWord >= 0) {
 		Word& word = listWord[posWord];
-		int numMove = static_cast<int>(word.listCharSpaceNew.size() + word.listCharDisplayNew.size());
+		std::wstring stringWord = listCharToString(word.listCharSpaceNew) + listCharToString(word.listCharDisplayNew);
+		int numMove = static_cast<int>(stringWord.size());
 
 		if (posWord == 0) {
 			reset();
@@ -250,8 +248,8 @@ void TypeWord::moveRight()
 		posWord += 1;
 
 		Word& word = listWord[posWord];
-		int numMove = static_cast<int>(word.listCharSpaceNew.size() + word.listCharDisplayNew.size());
-
+		std::wstring stringWord = listCharToString(word.listCharSpaceNew) + listCharToString(word.listCharDisplayNew);
+		int numMove = static_cast<int>(stringWord.size());
 
 		std::vector<INPUT> inputs;
 		if (variable.modeFixAutoSuggest) {
@@ -437,11 +435,6 @@ void TypeWord::changeConfigUi(QString nameMode)
 		valueMode = variable.modeTeenCode;
 	}
 
-	if (nameMode == "modeInsertChar") {
-		variable.modeInsertChar = !variable.modeInsertChar;
-		valueMode = variable.modeInsertChar;
-	}
-
 	if (nameMode == "modeUseLeftRight") {
 		variable.modeUseLeftRight = !variable.modeUseLeftRight;
 		valueMode = variable.modeUseLeftRight;
@@ -470,13 +463,17 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 
 	if (nameMode == "modeAutoStart") {
 		variable.modeAutoStart = !variable.modeAutoStart;
-		valueMode = variable.modeAutoStart;
-		setAutoStartApp(valueMode);
+		createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
 	}
 
-	if (nameMode == "modeUseSnippet") {
-		variable.modeUseSnippet = !variable.modeUseSnippet;
-		valueMode = variable.modeUseSnippet;
+	if (nameMode == "modeRestore") {
+		variable.modeRestore = !variable.modeRestore;
+		valueMode = variable.modeRestore;
+	}
+
+	if (nameMode == "modeRemoveDiacTone") {
+		variable.modeRemoveDiacTone = !variable.modeRemoveDiacTone;
+		valueMode = variable.modeRemoveDiacTone;
 	}
 
 	if (nameMode == "modeLoopDiacTone"){
@@ -484,14 +481,9 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 		valueMode = variable.modeLoopDiacTone;
 	}
 
-	if (nameMode == "modeAutoAddVowel") {
-		variable.modeAutoAddVowel = !variable.modeAutoAddVowel;
-		valueMode = variable.modeAutoAddVowel;
-	}
-
-	if (nameMode == "modeShortcutLast") {
-		variable.modeShortcutLast = !variable.modeShortcutLast;
-		valueMode = variable.modeShortcutLast;
+	if (nameMode == "modeInsertChar") {
+		variable.modeInsertChar = !variable.modeInsertChar;
+		valueMode = variable.modeInsertChar;
 	}
 
 	if (nameMode == "modeAutoChangeLang") {
@@ -530,7 +522,7 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 
 	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 	inputs.clear();
-	clipboard.sendUnicodeText(stringAdd);
+	clipboard.sendUnicodeText(stringAdd, false);
 
 	if (stringSnippet != L"") {
 		reset();
@@ -716,12 +708,7 @@ void TypeWord::showChangeConfig(QString nameMode)
 
 	if (nameMode == "modeTeenCode") {
 		valueMode = variable.modeTeenCode;
-		displayText = "Cho phép gõ ký tự Teencode";
-	}
-
-	if (nameMode == "modeInsertChar") {
-		valueMode = variable.modeInsertChar;
-		displayText = "Cho phép chèn ký tự bị thiếu";
+		displayText = "Cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"";
 	}
 
 	if (nameMode == "modeUseLeftRight") {
@@ -734,9 +721,14 @@ void TypeWord::showChangeConfig(QString nameMode)
 		displayText = "Khởi động cùng Windows";
 	}
 
-	if (nameMode == "modeUseSnippet") {
-		valueMode = variable.modeUseSnippet;
-		displayText = "Cho phép gõ tắt";
+	if (nameMode == "modeRestore") {
+		valueMode = variable.modeRestore;
+		displayText = "Khôi phục từ gốc khi gõ sai chính tả";
+	}
+
+	if (nameMode == "modeRemoveDiacTone") {
+		valueMode = variable.modeRemoveDiacTone;
+		displayText = "Xóa toàn bộ dấu khi nhấn phím bỏ dấu";
 	}
 
 	if (nameMode == "modeLoopDiacTone") {
@@ -744,24 +736,14 @@ void TypeWord::showChangeConfig(QString nameMode)
 		displayText = "Cho phép bỏ dấu xoay vòng";
 	}
 
-	if (nameMode == "modeAutoAddVowel") {
-		valueMode = variable.modeAutoAddVowel;
-		displayText = "Tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"";
-	}
-
-	if( nameMode == "modeShortcutLast") {
-		valueMode = variable.modeShortcutLast;
-		displayText = "Cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"";
+	if (nameMode == "modeInsertChar") {
+		valueMode = variable.modeInsertChar;
+		displayText = "Cho phép chèn ký tự bị thiếu";
 	}
 
 	if (nameMode == "modeAutoChangeLang") {
 		valueMode = variable.modeAutoChangeLang;
 		displayText = "Tự động chuyển từ tiếng Anh đã ghi nhớ";
-	}
-
-	if (nameMode == "modeRestore") {
-		valueMode = !variable.modeRestore;
-		displayText = "Cho phép gõ các từ tiếng Việt dính liền";
 	}
 
 	if(valueMode){
@@ -815,12 +797,11 @@ void TypeWord::calStringSnippet()
 			stringKeyTemp = stringTotal.substr(length - count);
 
 			stringKey = toLowerCase(stringKeyTemp);
-			if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
-				stringKey[0] = std::toupper(stringKey[0]);
-			}
 			if ((count > 1) && (std::iswupper(stringKeyTemp[1]))) {
-				stringKey[0] = std::toupper(stringKey[0]);
 				stringKey[1] = std::toupper(stringKey[1]);
+			}
+			else if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
+				stringKey[0] = std::toupper(stringKey[0]);
 			}
 
 			if (snippetEditor->mapSnippetString.count(stringKey)) {
@@ -856,12 +837,11 @@ void TypeWord::calStringSnippet()
 				}
 
 				stringKey = toLowerCase(stringKeyTemp);
-				if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
-					stringKey[0] = std::toupper(stringKey[0]);
-				}
 				if ((count > 1) && (std::iswupper(stringKeyTemp[1]))) {
-					stringKey[0] = std::toupper(stringKey[0]);
 					stringKey[1] = std::toupper(stringKey[1]);
+				}
+				else if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
+					stringKey[0] = std::toupper(stringKey[0]);
 				}
 
 				if (snippetEditor->mapSnippetWords.count(stringKey)) {
@@ -905,6 +885,16 @@ void TypeWord::updateDataChangeLang(Word& word)
 			}
 		}
 	}
+}
+
+std::wstring TypeWord::createStringDisplayAll()
+{
+	std::wstring stringDisplayAll;
+	
+	for (const Word& word : listWord) {
+		stringDisplayAll += listCharToString(word.listCharSpaceCurrent) + listCharToString(word.listCharDisplayCurrent);
+	}
+	return stringDisplayAll;
 }
 
 void TypeWord::reset(bool flagCheckChangeLangEng)

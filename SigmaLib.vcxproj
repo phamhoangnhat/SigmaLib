@@ -105,6 +105,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GeneralConfig.cpp" />
+    <ClCompile Include="KeyAPIManage.cpp" />
+    <ClCompile Include="RenameSnippetDialog.cpp" />
     <ClCompile Include="ShortcutKeyEditor.cpp" />
     <ClCompile Include="TaskAI.cpp" />
     <ClCompile Include="TaskAIDatabase.cpp" />
@@ -119,6 +121,8 @@
     <QtRcc Include="SigmaLib.qrc" />
     <QtUic Include="SigmaLib.ui" />
     <QtMoc Include="GeneralConfig.h" />
+    <QtMoc Include="RenameSnippetDialog.h" />
+    <QtMoc Include="KeyAPIManage.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="ShortcutKeyEditor.h" />
     <ClInclude Include="SigmaLib.h" />
@@ -159,18 +163,17 @@
     <ResourceCompile Include="SigmaLib.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bitmap1.bmp" />
     <Image Include="icon.png" />
-    <Image Include="iconAddTaskAI.png" />
+    <Image Include="iconAddItem.png" />
     <Image Include="iconAutoStart.png" />
     <Image Include="iconAutoUpdate.png" />
     <Image Include="iconConfigInput.png" />
-    <Image Include="iconDeleteTaskAI.png" />
+    <Image Include="iconDeleteItem.png" />
     <Image Include="iconFeedback.png" />
     <Image Include="iconGeneralConfig.png" />
     <Image Include="iconHelp.png" />
     <Image Include="iconQuit.png" />
-    <Image Include="iconRenameTaskAI.png" />
+    <Image Include="iconRenameItem.png" />
     <Image Include="iconReset.png" />
     <Image Include="iconShortcutKey.png" />
     <Image Include="iconSnippetEdittor.png" />

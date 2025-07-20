@@ -3,6 +3,7 @@
 #include <RenameDialog.h>
 #include "CustomMessageBox.h"
 #include "TaskAIDatabase.h"
+#include "KeyAPIManage.h"
 
 #include <QApplication>
 #include <QJsonValue>
@@ -271,6 +272,7 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	saveBtn = new QPushButton("Lưu và đóng");
 	defaultBtn = new QPushButton("Mặc định");
 	cancelBtn = new QPushButton("Hủy");
+	keyAPIBtn = new QPushButton("Khóa API Gemini");
 
 	QHBoxLayout* topLayout = new QHBoxLayout();
 	topLayout->addWidget(taskCombo, 1);
@@ -283,27 +285,29 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	btnLayout->addWidget(saveBtn);
 	btnLayout->addWidget(defaultBtn);
 	btnLayout->addWidget(cancelBtn);
+	btnLayout->addWidget(keyAPIBtn);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addLayout(topLayout);
 	layout->addWidget(taskEditor);
 	layout->addLayout(btnLayout);
 
-	addTaskBtn->setIcon(QIcon(":/iconAddTaskAI.png"));
-	renameTaskBtn->setIcon(QIcon(":/iconRenameTaskAI.png"));
-	removeTaskBtn->setIcon(QIcon(":/iconDeleteTaskAI.png"));
+	addTaskBtn->setIcon(QIcon(":/iconAddItem.png"));
+	renameTaskBtn->setIcon(QIcon(":/iconRenameItem.png"));
+	removeTaskBtn->setIcon(QIcon(":/iconDeleteItem.png"));
 
 	labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 	labelShortcut->setFixedWidth(80);
 
-	connect(addTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onAddTaskClicked);
-	connect(renameTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRenameTaskClicked);
-	connect(removeTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRemoveTaskClicked);
 	connect(taskCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onTaskComboChanged);
+	connect(renameTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRenameTaskClicked);
+	connect(addTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onAddTaskClicked);
+	connect(removeTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRemoveTaskClicked);
 	connect(taskEditor, &QTextEdit::textChanged, this, &TaskAIEditor::onEditorChanged);
 	connect(saveBtn, &QPushButton::clicked, this, &TaskAIEditor::onSaveButtonClicked);
 	connect(defaultBtn, &QPushButton::clicked, this, &TaskAIEditor::onDefaultButtonClicked);
 	connect(cancelBtn, &QPushButton::clicked, this, &TaskAIEditor::onCancelButtonClicked);
+	connect(keyAPIBtn, &QPushButton::clicked, this, &TaskAIEditor::onKeyAPIButtonClicked);
 }
 
 TaskAIEditor::~TaskAIEditor() {}
@@ -533,4 +537,9 @@ void TaskAIEditor::onDefaultButtonClicked() {
 
 void TaskAIEditor::onCancelButtonClicked() {
 	hideWindow();
+}
+
+void TaskAIEditor::onKeyAPIButtonClicked()
+{
+	KeyAPIManage::showWindow();
 }

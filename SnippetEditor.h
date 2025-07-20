@@ -2,6 +2,7 @@
 #define SNIPPETEDITOR_H
 
 #include "CustomMessageBox.h"
+#include "RenameSnippetDialog.h"
 
 #include <QDialog>
 #include <QPointer>
@@ -16,15 +17,22 @@ class SnippetEditor : public QDialog {
     Q_OBJECT
 
 public:
+    QString nameSnippet;
+    QSet<QString> listNameSnippetUpper;
+    QSet<QString> listNameSnippet;
+    QMap<QString, std::set<int>> mapCountSnippet;
+    QMap<QString, QList<QPair<QString, QString>>> dataSnippetTable;
+    std::map<QString, std::map<std::wstring, std::wstring>> dataSnippet;
+    std::map<QString, std::map<std::wstring, std::wstring>> dataSnippetTotal;
+
     std::map<std::wstring, std::wstring> mapSnippetString;
     std::map<std::wstring, std::wstring> mapSnippetWords;
-    std::vector<std::pair<std::wstring, std::wstring>> listSnippetString;
-    std::vector<std::pair<std::wstring, std::wstring>> listSnippetWords;
     std::set<int> setCountString;
     std::set<int> setCountWords;
     int maxCount;
 
     static SnippetEditor* getInstance();
+    void loadSnippetForApp(QString nameSnippetString, QString nameSnippetWords);
     static void showWindow();
     static void hideWindow();
     static void closeWindow();
@@ -36,25 +44,32 @@ protected:
 private:
     explicit SnippetEditor(QWidget* parent = nullptr);
     ~SnippetEditor();
-
-    bool isLoading = false;
-
     void loadSnippetFromFile();
-    void loadWindow(int index);
-    void saveWindow(int index);
-    void findSetCount();
-    void onSaveButtonClicked();
+    void updateTotal();
+    void loadNameSnippetCombo();
+    void onNameSnippetComboChanged();
+	void onRenameSnippetButtonClicked();
+	void onRemoveSnippetButtonClicked();
+	void onAddSnippetButtonClicked();
+    void onTableChanged(QTableWidgetItem* item);
+    void loadTable();
+    void onsaveButtonClicked();
     void onCancelButtonClicked();
     void fadeIn();
     void fadeOut();
 
+    bool isLoading = false;
+
+    QComboBox* nameSnippetCombo;
+    QPushButton* addSnippetBtn;
+    QPushButton* removeSnippetBtn;
+    QPushButton* renameSnippetBtn;
     QTableWidget* table;
     QPushButton* saveBtn;
     QPushButton* cancelBtn;
-    QComboBox* changeTypeSnippet;
 
     static QPointer<SnippetEditor> m_instance;
-    QPointer<CustomMessageBox> popup;
+    QPointer<RenameSnippetDialog> renameDialog;
 };
 
 #endif // SNIPPETEDITOR_H

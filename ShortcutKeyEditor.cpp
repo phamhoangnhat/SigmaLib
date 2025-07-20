@@ -106,7 +106,6 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Chuyển đổi bộ mã",
         "Chuyển đổi kiểu gõ",
         "Chuyển đổi dạng chữ viết hoa thường",
-        "Bật chế độ gõ các từ tiếng Việt dính liền",
         "Gọi bảng cấu hình ứng dụng",
         "Gọi bảng cấu hình chung",
         "Gọi bảng tùy chỉnh kiểu gõ tích hợp",
@@ -119,24 +118,22 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Đóng ứng dụng Sigma",
         "Thực hiện tác vụ AI mặc định",
         "Bật / tắt sử dụng chế độ tiếng Việt chủ động",
-        "Bật / tắt Sử dụng clipboard khi gửi phím",
+        "Bật / tắt sử dụng clipboard khi gửi phím",
         "Bật / tắt tương thích với ứng dụng có gợi ý từ",
         "Bật / tắt tự động viết hoa thông minh",
-        "Bật / tắt cho phép gõ ký tự Teencode",
-        "Bật / tắt cho phép chèn ký tự bị thiếu",
+        "Bật / tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"",
         "Bật / tắt dùng phím ← → để điều hướng từng từ",
         "Bật / tắt khởi động cùng Windows",
-        "Bật / tắt cho phép gõ tắt",
+        "Bật / tắt khôi phục từ gốc khi gõ sai chính tả",
+        "Bật / tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu",
         "Bật / tắt cho phép bỏ dấu xoay vòng",
-        "Bật / tắt tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"",
-        "Bật / tắt cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"",
-        "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ"
+        "Bật / tắt cho phép chèn ký tự bị thiếu",
+        "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
     };
 
     dataShortcutKeyDefault = {
         {"Chuyển đổi bộ mã", "M"},
         {"Chuyển đổi dạng chữ viết hoa thường", "H"},
-        {"Bật chế độ gõ các từ tiếng Việt dính liền", "L"},
         {"Gọi bảng cấu hình ứng dụng", "U"},
         {"Gọi bảng cấu hình chung", "C"},
         {"Thực hiện tác vụ AI mặc định", "`"},
@@ -169,7 +166,7 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
 
     setWindowTitle("Trình quản lý phím tắt");
     setWindowIcon(QIcon(":/icon.png"));
-    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
     setAttribute(Qt::WA_DeleteOnClose, false);
 
     setStyleSheet(R"(
@@ -196,6 +193,10 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
             padding-left: 10px;
             padding-right: 10px;
             min-height: 25px;
+        }
+
+        QLineEdit:hover {
+            border: 1px solid #FFFFFF;
         }
 
         QLineEdit:focus {
@@ -243,14 +244,20 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         int col = index / rowCount;
         int row = index % rowCount;
 
+        int baseCol = col * 3;
+
         QLabel* label = new QLabel(labelText);
-        gridLayout->addWidget(label, row, col * 2);
+        gridLayout->addWidget(label, row, baseCol);
 
         QLineEdit* edit = new QLineEdit();
         edit->setMaxLength(1);
         edit->setFixedWidth(40);
         edit->setAlignment(Qt::AlignCenter);
-        gridLayout->addWidget(edit, row, col * 2 + 1);
+        gridLayout->addWidget(edit, row, baseCol + 1);
+
+        if (col < columnCount - 1) {
+            gridLayout->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum), row, baseCol + 2);
+        }
 
         shortcutEdits.append(edit);
         connect(edit, &QLineEdit::textChanged, this, [=]() { changeShortcutKey(index); });
@@ -258,10 +265,6 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         ++index;
     }
     layout->addLayout(gridLayout);
-
-    QLabel* noteLabel = new QLabel("Ghi chú: Tất cả các phím tắt trên đều thực hiện bằng cách nhấn lần lượt phím Shift rồi phím chính", this);
-    noteLabel->setStyleSheet("color: #666666; font-style: italic;");
-    layout->addWidget(noteLabel);
 
     auto* separator = new QFrame(this);
     separator->setObjectName("separatorLine");
@@ -271,6 +274,9 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
     layout->addWidget(separator);
     layout->addSpacing(5);
 
+    QLabel* noteLabel = new QLabel("Ghi chú: Tất cả các phím tắt trên đều thực hiện bằng cách nhấn lần lượt phím Shift rồi phím chính", this);
+    noteLabel->setStyleSheet("color: #666666; font-style: italic;");
+    layout->addWidget(noteLabel);
 
     saveBtn = new QPushButton("Lưu");
     cancelBtn = new QPushButton("Đóng");
@@ -388,7 +394,6 @@ void ShortcutKeyEditor::loadFromSettings() {
     dataShortcutKeyCurrent = dataShortcutKey;
     flagUpdating = false;
 }
-
 
 void ShortcutKeyEditor::loadDefault() {
     flagUpdating = true;

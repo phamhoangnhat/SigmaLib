@@ -37,6 +37,7 @@ private:
     QPushButton* cancelBtn = nullptr;
     QPushButton* defaultBtn = nullptr;
     QPointer<CustomMessageBox> popup;
+    std::vector<std::wstring> inputMethodTemp;
     bool flagUpdatingInput = false;
 };
 

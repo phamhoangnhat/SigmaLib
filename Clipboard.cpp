@@ -57,6 +57,8 @@ wstring Clipboard::getClipboardText() {
 }
 
 void Clipboard::setClipboardText(const wstring& text) {
+	//qDebug() << "setClipboardText start: " << text;
+
 	if (!OpenClipboard(NULL)) return;
 
 	EmptyClipboard();
@@ -87,6 +89,7 @@ void Clipboard::setClipboardText(const wstring& text) {
 	}
 
 	CloseClipboard();
+	//qDebug() << "setClipboardText finish: " << text;
 }
 
 void Clipboard::getBaseClipboard()
@@ -101,19 +104,25 @@ void Clipboard::getBaseClipboard()
 void Clipboard::setBaseClipboard()
 {
 	if (!flagBaseClipboard && flagClipboardText) {
+		//qDebug() << "Set base clipboard start: " << QString::fromStdWString(baseClipboard);
+
 		flagUpdateBaseClipboard = false;
 		setClipboardText(baseClipboard);
 		flagBaseClipboard = true;
-		//qDebug() << "Set base clipboard: " << QString::fromStdWString(baseClipboard);
+
+		//qDebug() << "Set base clipboard finish: " << QString::fromStdWString(baseClipboard);
 	}
 }
 
-void Clipboard::sendUnicodeText(const wstring& text) {
+void Clipboard::sendUnicodeText(const wstring& text, bool flagWait) {
 	Listener& listener = Listener::getInstance();
 
+	//qDebug() << "sendUnicodeText Start";
 	if (text.size() != 0) {
 		setClipboardText(text);
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		if (flagWait) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
 		bool flagShiftLeftPress = ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0);
 		bool flagShiftRightPress = ((GetAsyncKeyState(VK_RSHIFT) & 0x8000) != 0);
 		if (flagShiftLeftPress) {
@@ -145,6 +154,7 @@ void Clipboard::sendUnicodeText(const wstring& text) {
 			listener.pressKey(VK_RSHIFT);
 		}
 	}
+	//qDebug() << "sendUnicodeText Finish";
 }
 
 void Clipboard::simulateCopy() {

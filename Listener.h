@@ -45,7 +45,6 @@ public:
     bool resetBuffer(int vkCode);
     bool checkHotkey(int vkCode);
     bool checkFunction(int vkCode);
-    bool checkModeRestore(int vkCode);
     void updateKeyPress(int vkCode);
     void updateKeyRelease(int vkCode);
     void updateMousePress(WPARAM wParam);

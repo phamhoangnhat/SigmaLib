@@ -13,48 +13,58 @@
 
 class Variable {
 public:
-    const std::wstring CHARACTERSET = L"Unicode";
     const std::wstring INPUTMETHOD = L"Tích hợp";
-    const bool FLAGLANGVIETGLOBAL = false;
-    const bool MODEAUTOSTART = true;
     const bool MODEAUTOUPDATE = true;
-    const bool MODEUSESNIPPET = true;
+    const bool MODEADMIN = false;
+    const bool MODEAUTOSTART = true;
+    const bool MODERESTORE = true;
+    const bool MODEREMOVEDIACTONE = false;
     const bool MODELOOPDIACTONE = false;
-    const bool MODEUSEDYNAMIC = false;
     const bool MODEINSERTCHAR = false;
-    const bool MODEAUTOADDVOWEL = false;
-    const bool MODESHORTCUTLAST = false;
+    const bool MODEAUTOCHANGELANG = false;
+
+    const bool FLAGLANGVIETGLOBAL = false;
+    const std::wstring CHARACTERSET = L"Unicode";
+    const QString NAMETASKAI = "01. Kiểm tra chính tả tiếng Việt";
+    const QString NAMESNIPPETSTRING = "Không sử dụng";
+    const QString NAMESNIPPETWORDS = "Không sử dụng";
+    const bool MODEUSEDYNAMIC = false;
     const bool MODECHECKCASE = false;
     const bool MODETEENCODE = false;
-    const bool MODEAUTOCHANGELANG = true;
-    const QString NAMETASKAI = "01. Kiểm tra chính tả tiếng Việt";
+    const bool MODEUSELEFTRIGHT = false;
 
     QString appName = APP_NAME;
     QString version = APP_VERSION_STRING;
     QString appNameFull = appName + " " + version;
     QString nameCurrentWindow = "";
     QString namePreviousWindow = "";
-    QString nameTaskAI;
-    std::wstring characterSet;
+    double verSigmaExe;
+
     std::wstring inputMethod;
-    bool flagLangVietGlobal;
     bool modeAutoStart;
+    bool modeAdmin;
     bool modeAutoUpdate;
-    bool modeUseSnippet;
     bool modeRestore;
+    bool modeRemoveDiacTone;
     bool modeLoopDiacTone;
+    bool modeInsertChar;
+    bool modeAutoChangeLang;
+
+    bool flagLangVietGlobal;
+    std::wstring characterSet;
+    QString nameTaskAI;
+    QString nameSnippetString;
+    QString nameSnippetWords;
     bool modeUseDynamic;
     bool modeClipboard;
     bool modeFixAutoSuggest;
-    bool modeInsertChar;
-    bool modeAutoAddVowel;
-    bool modeShortcutLast;
-    bool modeUseLeftRight;
     bool modeCheckCase;
     bool modeTeenCode;
-    bool modeAutoChangeLang;
+    bool modeUseLeftRight;
+
     bool flagSendingKey = false;
     int vkCodePrevious;
+    int vkCodeCurrent;
 
     std::map<std::wstring, std::map<wchar_t, std::vector<std::wstring>>> mapCharacterSetBase;
     std::map<std::wstring, std::vector<std::wstring>> mapInputMethodBase;
@@ -63,20 +73,15 @@ public:
     std::vector<int> listOrderStateQuick;
     std::unordered_set<std::wstring> dataCheckCharOnsetStartBase;
     std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> listDataMiddleBase;
-    std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> listDataMiddleBaseOrigin;
     std::map<std::wstring, wchar_t> dataRemoveCharMiddle2;
-    std::map<std::wstring, wchar_t> dataRemoveCharMiddle2Origin;
     std::map<std::wstring, std::map<std::wstring, std::wstring>> mapDataEndBase;
-    std::map<std::wstring, std::map<std::wstring, std::wstring>> mapDataEndBaseOrigin;
     std::unordered_set<int> setVirtualKeyCodeValid;
     std::unordered_set<wchar_t> setCharSpaceSnippet;
     std::map<std::wstring, std::wstring> mapUniToVni;
     std::map<std::wstring, std::wstring> mapUniToAbc;
     std::unordered_set<std::wstring> setPunctuation;
     std::vector<std::wstring> dataOnsetStartTeenCode;
-    std::vector<std::wstring> dataOnsetEndTeenCodeTotal;
-    std::vector<std::wstring> dataOnsetEndTeenCode;
-    std::unordered_set<std::wstring> dataCheckRetore;
+    QSet<QChar> dataValidateKeyToneDiac;
 
     std::map<wchar_t, std::vector<std::wstring>> characterSetBase;
     std::unordered_set<std::wstring> dataCheckCharOnsetStart;
@@ -94,15 +99,15 @@ public:
     std::map<std::wstring, std::map<std::wstring, std::wstring>> dataCheckEnd;
     std::unordered_set<std::wstring> dataRemoveCharMiddle1;
     std::map<std::wstring, std::vector<std::wstring>> dataCheckPosTone;
+    std::unordered_set<wchar_t> dataAddNewWord;
     std::unordered_set<wchar_t> dataAddCharSpace;
-    std::unordered_set<wchar_t> dataCharKeyStartValid;
+    std::unordered_set<wchar_t> dataCheckModeRestore;
     std::map<std::wstring, std::wstring> dataChangeCaseLower;
     std::map<std::wstring, std::wstring> dataChangeCaseUpper;
     std::unordered_set<std::wstring> dataAutoChangeLang;
 
     QSet<QString> listAppUseClipboard;
     QSet<QString> listAppFixAutoSuggest;
-    QSet<QString> listAppNotUseLeftRight;
 
     static Variable& getInstance() {
         static Variable instance;
@@ -114,8 +119,8 @@ public:
 
     Variable(const Variable&) = delete;
     Variable& operator=(const Variable&) = delete;
-    QString validateKeySequence(const QString& raw, int indexChar);
     bool loadSettingsWindow();
+    void addKeyInputMethod(const QString& stringRaw, int indexChar, std::vector<std::wstring>& inputMethodBase);
     void saveDataAutoChangeLang(QString& nameApp);
     void loadDataAutoChangeLang(QString& nameApp);
 
@@ -123,29 +128,24 @@ private:
     Variable();
     ~Variable();
 
-    void initGeneralConfig();
     void initMapCharacterSetBase();
     void initMapInputMethodBase();
     void initListStateBase();
     void initListOrderState();
     void initDataCheckCharOnsetStartBase();
-    void initListDataMiddleBaseOrigin();
-    void initDataRemoveCharMiddle2Origin();
-    void initMapDataEndBaseOrigin();
+    void initListDataMiddleBase();
+    void initDataRemoveCharMiddle2();
+    void initMapDataEndBase();
     void initSetVirtualKeyCodeValid();
     void initSetCharSpaceSnippet();
     void initMapConvertCharset();
     void initSetPunctuation();
     void initDataOnsetStartTeenCode();
-    void initDataOnsetEndTeenCodeTotal();
-    void initDataCheckRetore();
+    void initDataValidateKeyToneDiac();
+    void loadGeneralConfig();
 
     std::vector<std::wstring> createInputMethodBase();
     std::unordered_set<std::wstring> createDataCheckCharOnsetStart();
-    std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> createListDataMiddleBase();
-    std::map<std::wstring, wchar_t> createDataRemoveCharMiddle2();
-    std::map<std::wstring, std::map<std::wstring, std::wstring>> createMapDataEndBase();
-    std::vector<std::wstring> createDataOnsetEndTeenCode();
     std::unordered_set<wchar_t> createDataAddKeyRemoveDiacToneD();
     std::map<wchar_t, std::vector<wchar_t>> createDataAddKey(int numStart, int numEnd, std::vector<int> listStateBase);
     std::map<wchar_t, std::unordered_set<wchar_t>> createDataAddCharMiddle1();
@@ -157,8 +157,9 @@ private:
     std::map<std::wstring, std::map<std::wstring, std::wstring>> createDataCheckEnd();
     std::unordered_set<std::wstring> createDataRemoveCharMiddle1();
     std::map<std::wstring, std::vector<std::wstring>> createDataCheckPosTone();
-    std::unordered_set<wchar_t> createDataAddCharSpace();
-    std::unordered_set<wchar_t> createDataCharKeyStartValid();
+    std::unordered_set<wchar_t> createDataAddNewWord();
+    std::unordered_set<wchar_t> createDataCharSpace();
+    std::unordered_set<wchar_t> createDataCheckModeRestore();
     std::map<std::wstring, std::wstring> createDataChangeCaseLower();
     std::map<std::wstring, std::wstring> createDataChangeCaseUpper();
 };

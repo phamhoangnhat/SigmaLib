@@ -8,6 +8,7 @@
 #include "ConfigUi.h"
 #include <TaskAI.h>
 #include "TaskAIDatabase.h"
+#include <SnippetEditor.h>
 #include "Typeword.h"
 
 #include <algorithm>
@@ -26,22 +27,21 @@ Variable::~Variable() {
 
 void Variable::init()
 {
-	initGeneralConfig();
 	initMapCharacterSetBase();
 	initMapInputMethodBase();
 	initListStateBase();
 	initListOrderState();
 	initDataCheckCharOnsetStartBase();
-	initListDataMiddleBaseOrigin();
-	initDataRemoveCharMiddle2Origin();
-	initMapDataEndBaseOrigin();
+	initListDataMiddleBase();
+	initDataRemoveCharMiddle2();
+	initMapDataEndBase();
 	initSetVirtualKeyCodeValid();
 	initSetCharSpaceSnippet();
 	initMapConvertCharset();
 	initSetPunctuation();
 	initDataOnsetStartTeenCode();
-	initDataOnsetEndTeenCodeTotal();
-	initDataCheckRetore();
+	initDataValidateKeyToneDiac();
+	loadGeneralConfig();
 	loadSettingsWindow();
 }
 
@@ -50,10 +50,6 @@ void Variable::update()
 	characterSetBase = mapCharacterSetBase[characterSet];
 	inputMethodBase = createInputMethodBase();
 	dataCheckCharOnsetStart = createDataCheckCharOnsetStart();
-	listDataMiddleBase = createListDataMiddleBase();
-	dataRemoveCharMiddle2 = createDataRemoveCharMiddle2();
-	mapDataEndBase = createMapDataEndBase();
-	dataOnsetEndTeenCode = createDataOnsetEndTeenCode();
 	dataAddCharMiddle1 = createDataAddCharMiddle1();
 	dataAddCharMiddle2 = createDataAddCharMiddle2();
 	dataAddKeyRemoveDiacToneD = createDataAddKeyRemoveDiacToneD();
@@ -67,16 +63,18 @@ void Variable::update()
 	dataCheckEnd = createDataCheckEnd();
 	dataRemoveCharMiddle1 = createDataRemoveCharMiddle1();
 	dataCheckPosTone = createDataCheckPosTone();
-	dataAddCharSpace = createDataAddCharSpace();
-	dataCharKeyStartValid = createDataCharKeyStartValid();
+	dataAddNewWord = createDataAddNewWord();
+	dataAddCharSpace = createDataCharSpace();
+	dataCheckModeRestore = createDataCheckModeRestore();
 	dataChangeCaseLower = createDataChangeCaseLower();
 	dataChangeCaseUpper = createDataChangeCaseUpper();
 }
 
-void Variable::initGeneralConfig()
+void Variable::loadGeneralConfig()
 {
 	QSettings settings(appName, "Config");
 	settings.setValue("appNameFull", appNameFull);
+	verSigmaExe = settings.value("verSigmaExe", 0.0).toDouble();
 
 	namePreviousWindow = "";
 	inputMethod = settings.value("inputMethod", QString::fromStdWString(INPUTMETHOD)).toString().toStdWString();
@@ -84,45 +82,42 @@ void Variable::initGeneralConfig()
 		inputMethod = INPUTMETHOD;
 	}
 	modeAutoStart = settings.value("modeAutoStart", MODEAUTOSTART).toBool();
-	setAutoStartApp(modeAutoStart);
+	modeAdmin = settings.value("modeAdmin", MODEADMIN).toBool();
+	createAdminTaskInScheduler(modeAutoStart, modeAdmin);
 	modeAutoUpdate = settings.value("modeAutoUpdate", MODEAUTOUPDATE).toBool();
-	modeUseSnippet = settings.value("modeUseSnippet", MODEUSESNIPPET).toBool();
+	modeRestore = settings.value("modeRestore", MODERESTORE).toBool();
+	modeRemoveDiacTone = settings.value("modeRemoveDiacTone", MODEREMOVEDIACTONE).toBool();
 	modeLoopDiacTone = settings.value("modeLoopDiacTone", MODELOOPDIACTONE).toBool();
-	modeAutoAddVowel = settings.value("modeAutoAddVowel", MODEAUTOADDVOWEL).toBool();
-	modeShortcutLast = settings.value("modeShortcutLast", MODESHORTCUTLAST).toBool();
+	modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
 	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
-	modeRestore = true;
 
 	listAppUseClipboard = { "acad" };
+
 	listAppFixAutoSuggest = {
 		//Trình duyệt web
 		"chrome", "coccoc", "brave", "msedge", "opera", "vivaldi", "firefox",
 
 		//Ứng dụng chat nhắn tin
-		"zalo", "telegram", "discord", "whatsapp", "skype", "slack", "teams", "ms teams",
+		//"zalo", "telegram", "discord", "whatsapp", "skype", "slack", "teams", "ms teams",
 
 		//Ứng dụng họp / học trực tuyến
-		"zoom", "classin", "cisco", "webex", "atmgr",
+		//"zoom", "classin", "cisco", "webex", "atmgr",
 
 		//Ứng dụng văn phòng (Microsoft & WPS)
 		"applicationframehost", "winword", "excel", "powerpnt", "outlook", "msaccess", "onenote", "wps", "et", "wpp", "soffice",
 
 		//IDE & Editor (trình soạn mã, lập trình)
-		"code", "devenv", "notepad++", "sublime_text", "atom", "eclipse", "pycharm64", "idea64", "webstorm64", "phpstorm64", "clion64", "studio64", "netbeans64", "codeblocks", "devcpp", "arduino", "thonny", "rstudio", "geany", "vscode-insiders",
+		//"code", "devenv", "notepad++", "sublime_text", "atom", "eclipse", "pycharm64", "idea64", "webstorm64", "phpstorm64", "clion64", "studio64", "netbeans64", "codeblocks", "devcpp", "arduino", "thonny", "rstudio", "geany", "vscode-insiders",
 
 		//Ghi chú / Markdown / Quản lý nội dung
-		"notion", "obsidian", "joplin", "marktext", "typora",
+		//"notion", "obsidian", "joplin", "marktext", "typora",
 
 		//Trình nền game / launcher (có khung chat hoặc overlay)
-		"steam", "epicgameslauncher", "riotclient", "battle.net", "robloxplayerbeta",
+		//"steam", "epicgameslauncher", "riotclient", "battle.net", "robloxplayerbeta",
 
 		//Thiết kế / sáng tạo (có nhập chữ)
-		"acad", "photoshop", "illustrator", "coreldraw", "blender", "krita", "sketchup"
-	};
-
-	listAppNotUseLeftRight = {
-		//IDE & Editor (trình soạn mã, lập trình)
-		"code", "devenv", "notepad++", "sublime_text", "atom", "eclipse", "pycharm64", "idea64", "webstorm64", "phpstorm64", "clion64", "studio64", "netbeans64", "codeblocks", "devcpp", "arduino", "thonny", "rstudio", "geany", "vscode-insiders",
+		"acad",
+		//"photoshop", "illustrator", "coreldraw", "blender", "krita", "sketchup"
 	};
 }
 
@@ -243,8 +238,8 @@ void Variable::initListStateBase()
 
 void Variable::initListOrderState()
 {
-	listOrderStatePush  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14 };
-	listOrderStateQuick = { 0, 1, 2, 3, 4, 5, 6, 12, 8, 7, 10, 9, 11, 13, 14 };
+	listOrderStatePush  = { 0, 1, 2, 3, 4, 5, 6, 10, 12, 11, 9, 8, 7, 13, 14 };
+	listOrderStateQuick = { 0, 1, 2, 3, 4, 5, 6, 10, 12, 11, 9, 8, 7, 13, 14 };
 }
 
 void Variable::initDataCheckCharOnsetStartBase()
@@ -252,12 +247,11 @@ void Variable::initDataCheckCharOnsetStartBase()
 	dataCheckCharOnsetStartBase = {
 		L"", L"b", L"c", L"ch", L"d", L"g", L"gh", L"gi", L"h", L"k", L"kh", L"l", L"m", L"n", L"ng", L"ngh", L"nh", L"p", L"ph", L"q", L"qu", L"r", L"s", L"t", L"th", L"tr", L"v", L"x"
 	};
-
 }
 
-void Variable::initListDataMiddleBaseOrigin()
+void Variable::initListDataMiddleBase()
 {
-	listDataMiddleBaseOrigin = {
+	listDataMiddleBase = {
 		 { L'G', L"0", 0, L"a",   L"A"   },
 		 { L'H', L"0", 0, L"a",   L"B"   },
 		 { L'I', L"0", 0, L"a",   L"C"   },
@@ -265,6 +259,7 @@ void Variable::initListDataMiddleBaseOrigin()
 		 { L'J', L"0", 0, L"e",   L"E"   },
 		 { L'G', L"0", 0, L"i",   L"F"   },
 		 { L'G', L"0", 0, L"ia",  L"FA"  },
+		 { L'G', L"0", 1, L"ie",  L"FD"  },
 		 { L'J', L"0", 1, L"ie",  L"FE"  },
 		 { L'G', L"0", 0, L"o",   L"G"   },
 		 { L'K', L"0", 0, L"o",   L"H"   },
@@ -279,22 +274,26 @@ void Variable::initListDataMiddleBaseOrigin()
 		 { L'G', L"0", 0, L"ua",  L"JA"  },
 		 { L'M', L"0", 0, L"ua",  L"KA"  },
 		 { L'I', L"0", 1, L"ua",  L"JC"  },
+		 { L'G', L"0", 1, L"ue",  L"JD"  },
 		 { L'J', L"0", 1, L"ue",  L"JE"  },
+		 { L'G', L"0", 1, L"uo",  L"JG"  },
 		 { L'K', L"0", 1, L"uo",  L"JH"  },
 		 { L'M', L"0", 1, L"uo",  L"KI"  },
 		 { L'L', L"0", 1, L"uo",  L"JI"  },
 		 { L'G', L"0", 0, L"uy",  L"JL"  },
 		 { L'G', L"1", 1, L"uy",  L"JL"  },
 		 { L'G', L"0", 1, L"uya", L"JLA" },
+		 { L'G', L"0", 2, L"uye", L"JLD" },
 		 { L'J', L"0", 2, L"uye", L"JLE" },
 		 { L'G', L"0", 0, L"y",   L"L"   },
+		 { L'G', L"0", 1, L"ye",  L"LD"  },
 		 { L'J', L"0", 1, L"ye",  L"LE"  }
 	};
 }
 
-void Variable::initDataRemoveCharMiddle2Origin()
+void Variable::initDataRemoveCharMiddle2()
 {
-	dataRemoveCharMiddle2Origin = {
+	dataRemoveCharMiddle2 = {
 		{ L"Ga",   L'G' },
 		{ L"Ha",   L'G' },
 		{ L"Ia",   L'G' },
@@ -302,6 +301,7 @@ void Variable::initDataRemoveCharMiddle2Origin()
 		{ L"Je",   L'G' },
 		{ L"Gi",   L'G' },
 		{ L"Gia",  L'G' },
+		{ L"Gie",  L'G' },
 		{ L"Jie",  L'G' },
 		{ L"Go",   L'G' },
 		{ L"Ko",   L'G' },
@@ -314,19 +314,23 @@ void Variable::initDataRemoveCharMiddle2Origin()
 		{ L"Gua",  L'G' },
 		{ L"Mua",  L'M' },
 		{ L"Iua",  L'G' },
+		{ L"Gue",  L'G' },
 		{ L"Jue",  L'G' },
+		{ L"Guo",  L'G' },
 		{ L"Kuo",  L'G' },
 		{ L"Muo",  L'M' },
 		{ L"Luo",  L'G' },
 		{ L"Guy",  L'G' },
 		{ L"Guya", L'G' },
+		{ L"Guye", L'G' },
 		{ L"Juye", L'G' },
 		{ L"Gy",   L'G' },
+		{ L"Gye",  L'G' },
 		{ L"Jye",  L'G' }
 	};
 }
 
-void Variable::initMapDataEndBaseOrigin()
+void Variable::initMapDataEndBase()
 {
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -336,9 +340,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"o",  L"o" },
 			{ L"p",  L"p" },
@@ -346,7 +348,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"u",  L"u" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"G"] = temp;
+		mapDataEndBase[L"G"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -356,9 +358,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"o",  L"o" },
 			{ L"p",  L"p" },
@@ -366,19 +366,18 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"u",  L"u" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"Ga"] = temp;
+		mapDataEndBase[L"Ga"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"c",  L"c" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Ha"] = temp;
+		mapDataEndBase[L"Ha"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -388,9 +387,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"o",  L"o" },
 			{ L"p",  L"p" },
@@ -398,7 +395,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"u",  L"u" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"Ia"] = temp;
+		mapDataEndBase[L"Ia"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -407,67 +404,73 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"ch", L"ch" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"o",  L"o" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Ge"] = temp;
+		mapDataEndBase[L"Ge"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
-			{ L"c",  L"ch" },
+			{ L"c",  L"c" },
 			{ L"ch", L"ch" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Je"] = temp;
+		mapDataEndBase[L"Je"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
-			{ L"c",  L"ch" },
+			{ L"c",  L"c" },
 			{ L"ch", L"ch" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Gi"] = temp;
+		mapDataEndBase[L"Gi"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"", L"" }
 		};
-		mapDataEndBaseOrigin[L"Gia"] = temp;
+		mapDataEndBase[L"Gia"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"c",  L"c" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Jie"] = temp;
+		mapDataEndBase[L"Gie"] = temp;
+	}
+	{
+		std::map<std::wstring, std::wstring> temp = {
+			{ L"c",  L"c" },
+			{ L"m",  L"m" },
+			{ L"n",  L"n" },
+			{ L"ng", L"ng" },
+			{ L"p",  L"p" },
+			{ L"t",  L"t" },
+			{ L"u",  L"u" }
+		};
+		mapDataEndBase[L"Jie"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -476,12 +479,11 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Go"] = temp;
+		mapDataEndBase[L"Go"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -492,7 +494,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Lo"] = temp;
+		mapDataEndBase[L"Lo"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -501,12 +503,11 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Ko"] = temp;
+		mapDataEndBase[L"Ko"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -516,28 +517,25 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"o",  L"o" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"Goa"] = temp;
+		mapDataEndBase[L"Goa"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"c",  L"c" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Hoa"] = temp;
+		mapDataEndBase[L"Hoa"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -547,7 +545,7 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"p",  L"p" },
 			{ L"t",  L"t" }
 		};
-		mapDataEndBaseOrigin[L"Goe"] = temp;
+		mapDataEndBase[L"Goe"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -556,13 +554,12 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Gu"] = temp;
+		mapDataEndBase[L"Gu"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -571,54 +568,62 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Mu"] = temp;
+		mapDataEndBase[L"Mu"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
 			{ L"c",  L"c" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"t",  L"t" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"Gua"] = temp;
+		mapDataEndBase[L"Gua"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"", L"" }
 		};
-		mapDataEndBaseOrigin[L"Mua"] = temp;
+		mapDataEndBase[L"Mua"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"c",  L"c" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"t",  L"t" },
 			{ L"y",  L"y" }
 		};
-		mapDataEndBaseOrigin[L"Iua"] = temp;
+		mapDataEndBase[L"Iua"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
-			{ L"c",  L"ch" },
+			{ L"c",  L"c" },
 			{ L"ch", L"ch" },
 			{ L"n",  L"n" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Jue"] = temp;
+		mapDataEndBase[L"Gue"] = temp;
+	}
+	{
+		std::map<std::wstring, std::wstring> temp = {
+			{ L"",   L"" },
+			{ L"c",  L"c" },
+			{ L"ch", L"ch" },
+			{ L"n",  L"n" },
+			{ L"nh", L"nh" },
+			{ L"t",  L"t" },
+			{ L"u",  L"u" }
+		};
+		mapDataEndBase[L"Jue"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -626,13 +631,12 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Kuo"] = temp;
+		mapDataEndBase[L"Guo"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -640,60 +644,77 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"i",  L"i" },
 			{ L"m",  L"m" },
 			{ L"n",  L"n" },
-			{ L"g",  L"ng" },
 			{ L"ng", L"ng" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Muo"] = temp;
+		mapDataEndBase[L"Kuo"] = temp;
+	}
+	{
+		std::map<std::wstring, std::wstring> temp = {
+			{ L"c",  L"c" },
+			{ L"i",  L"i" },
+			{ L"m",  L"m" },
+			{ L"n",  L"n" },
+			{ L"ng", L"ng" },
+			{ L"p",  L"p" },
+			{ L"t",  L"t" },
+			{ L"u",  L"u" }
+		};
+		mapDataEndBase[L"Muo"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"", L"" }
 		};
-		mapDataEndBaseOrigin[L"Luo"] = temp;
+		mapDataEndBase[L"Luo"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
-			{ L"c",  L"ch" },
+			{ L"c",  L"c" },
 			{ L"ch", L"ch" },
 			{ L"n",  L"n" },
-			{ L"h",  L"nh" },
 			{ L"nh", L"nh" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Guy"] = temp;
+		mapDataEndBase[L"Guy"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"", L"" }
 		};
-		mapDataEndBaseOrigin[L"Guya"] = temp;
+		mapDataEndBase[L"Guya"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"n", L"n" },
 			{ L"t", L"t" }
 		};
-		mapDataEndBaseOrigin[L"Juye"] = temp;
+		mapDataEndBase[L"Guye"] = temp;
+	}
+	{
+		std::map<std::wstring, std::wstring> temp = {
+			{ L"n", L"n" },
+			{ L"t", L"t" }
+		};
+		mapDataEndBase[L"Juye"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
 			{ L"",   L"" },
-			{ L"c",  L"ch" },
+			{ L"c",  L"c" },
 			{ L"ch", L"ch" },
-			{ L"n",  L"nh" },
-			{ L"h",  L"nh" },
+			{ L"n",  L"n" },
 			{ L"nh", L"nh" },
 			{ L"p",  L"p" },
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Gy"] = temp;
+		mapDataEndBase[L"Gy"] = temp;
 	}
 	{
 		std::map<std::wstring, std::wstring> temp = {
@@ -703,7 +724,17 @@ void Variable::initMapDataEndBaseOrigin()
 			{ L"t",  L"t" },
 			{ L"u",  L"u" }
 		};
-		mapDataEndBaseOrigin[L"Jye"] = temp;
+		mapDataEndBase[L"Gye"] = temp;
+	}
+	{
+		std::map<std::wstring, std::wstring> temp = {
+			{ L"m",  L"m" },
+			{ L"n",  L"n" },
+			{ L"ng", L"ng" },
+			{ L"t",  L"t" },
+			{ L"u",  L"u" }
+		};
+		mapDataEndBase[L"Jye"] = temp;
 	}
 }
 
@@ -726,7 +757,7 @@ void Variable::initSetVirtualKeyCodeValid() {
 
 		// NumPad
 		0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-		0x6A, 0x6B, 0x6D, 0x6E, 0x6F,
+		0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
 	};
 }
 
@@ -773,31 +804,29 @@ void Variable::initMapConvertCharset()
 
 void Variable::initSetPunctuation()
 {
-	setPunctuation = { L". ", L"? ", L"! " };
+	setPunctuation = { L".", L"?", L"!" };
 }
 
 void Variable::initDataOnsetStartTeenCode()
 {
 	dataOnsetStartTeenCode =
-	{
-		L"f",  L"j",  L"q",  L"w", L"z",
-		L"ck", L"dz", L"ff", L"fw", L"gz", L"jj", L"jk", L"jz", L"kk", L"kw", L"pp", L"qq", L"vv",  L"xx", L"zz",
-		L"k~", L"h~", L"v~", L"z~"
-	};
+	{ L"f",  L"j",  L"w", L"z" };
 }
 
-void Variable::initDataOnsetEndTeenCodeTotal()
+void Variable::initDataValidateKeyToneDiac()
 {
-	dataOnsetEndTeenCodeTotal =
-	{
-		L"d", L"g", L"h", L"j", L"k", L"q", L"t", L"v", L"w", L"x", L"z", L"~",
-		L"k~", L"v~", L"z~"
+	dataValidateKeyToneDiac = {
+		QChar('0'), QChar('1'), QChar('2'), QChar('3'), QChar('4'),
+		QChar('5'), QChar('6'), QChar('7'), QChar('8'), QChar('9'),
+		QChar('A'), QChar('B'), QChar('C'), QChar('D'), QChar('E'),
+		QChar('F'), QChar('G'), QChar('H'), QChar('I'), QChar('J'),
+		QChar('K'), QChar('L'), QChar('M'), QChar('N'), QChar('O'),
+		QChar('P'), QChar('Q'), QChar('R'), QChar('S'), QChar('T'),
+		QChar('U'), QChar('V'), QChar('W'), QChar('X'), QChar('Y'),
+		QChar('Z'), QChar('`'), QChar('-'), QChar('='), QChar('['),
+		QChar(']'), QChar('\\'), QChar(';'), QChar('\''), QChar(','),
+		QChar('.'), QChar('/')
 	};
-}
-
-void Variable::initDataCheckRetore()
-{
-	dataCheckRetore = { L"a", L"b", L"c", L"d", L"e", L"f", L"g", L"h", L"i", L"j", L"k", L"l", L"m", L"n", L"o", L"p", L"q", L"r", L"s", L"t", L"u", L"v", L"w", L"x", L"y", L"z" };
 }
 
 void Variable::loadDataAutoChangeLang(QString& nameApp)
@@ -822,27 +851,22 @@ std::vector<std::wstring> Variable::createInputMethodBase() {
 		inputMethod = INPUTMETHOD;
 	}
 
+	inputMethodBase = mapInputMethodBase[inputMethod];
 	if (inputMethod == L"Tích hợp") {
 		QSettings settings(appName, "InputMethodCustom");
 		if (settings.contains("data")) {
 			QStringList stored = settings.value("data").toStringList();
 
-			inputMethodBase.resize(15);
 			for (int i = 0; i < std::min(15, static_cast<int>(stored.size())); ++i) {
-				QString stringRaw;
+				QString stringRaw = QString::fromStdWString(inputMethodBase[i]);
 				if (i < stored.size()) {
-					stringRaw = stored[i];
+					stringRaw += stored[i];
 				}
-				else {
-					stringRaw = "";
-				}
-				QString stringKeyInput = validateKeySequence(stringRaw, i);
-				inputMethodBase[i] = stringKeyInput.toStdWString();
+				addKeyInputMethod(stringRaw, i, inputMethodBase);
 			}
-			return inputMethodBase;
 		}
 	}
-	return mapInputMethodBase[inputMethod];
+	return inputMethodBase;
 }
 
 std::unordered_set<std::wstring> Variable::createDataCheckCharOnsetStart()
@@ -852,150 +876,6 @@ std::unordered_set<std::wstring> Variable::createDataCheckCharOnsetStart()
 		dataCheckCharOnsetStart.insert(dataOnsetStartTeenCode.begin(), dataOnsetStartTeenCode.end());
 	}
 	return dataCheckCharOnsetStart;
-}
-
-std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> Variable::createListDataMiddleBase()
-{
-	std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> listDataMiddleBase;
-	listDataMiddleBase = listDataMiddleBaseOrigin;
-
-	if (!modeAutoAddVowel) {
-		std::vector<std::tuple<wchar_t, std::wstring, int, std::wstring, std::wstring>> listDataMiddleBaseTemp;
-		listDataMiddleBaseTemp =
-		{
-			{ L'G', L"0", 1, L"ie", L"FD" },
-			{ L'G', L"0", 1, L"ue",  L"JD" },
-			{ L'G', L"0", 1, L"uo",  L"JG" },
-			{ L'G', L"0", 2, L"uye", L"JLD" },
-			{ L'G', L"0", 1, L"ye",  L"LD" }
-		};
-
-		listDataMiddleBase.insert(
-			listDataMiddleBase.end(),
-			listDataMiddleBaseTemp.begin(),
-			listDataMiddleBaseTemp.end()
-		);
-	}
-
-	return listDataMiddleBase;
-}
-
-std::map<std::wstring, wchar_t> Variable::createDataRemoveCharMiddle2()
-{
-	std::map<std::wstring, wchar_t> dataRemoveCharMiddle2;
-	dataRemoveCharMiddle2 = dataRemoveCharMiddle2Origin;
-	if (!modeAutoAddVowel) {
-		std::map<std::wstring, wchar_t> dataRemoveCharMiddle2Temp =
-		{
-			{ L"Gie",  L'G' },
-			{ L"Gue",  L'G' },
-			{ L"Guo",  L'G' },
-			{ L"Guye", L'G' },
-			{ L"Gye",  L'G' }
-		};
-		for (const auto& pair : dataRemoveCharMiddle2Temp) {
-			dataRemoveCharMiddle2[pair.first] = pair.second;
-		}
-	}
-	return dataRemoveCharMiddle2;
-}
-
-std::map<std::wstring, std::map<std::wstring, std::wstring>> Variable::createMapDataEndBase()
-{
-	std::map<std::wstring, std::map<std::wstring, std::wstring>> mapDataEndBase;
-	mapDataEndBase = mapDataEndBaseOrigin;
-
-	if (!modeAutoAddVowel) {
-		{
-			std::map<std::wstring, std::wstring> temp = {
-				{ L"c",  L"c" },
-				{ L"m",  L"m" },
-				{ L"n",  L"n" },
-				{ L"g",  L"ng" },
-				{ L"ng", L"ng" },
-				{ L"p",  L"p" },
-				{ L"t",  L"t" },
-				{ L"u",  L"u" }
-			};
-			mapDataEndBase[L"Gie"] = temp;
-		}
-
-		{
-			std::map<std::wstring, std::wstring> temp = {
-				{ L"",   L"" },
-				{ L"c",  L"ch" },
-				{ L"ch", L"ch" },
-				{ L"n",  L"n" },
-				{ L"h",  L"nh" },
-				{ L"nh", L"nh" },
-				{ L"t",  L"t" },
-				{ L"u",  L"u" }
-			};
-			mapDataEndBase[L"Gue"] = temp;
-		}
-
-		{
-			std::map<std::wstring, std::wstring> temp = {
-				{ L"c",  L"c" },
-				{ L"i",  L"i" },
-				{ L"m",  L"m" },
-				{ L"n",  L"n" },
-				{ L"g",  L"ng" },
-				{ L"ng", L"ng" },
-				{ L"p",  L"p" },
-				{ L"t",  L"t" },
-				{ L"u",  L"u" }
-			};
-			mapDataEndBase[L"Guo"] = temp;
-		}
-
-		{
-			std::map<std::wstring, std::wstring> temp = {
-				{ L"n", L"n" },
-				{ L"t", L"t" }
-			};
-			mapDataEndBase[L"Guye"] = temp;
-		}
-
-		{
-			std::map<std::wstring, std::wstring> temp = {
-				{ L"m",  L"m" },
-				{ L"n",  L"n" },
-				{ L"ng", L"ng" },
-				{ L"t",  L"t" },
-				{ L"u",  L"u" }
-			};
-			mapDataEndBase[L"Gye"] = temp;
-		}
-	}
-	return mapDataEndBase;
-}
-
-std::vector<std::wstring> Variable::createDataOnsetEndTeenCode()
-{
-	std::vector<std::wstring> dataOnsetEndTeenCode;
-	if (modeTeenCode) {
-		std::unordered_set<wchar_t> setCharKeyMethod;
-		for (const std::wstring& str : inputMethodBase) {
-			for (wchar_t charTemp : str) {
-				setCharKeyMethod.insert(charTemp);
-			}
-		}
-
-		for (const std::wstring& str : dataOnsetEndTeenCodeTotal) {
-			bool flagValid = true;
-			for (wchar_t charTemp : str) {
-				if (setCharKeyMethod.count(std::towupper(charTemp))) {
-					flagValid = false;
-					break;
-				}
-			}
-			if (flagValid) {
-				dataOnsetEndTeenCode.push_back(str);
-			}
-		}
-	}
-	return dataOnsetEndTeenCode;
 }
 
 std::unordered_set<wchar_t> Variable::createDataAddKeyRemoveDiacToneD()
@@ -1067,7 +947,7 @@ std::map<wchar_t, std::pair<wchar_t, wchar_t>> Variable::createDataAddCharMiddle
 			if (it != dataVowelQuick.end()) {
 				wchar_t keyDiacUpper = towupper(keyDiac);
 				wchar_t keyDiacLower = towlower(keyDiac);
-				if (keyDiacUpper != keyDiacLower) {
+				if (!(keyDiac >= L'0' && keyDiac <= L'9')) {
 					wchar_t keyVowel = it->second;
 					wchar_t stringVowelUpper = towupper(keyVowel);
 					wchar_t stringVowelLower = towlower(keyVowel);
@@ -1189,46 +1069,6 @@ std::map<std::wstring, std::map<std::wstring, std::wstring>> Variable::createDat
 	std::map<std::wstring, std::map<std::wstring, std::wstring>> dataCheckEnd;
 	std::map<std::wstring, std::map<std::wstring, std::wstring>> mapDataEndBaseTotal = mapDataEndBase;
 
-	if (!modeShortcutLast) {
-		for (auto& keyTempPair : mapDataEndBaseTotal) {
-			const std::wstring& keyTemp = keyTempPair.first;
-			std::map<std::wstring, std::wstring>& mapOnsetBase = keyTempPair.second;
-
-			std::vector<std::wstring> keysToErase;
-			for (const auto& onsetPair : mapOnsetBase) {
-				if (onsetPair.first != onsetPair.second) {
-					if (onsetPair.first == L"c") {
-						mapOnsetBase[L"c"] = L"c";
-					}
-					if ((onsetPair.first == L"g") || (onsetPair.first == L"h")) {
-						keysToErase.push_back(onsetPair.first);
-					}
-				}
-			}
-
-			for (const std::wstring& key : keysToErase) {
-				mapOnsetBase.erase(key);
-			}
-		}
-	}
-
-	if (modeTeenCode) {
-		std::map<std::wstring, std::map<std::wstring, std::wstring>> mapDataEndBaseTemp = mapDataEndBaseTotal;
-
-		for (const auto& keyTempPair : mapDataEndBaseTemp) {
-			const std::wstring keyTemp = keyTempPair.first;
-			const std::map<std::wstring, std::wstring> mapOnsetBase = keyTempPair.second;
-			for (const std::wstring& extend : dataOnsetEndTeenCode) {
-				for (const auto onsetPair : mapOnsetBase) {
-					std::wstring onset1 = onsetPair.first;
-					std::wstring onset2 = onsetPair.second;
-					mapDataEndBaseTotal[keyTemp].insert({ onset1 + extend , onset2 + extend });
-				}
-				mapDataEndBaseTotal[keyTemp].insert({ extend , extend });
-			}
-		}
-	}
-
 	for (const auto& keyTempPair : mapDataEndBaseTotal) {
 		const std::wstring& keyTemp = keyTempPair.first;
 		const std::map<std::wstring, std::wstring>& mapOnsetBase = keyTempPair.second;
@@ -1295,34 +1135,63 @@ std::map<std::wstring, std::vector<std::wstring>> Variable::createDataCheckPosTo
 	return createDataCheckMiddle2();
 }
 
-std::unordered_set<wchar_t> Variable::createDataAddCharSpace()
+std::unordered_set<wchar_t> Variable::createDataAddNewWord()
 {
-	std::unordered_set<wchar_t> dataAddCharSpace;
+	std::unordered_set<wchar_t> dataAddNewWord;
 
-	std::vector<wchar_t> listCharTemp = { L'a', L'b', L'c', L'd', L'e', L'f', L'g', L'h', L'i', L'j', L'k', L'l', L'm', L'n', L'o', L'p', L'q', L'r', L's', L't', L'u', L'v', L'w', L'x', L'y', L'z', L'0', L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9' };
+	std::vector<wchar_t> listCharTemp = { L'a', L'b', L'c', L'd', L'e', L'f', L'g', L'h', L'i', L'j', L'k', L'l', L'm', L'n', L'o', L'p', L'q', L'r', L's', L't', L'u', L'v', L'w', L'x', L'y', L'z', L'0', L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9'};
 	for (auto& charTemp : listCharTemp)
 	{
-		dataAddCharSpace.insert(tolower(charTemp));
-		dataAddCharSpace.insert(towupper(charTemp));
+		dataAddNewWord.insert(tolower(charTemp));
+		dataAddNewWord.insert(towupper(charTemp));
 	}
 
 	for (auto& stringTemp : inputMethodBase)
 	{
 		for (auto& charTemp : stringTemp)
 		{
-			dataAddCharSpace.insert(tolower(charTemp));
-			dataAddCharSpace.insert(towupper(charTemp));
+			dataAddNewWord.insert(tolower(charTemp));
+			dataAddNewWord.insert(towupper(charTemp));
 		}
 	}
 
 	if (modeTeenCode) {
 		for (const std::wstring& item : dataOnsetStartTeenCode) {
 			for (wchar_t charTemp : item) {
-				dataAddCharSpace.insert(tolower(charTemp));
-				dataAddCharSpace.insert(towupper(charTemp));
+				dataAddNewWord.insert(tolower(charTemp));
+				dataAddNewWord.insert(towupper(charTemp));
 			}
 		}
-		for (const std::wstring& item : dataOnsetEndTeenCode) {
+	}
+
+	return dataAddNewWord;
+}
+
+std::unordered_set<wchar_t> Variable::createDataCharSpace()
+{
+	std::unordered_set<wchar_t> dataAddCharSpace;
+
+	std::vector<wchar_t> listCharTemp = { L'a', L'b', L'c', L'd', L'e', L'g', L'h', L'i', L'k', L'l', L'm', L'n', L'o', L'p', L'q', L'r', L's', L't', L'u', L'v', L'x', L'y' };
+	for (auto& charTemp : listCharTemp)
+	{
+		dataAddCharSpace.insert(tolower(charTemp));
+		dataAddCharSpace.insert(towupper(charTemp));
+	}
+
+	for (const auto& stringTemp : inputMethodBase) {
+		for (wchar_t charTemp : stringTemp) {
+			dataAddCharSpace.insert(tolower(charTemp));
+			dataAddCharSpace.insert(towupper(charTemp));
+		}
+	}
+
+	for (const auto& pair : dataAddCharMiddle2) {
+		wchar_t charTemp = pair.first;
+		dataAddCharSpace.insert(charTemp);
+	}
+
+	if (modeTeenCode) {
+		for (const std::wstring& item : dataOnsetStartTeenCode) {
 			for (wchar_t charTemp : item) {
 				dataAddCharSpace.insert(tolower(charTemp));
 				dataAddCharSpace.insert(towupper(charTemp));
@@ -1333,38 +1202,16 @@ std::unordered_set<wchar_t> Variable::createDataAddCharSpace()
 	return dataAddCharSpace;
 }
 
-std::unordered_set<wchar_t> Variable::createDataCharKeyStartValid()
+std::unordered_set<wchar_t> Variable::createDataCheckModeRestore()
 {
-	std::unordered_set<wchar_t> dataCharKeyStartValid;
-
-	std::vector<wchar_t> listCharTemp = { L'a', L'b', L'c', L'd', L'e', L'g', L'h', L'i', L'k', L'l', L'm', L'n', L'o', L'p', L'q', L'r', L's', L't', L'u', L'v', L'x', L'y' };
+	std::unordered_set<wchar_t> dataCheckModeRestore;
+	std::vector<wchar_t> listCharTemp = { L'a', L'b', L'c', L'd', L'e', L'f', L'g', L'h', L'i', L'j', L'k', L'l', L'm', L'n', L'o', L'p', L'q', L'r', L's', L't', L'u', L'v', L'w', L'x', L'y', L'z' };
 	for (auto& charTemp : listCharTemp)
 	{
-		dataCharKeyStartValid.insert(tolower(charTemp));
-		dataCharKeyStartValid.insert(towupper(charTemp));
+		dataCheckModeRestore.insert(tolower(charTemp));
+		dataCheckModeRestore.insert(towupper(charTemp));
 	}
-
-	for (const auto& pair : dataAddCharMiddle2) {
-		wchar_t charTemp = pair.first;
-		dataCharKeyStartValid.insert(charTemp);
-	}
-
-	if (modeTeenCode) {
-		for (const std::wstring& item : dataOnsetStartTeenCode) {
-			for (wchar_t charTemp : item) {
-				dataCharKeyStartValid.insert(tolower(charTemp));
-				dataCharKeyStartValid.insert(towupper(charTemp));
-			}
-		}
-		for (const std::wstring& item : dataOnsetEndTeenCode) {
-			for (wchar_t charTemp : item) {
-				dataCharKeyStartValid.insert(tolower(charTemp));
-				dataCharKeyStartValid.insert(towupper(charTemp));
-			}
-		}
-	}
-
-	return dataCharKeyStartValid;
+	return dataCheckModeRestore;
 }
 
 std::map<std::wstring, std::wstring> Variable::createDataChangeCaseLower()
@@ -1415,23 +1262,24 @@ bool Variable::loadSettingsWindow()
 	nameCurrentWindow = getActiveWindowAppName();
 	if (nameCurrentWindow != namePreviousWindow) {
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+		SnippetEditor* snippetEditor = SnippetEditor::getInstance();
 
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
-		bool modeUseLeftRightDefault = listAppNotUseLeftRight.contains(nameCurrentWindow.toLower()) ? false : true;
 
 		QSettings settings(appName, "ConfigUi");
 		settings.beginGroup(nameCurrentWindow);
-		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
 		flagLangVietGlobal = settings.value("flagLangVietGlobal", FLAGLANGVIETGLOBAL).toBool();
+		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
+		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
+		nameSnippetString = settings.value("nameSnippetString", NAMESNIPPETSTRING).toString();
+		nameSnippetWords = settings.value("nameSnippetWords", NAMESNIPPETWORDS).toString();
 		modeUseDynamic = settings.value("modeUseDynamic", MODEUSEDYNAMIC).toBool();
 		modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 		modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
 		modeCheckCase = settings.value("modeCheckCase", MODECHECKCASE).toBool();
 		modeTeenCode = settings.value("modeTeenCode", MODETEENCODE).toBool();
-		modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
-		modeUseLeftRight = settings.value("modeUseLeftRight", modeUseLeftRightDefault).toBool();
-		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
+		modeUseLeftRight = settings.value("modeUseLeftRight", MODEUSELEFTRIGHT).toBool();
 		settings.endGroup();
 
 		if (mapCharacterSetBase.find(characterSet) == mapCharacterSetBase.end()) {
@@ -1441,6 +1289,7 @@ bool Variable::loadSettingsWindow()
 		if (!taskAIDatabase.listNameTaskAI.contains(nameTaskAI)) {
 			nameTaskAI = NAMETASKAI;
 		}
+		snippetEditor->loadSnippetForApp(nameSnippetString, nameSnippetWords);
 		if (namePreviousWindow != "") {
 			saveDataAutoChangeLang(namePreviousWindow);
 		}
@@ -1453,29 +1302,29 @@ bool Variable::loadSettingsWindow()
 	return false;
 }
 
-QString Variable::validateKeySequence(const QString& raw, int indexChar) {
-	QSet<QChar> seen;
-	QString result;
+void Variable::addKeyInputMethod(const QString& stringRaw, int indexChar, std::vector<std::wstring>& inputMethodBase)
+{
+	Variable& variable = Variable::getInstance();
+	QSet<QChar> stringSeen;
+	int start = (indexChar == 0) ? 1 : 0;
+	int end = (indexChar == 0) ? inputMethodBase.size() : 1;
 
-	QString upper = raw.toUpper();
-	const QString defaultKey = QString::fromStdWString(mapInputMethodBase[L"Tích hợp"][indexChar]);
-	upper = defaultKey + upper;
-
-	for (QChar ch : upper) {
-		ushort vk = ch.unicode();
-		if (
-			vk > 0x7F ||
-			seen.contains(ch) ||
-			!((vk >= 0x41 && vk <= 0x5A) ||
-				(vk >= 0x30 && vk <= 0x39) ||
-				(vk >= 0x60 && vk <= 0x6F) ||
-				(vk >= 0xBA && vk <= 0xDE))
-			)
-			continue;
-
-		seen.insert(ch);
-		result += ch;
+	for (int i = start; i < end; ++i) {
+		const QString inputString = QString::fromStdWString(inputMethodBase[i]);
+		for (QChar character : inputString)
+			stringSeen.insert(character);
 	}
 
-	return result.left(5);
+	const QString stringTemp = variable.mapInputMethodBase[L"Tích hợp"][indexChar] +  stringRaw.toUpper();
+	QString stringResult;
+	for (QChar character : stringTemp) {
+		if (dataValidateKeyToneDiac.contains(character) && !stringSeen.contains(character)) {
+			stringResult += std::wstring(1, character.unicode());
+			stringSeen.insert(character);
+		}
+	}
+	if (stringResult.size() >= 5) {
+		stringResult = stringResult.left(5);
+	}
+	inputMethodBase[indexChar] = stringResult.toStdWString();
 }

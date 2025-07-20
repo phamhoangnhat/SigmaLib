@@ -1,6 +1,5 @@
-﻿#include "RenameDialog.h"
-#include "TaskAIEditor.h"
-#include "TaskAIDatabase.h"
+﻿#include "RenameSnippetDialog.h"
+#include "SnippetEditor.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -8,11 +7,11 @@
 #include <QPushButton>
 #include <QPalette>
 
-RenameDialog::RenameDialog(QWidget* parent)
+RenameSnippetDialog::RenameSnippetDialog(QWidget* parent)
     : QDialog(parent)
 {
     setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
-    setWindowTitle("Đổi tên tác vụ AI");
+    setWindowTitle("Đổi tên danh sách gõ tắt");
     setWindowIcon(QIcon(":/icon.png"));
     setAttribute(Qt::WA_DeleteOnClose, false);
     setWindowOpacity(0.0);
@@ -104,24 +103,24 @@ RenameDialog::RenameDialog(QWidget* parent)
     mainLayout->addLayout(inputLayout);
     mainLayout->addLayout(btnLayout);
 
-    connect(okBtn, &QPushButton::clicked, this, &RenameDialog::onAcceptClicked);
-    connect(cancelBtn, &QPushButton::clicked, this, &RenameDialog::reject);
+    connect(okBtn, &QPushButton::clicked, this, &RenameSnippetDialog::onAcceptClicked);
+    connect(cancelBtn, &QPushButton::clicked, this, &RenameSnippetDialog::reject);
 
     resize(340, 110);
 }
 
-void RenameDialog::showWindow() {
+void RenameSnippetDialog::showWindow() {
     fadeIn();
     show();
     raise();
     activateWindow();
 }
 
-void RenameDialog::closeWindow() {
+void RenameSnippetDialog::closeWindow() {
     hideWindow();
 }
 
-void RenameDialog::hideWindow() {
+void RenameSnippetDialog::hideWindow() {
     if (popup) {
         popup->closeWindow();
         popup.clear();
@@ -140,11 +139,11 @@ void RenameDialog::hideWindow() {
     }
 }
 
-QString RenameDialog::getNewName() const {
+QString RenameSnippetDialog::getNewName() const {
     return lineEdit->text().trimmed();
 }
 
-void RenameDialog::setOldName(QString name) {
+void RenameSnippetDialog::setOldName(QString name) {
     if (popup) {
         popup->closeWindow();
         popup.clear();
@@ -153,16 +152,16 @@ void RenameDialog::setOldName(QString name) {
     lineEdit->setText(name);
 }
 
-void RenameDialog::showEvent(QShowEvent* event) {
+void RenameSnippetDialog::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
     fadeIn();
 }
 
-void RenameDialog::reject() {
+void RenameSnippetDialog::reject() {
     hideWindow();
 }
 
-void RenameDialog::fadeIn() {
+void RenameSnippetDialog::fadeIn() {
     QPropertyAnimation* anim = new QPropertyAnimation(this, "windowOpacity");
     anim->setDuration(1000);
     anim->setStartValue(0.0);
@@ -170,10 +169,11 @@ void RenameDialog::fadeIn() {
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void RenameDialog::onAcceptClicked() {
-    TaskAIEditor* taskAIEditor = TaskAIEditor::getInstance();
-    TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+void RenameSnippetDialog::onAcceptClicked() {
+    SnippetEditor* snippetEditor = SnippetEditor::getInstance();
     QString newName = getNewName();
+    QString newNameUpper = newName.toUpper();
+    QString oldNameUpper = oldName.toUpper();
 
     if (newName.isEmpty()) {
         if (!popup) {
@@ -184,11 +184,13 @@ void RenameDialog::onAcceptClicked() {
         return;
     }
 
-    if (!taskAIDatabase.isValidTaskName(newName, taskAIEditor->dataTaskAITemp, oldName)) {
+
+
+    if ((newNameUpper != oldNameUpper) && snippetEditor->listNameSnippetUpper.contains(newNameUpper)) {
         if (!popup) {
             popup = new CustomMessageBox("Lỗi", this);
         }
-        popup->setMessage("Tên tác vụ đã tồn tại hoặc không hợp lệ!");
+        popup->setMessage("Tên danh sách gõ tắt đã tồn tại hoặc không hợp lệ!");
         popup->showWindow();
         return;
     }

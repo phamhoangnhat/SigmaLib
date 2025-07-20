@@ -111,6 +111,10 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
             min-height: 25px;
         }
 
+        QLineEdit:hover {
+            border: 1px solid #FFFFFF;
+        }
+
         QLineEdit:focus {
             background-color: #E8E8E8;
             border: 1px solid #FFFFFF;
@@ -146,7 +150,7 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
     layout->setContentsMargins(16, 16, 16, 16);
 
     const std::vector<QString> labelListLeft = {
-       "Ngang", "Sắc", "Huyền", "Hỏi", "Ngã", "Nặng"
+       "Xóa xấu", "Sắc", "Huyền", "Hỏi", "Ngã", "Nặng"
     };
     const std::vector<QString> labelListRight = {
         "a → ă", "a → â", "e → ê", "o → ô", "o → ơ", "u → ư", "d → đ"
@@ -154,7 +158,7 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
 
     indexListChar = { 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14 };
     inputFields.resize(indexListChar.size());
-
+    
     for (int i = 0; i < labelListLeft.size(); ++i) {
         int globalIndex = i;
 
@@ -255,14 +259,16 @@ void CustomInputMethod::changeInput(int index) {
     int indexChar = indexListChar[index];
 
     QLineEdit* input = inputFields[index];
-    QString raw = input->text();
-    QString stringInput = variable.validateKeySequence(raw, indexChar);
-    input->setText(stringInput);
+    QString stringRaw = input->text();
 
+    variable.addKeyInputMethod(stringRaw, indexChar, inputMethodTemp);
+    QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);
+    input->setText(stringInput);
     flagUpdatingInput = false;
 }
 
 void CustomInputMethod::saveChanges() {
+    Variable& variable = Variable::getInstance();
     QStringList result;
     result.resize(15);
 
@@ -271,46 +277,36 @@ void CustomInputMethod::saveChanges() {
         result[indexListChar[i]] = text;
     }
 
-    Variable& variable = Variable::getInstance();
     QSettings settings(variable.appName, "InputMethodCustom");
     settings.setValue("data", result);
+    
+    variable.inputMethodBase = inputMethodTemp;
+    variable.update();
     hideWindow();
 }
 
-
-
 void CustomInputMethod::loadFromSettings() {
     Variable& variable = Variable::getInstance();
+	inputMethodTemp = variable.inputMethodBase;
+
     flagUpdatingInput = true;
-
-    QSettings settings(variable.appName, "InputMethodCustom");
-    QStringList stored = settings.value("data").toStringList();
-
     for (int index = 0; index < inputFields.size(); ++index) {
         int indexChar = indexListChar[index];
-        QString raw;
-        if (indexChar >= 0 && indexChar < stored.size()) {
-            raw = stored[indexChar];
-        }
-        else {
-            raw = "";
-        }
-        QString stringInput = variable.validateKeySequence(raw, indexChar);
+        QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);
         QLineEdit* input = inputFields[index];
         input->setText(stringInput);
     }
-
     flagUpdatingInput = false;
 }
 
 void CustomInputMethod::loadDefault() {
     Variable& variable = Variable::getInstance();
     flagUpdatingInput = true;
-    const auto& inputMethodDefault = variable.mapInputMethodBase[L"Tích hợp"];
+    inputMethodTemp = variable.mapInputMethodBase[L"Tích hợp"];
 
     for (int index = 0; index < inputFields.size(); ++index) {
         int indexChar = indexListChar[index];
-        QString stringInput = QString::fromStdWString(inputMethodDefault[indexChar]);
+        QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);
         QLineEdit* input = inputFields[index];
         input->setText(stringInput);
     }

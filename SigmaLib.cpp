@@ -15,6 +15,7 @@
 #include "Feedback.h"
 #include "SnippetEditor.h"
 #include "ShortcutKeyEditor.h"
+#include <KeyAPIManage.h>
 
 #include <QApplication>
 #include <QTimer>
@@ -97,6 +98,7 @@ void SigmaLib::stop() {
     TrayIcon::closeWindow();
     CustomInputMethod::closeWindow();
     TaskAIEditor::closeWindow();
+    KeyAPIManage::closeWindow();
     TaskAIResult::closeWindow();
     Feedback::closeWindow();
     SnippetEditor::closeWindow();

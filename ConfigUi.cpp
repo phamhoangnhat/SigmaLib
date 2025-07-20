@@ -5,6 +5,7 @@
 #include "TaskAIEditor.h"
 #include "TypeWord.h"
 #include "TaskAIDatabase.h"
+#include <SnippetEditor.h>
 #include "ShortcutKeyEditor.h"
 
 #include <QVBoxLayout>
@@ -44,8 +45,8 @@ ConfigUi::ConfigUi(QWidget* parent)
 	Variable& variable = Variable::getInstance();
 
 	setWindowTitle(variable.appNameFull);
-	setFixedSize(400, 350);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+	setFixedWidth(420);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 	setAttribute(Qt::WA_DeleteOnClose, false);
 	setFocusPolicy(Qt::StrongFocus);
 	setWindowIcon(QIcon(":/icon.png"));
@@ -218,6 +219,14 @@ ConfigUi::ConfigUi(QWidget* parent)
         QPushButton:pressed {
             background-color: #B0B0B0;
         }
+
+		QToolTip {
+			background-color: #D0D0D0;
+			color: #000000;
+			border: 1px solid #AAAAAA;
+			padding: 5px;
+			border-radius:10px;
+		}
 	)");
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
@@ -228,7 +237,7 @@ ConfigUi::ConfigUi(QWidget* parent)
 
 		QLabel* label = new QLabel(labelText, this);
 		label->setFixedHeight(25);
-		label->setFixedWidth(60);
+		label->setFixedWidth(85);
 		label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 		label->setStyleSheet("font-weight: bold; background: transparent;");
 
@@ -248,14 +257,30 @@ ConfigUi::ConfigUi(QWidget* parent)
 		layout->addLayout(row);
 		};
 
-	addComboBoxRow(m_comboCharacterSet, m_labelShortcutCharacterSet, "Bộ mã");
-	connect(m_comboCharacterSet, &QComboBox::currentTextChanged, this, [this](const QString& characterSet) {
+	addComboBoxRow(comboLangVietGlobal, labelShortcutLangVietGlobal, "Chế độ");
+	connect(comboLangVietGlobal, &QComboBox::currentTextChanged, this, [this](const QString& langVietGlobal) {
+		QString strFlagLangVietGlobal = (langVietGlobal == "Tiếng Việt") ? "true" : "false";
+		saveSettings(m_AppNameConfig, "flagLangVietGlobal", strFlagLangVietGlobal);
+		});
+
+	addComboBoxRow(comboCharacterSet, labelShortcutCharacterSet, "Bộ mã");
+	connect(comboCharacterSet, &QComboBox::currentTextChanged, this, [this](const QString& characterSet) {
 		saveSettings(m_AppNameConfig, "characterSet", characterSet);
 		});
 
-	addComboBoxRow(m_comboNameTaskAI, m_labelShortcutTaskAI, "Tác vụ AI");
-	connect(m_comboNameTaskAI, &QComboBox::currentTextChanged, this, [this](const QString& nameTaskAI) {
+	addComboBoxRow(comboNameTaskAI, labelShortcutTaskAI, "Tác vụ AI");
+	connect(comboNameTaskAI, &QComboBox::currentTextChanged, this, [this](const QString& nameTaskAI) {
 		saveSettings(m_AppNameConfig, "nameTaskAI", nameTaskAI);
+		});
+
+	addComboBoxRow(comboNameSnippetString, labelShortcutNameSnippetString, "Gõ tắt tức thì");
+	connect(comboNameSnippetString, &QComboBox::currentTextChanged, this, [this](const QString& nameSnippetString) {
+		saveSettings(m_AppNameConfig, "nameSnippetString", nameSnippetString);
+		});
+
+	addComboBoxRow(comboNameSnippetWords, labelShortcutNameSnippetWords, "Gõ tắt khi cách");
+	connect(comboNameSnippetWords, &QComboBox::currentTextChanged, this, [this](const QString& nameSnippetWords) {
+		saveSettings(m_AppNameConfig, "nameSnippetWords", nameSnippetWords);
 		});
 
 	QFrame* spacer = new QFrame();
@@ -277,13 +302,12 @@ ConfigUi::ConfigUi(QWidget* parent)
 		layout->addLayout(row);
 		};
 
-	addCheckboxRow(m_checkBoxModeUseDynamic, m_labelShortcutModeUseDynamic, "Sử dụng chế độ tiếng Việt chủ động");
-	addCheckboxRow(m_checkBoxModeClipboard, m_labelShortcutModeClipboard, "Sử dụng clipboard khi gửi phím");
-	addCheckboxRow(m_checkBoxModeFixAutoSuggest, m_labelShortcutModeFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ");
-	addCheckboxRow(m_checkBoxModeCheckCase, m_labelShortcutModeCheckCase, "Tự động viết hoa thông minh");
-	addCheckboxRow(m_checkBoxModeTeenCode, m_labelShortcutModeTeenCode, "Cho phép gõ ký tự Teencode");
-	addCheckboxRow(m_checkBoxModeInsertChar, m_labelShortcutModeInsertChar, "Cho phép chèn ký tự bị thiếu");
-	addCheckboxRow(m_checkBoxModeUseLeftRight, m_labelShortcutModeUseLeftRight, "Dùng phím ← → để điều hướng từng từ");
+	addCheckboxRow(checkBoxUseDynamic, labelShortcutUseDynamic, "Sử dụng chế độ tiếng Việt chủ động");
+	addCheckboxRow(checkBoxClipboard, labelShortcutClipboard, "Sử dụng clipboard khi gửi phím");
+	addCheckboxRow(checkBoxFixAutoSuggest, labelShortcutFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ");
+	addCheckboxRow(checkBoxCheckCase, labelShortcutCheckCase, "Tự động viết hoa thông minh");
+	addCheckboxRow(checkBoxTeenCode, labelShortcutTeenCode, "Cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
+	addCheckboxRow(checkBoxUseLeftRight, labelShortcutUseLeftRight, "Dùng phím ← → để điều hướng từng từ");
 
 	auto* separator = new QFrame(this);
 	separator->setFrameShape(QFrame::HLine);
@@ -305,25 +329,22 @@ ConfigUi::ConfigUi(QWidget* parent)
 	buttonLayout->addWidget(resetAllBtn);
 	layout->addLayout(buttonLayout);
 
-	connect(m_checkBoxModeUseDynamic, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxUseDynamic, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeUseDynamic", state == Qt::Checked ? "true" : "false");
 		});
-	connect(m_checkBoxModeClipboard, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxClipboard, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeClipboard", state == Qt::Checked ? "true" : "false");
 		});
-	connect(m_checkBoxModeFixAutoSuggest, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxFixAutoSuggest, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeFixAutoSuggest", state == Qt::Checked ? "true" : "false");
 		});
-	connect(m_checkBoxModeCheckCase, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxCheckCase, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeCheckCase", state == Qt::Checked ? "true" : "false");
 		});
-	connect(m_checkBoxModeTeenCode, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxTeenCode, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeTeenCode", state == Qt::Checked ? "true" : "false");
 		});
-	connect(m_checkBoxModeInsertChar, &QCheckBox::checkStateChanged, this, [this](int state) {
-		saveSettings(m_AppNameConfig, "modeInsertChar", state == Qt::Checked ? "true" : "false");
-		});
-	connect(m_checkBoxModeUseLeftRight, &QCheckBox::checkStateChanged, this, [this](int state) {
+	connect(checkBoxUseLeftRight, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeUseLeftRight", state == Qt::Checked ? "true" : "false");
 		});
 	connect(resetBtn, &QPushButton::clicked, this, &ConfigUi::onResetButtonClicked);
@@ -474,18 +495,19 @@ void ConfigUi::updateShortcutLabels() {
 			label->setText(shortcut);
 			label->show();
 		}
-		};
+	};
 
-	updateLabel(m_labelShortcutCharacterSet, "Chuyển đổi bộ mã");
-	updateLabel(m_labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
-	updateLabel(m_labelShortcutModeUseDynamic, "Bật / tắt sử dụng chế độ tiếng Việt chủ động");
-	updateLabel(m_labelShortcutModeClipboard, "Bật / tắt Sử dụng clipboard khi gửi phím");
-	updateLabel(m_labelShortcutModeFixAutoSuggest, "Bật / tắt tương thích với ứng dụng có gợi ý từ");
-	updateLabel(m_labelShortcutModeCheckCase, "Bật / tắt tự động viết hoa thông minh");
-	updateLabel(m_labelShortcutModeTeenCode, "Bật / tắt cho phép gõ ký tự Teencode");
-	updateLabel(m_labelShortcutModeInsertChar, "Bật / tắt cho phép chèn ký tự bị thiếu");
-	updateLabel(m_labelShortcutModeUseLeftRight, "Bật / tắt dùng phím ← → để điều hướng từng từ");
+	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
+	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
+	updateLabel(labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
+	updateLabel(labelShortcutUseDynamic, "Bật / tắt sử dụng chế độ tiếng Việt chủ động");
+	updateLabel(labelShortcutClipboard, "Bật / tắt sử dụng clipboard khi gửi phím");
+	updateLabel(labelShortcutFixAutoSuggest, "Bật / tắt tương thích với ứng dụng có gợi ý từ");
+	updateLabel(labelShortcutCheckCase, "Bật / tắt tự động viết hoa thông minh");
+	updateLabel(labelShortcutTeenCode, "Bật / tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
+	updateLabel(labelShortcutUseLeftRight, "Bật / tắt dùng phím ← → để điều hướng từng từ");
 }
+
 
 void ConfigUi::closeEvent(QCloseEvent* event) {
 	doHide();
@@ -509,39 +531,106 @@ void ConfigUi::saveSettings(QString appNameConfig, QString nameValue, QString va
 	settings.beginGroup(appNameConfig);
 	settings.setValue(nameValue, value);
 	settings.endGroup();
+
+	bool mode = (value == "true") ? true : false;
+	QCheckBox* checkBox = nullptr;
+	QString stringWarning = "";
+
+	if (nameValue == "modeUseDynamic") {
+		checkBox = checkBoxUseDynamic;
+		if (mode) {
+			stringWarning = "Luôn ở chế độ tiếng Anh, nhấn Ctrl + Shift trái để chuyển sang tiếng Việt.\nkhi thao tác chuột sẽ tự chuyển lại tiếng Anh.";
+		}
+	}
+
+	if (nameValue == "modeClipboard") {
+		checkBox = checkBoxClipboard;
+		if (variable.listAppUseClipboard.contains(m_AppNameConfig.toLower())) {
+			if (!mode) {
+				stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong một số trường hợp";
+			}
+		}
+		else {
+			if (mode) {
+				stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này.\nNó có thể gây trễ và giật chữ khi gõ.";
+			}
+		}
+	}
+
+	if (nameValue == "modeFixAutoSuggest") {
+		checkBox = checkBoxFixAutoSuggest;
+		if (variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower())) {
+			if (!mode) {
+				stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong một số trường hợp";
+			}
+		}
+		else {
+			if (mode) {
+				stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này.\nNó có thể gây trễ và giật chữ khi gõ.";
+			}
+		}
+	}
+
+	if (checkBox) {
+		updateCheckBoxStyle(checkBox, stringWarning);
+	}
 }
 
 void ConfigUi::loadSettings() {
 	Variable& variable = Variable::getInstance();
 	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+	SnippetEditor* snippetEditor = SnippetEditor::getInstance();
 
 	m_isLoading = true;
-	m_comboCharacterSet->clear();
+
+	comboLangVietGlobal->clear();
+	comboLangVietGlobal->addItem("Tiếng Anh");
+	comboLangVietGlobal->addItem("Tiếng Việt");
+
+	comboCharacterSet->clear();
 	for (const auto& pair : variable.mapCharacterSetBase) {
-		m_comboCharacterSet->addItem(QString::fromStdWString(pair.first));
+		comboCharacterSet->addItem(QString::fromStdWString(pair.first));
 	}
 
-	m_comboNameTaskAI->clear();
+	comboNameTaskAI->clear();
 	for (const QString& item : taskAIDatabase.listNameTaskAI) {
-		m_comboNameTaskAI->addItem(item);
+		comboNameTaskAI->addItem(item);
+	}
+
+	QStringList listNameSnippetTemp = QStringList(snippetEditor->listNameSnippet.begin(), snippetEditor->listNameSnippet.end());
+	std::sort(listNameSnippetTemp.begin(), listNameSnippetTemp.end(), [](const QString& a, const QString& b) {
+		return a.compare(b, Qt::CaseInsensitive) < 0;
+		});
+
+	comboNameSnippetString->clear();
+	comboNameSnippetString->addItem("Không sử dụng");
+	for (const QString& item : listNameSnippetTemp) {
+		comboNameSnippetString->addItem(item);
+	}
+
+	comboNameSnippetWords->clear();
+	comboNameSnippetWords->addItem("Không sử dụng");
+	for (const QString& item : listNameSnippetTemp) {
+		comboNameSnippetWords->addItem(item);
 	}
 	m_isLoading = false;
 
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
-	bool modeUseLeftRightDefault = variable.listAppNotUseLeftRight.contains(m_AppNameConfig.toLower()) ? false : true;
 
 	QSettings settings(variable.appName, "ConfigUi");
 	settings.beginGroup(m_AppNameConfig);
+	bool flagLangVietGlobal = settings.value("flagLangVietGlobal", variable.FLAGLANGVIETGLOBAL).toBool();
 	std::wstring characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString().toStdWString();
 	variable.nameTaskAI = settings.value("nameTaskAI", variable.NAMETASKAI).toString();
+	variable.nameSnippetString = settings.value("nameSnippetString", variable.NAMESNIPPETSTRING).toString();
+	variable.nameSnippetWords = settings.value("nameSnippetWords", variable.NAMESNIPPETWORDS).toString();
 	bool modeUseDynamic = settings.value("modeUseDynamic", variable.MODEUSEDYNAMIC).toBool();
 	bool modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 	bool modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
 	bool modeCheckCase = settings.value("modeCheckCase", variable.MODECHECKCASE).toBool();
 	bool modeTeenCode = settings.value("modeTeenCode", variable.MODETEENCODE).toBool();
-	bool modeInsertChar = settings.value("modeInsertChar", variable.MODEINSERTCHAR).toBool();
-	bool modeUseLeftRight = settings.value("modeUseLeftRight", modeUseLeftRightDefault).toBool();
+	bool modeUseLeftRight = settings.value("modeUseLeftRight", variable.MODEUSELEFTRIGHT).toBool();
 	settings.endGroup();
 
 	if (variable.mapCharacterSetBase.find(characterSet) == variable.mapCharacterSetBase.end()) {
@@ -550,21 +639,147 @@ void ConfigUi::loadSettings() {
 	if (!taskAIDatabase.listNameTaskAI.contains(variable.nameTaskAI)) {
 		variable.nameTaskAI = variable.NAMETASKAI;
 	}
+	if (!snippetEditor->listNameSnippet.contains(variable.nameSnippetString)) {
+		variable.nameSnippetString = variable.NAMESNIPPETSTRING;
+	}
+	if (!snippetEditor->listNameSnippet.contains(variable.nameSnippetWords)) {
+		variable.nameSnippetWords = variable.NAMESNIPPETWORDS;
+	}
 
 	QString charSetStr = QString::fromStdWString(characterSet);
 	QString nameTaskAIStr = variable.nameTaskAI;
+	QString nameSnippetStringStr = variable.nameSnippetString;
+	QString nameSnippetWordsStr = variable.nameSnippetWords;
 
-	int indexChar = m_comboCharacterSet->findText(charSetStr);
-	if (indexChar != -1) m_comboCharacterSet->setCurrentIndex(indexChar);
+	int indexLang = flagLangVietGlobal ? 1 : 0;
+	comboLangVietGlobal->setCurrentIndex(indexLang);
 
-	int indexTask = m_comboNameTaskAI->findText(nameTaskAIStr);
-	if (indexTask != -1) m_comboNameTaskAI->setCurrentIndex(indexTask);
+	int indexChar = comboCharacterSet->findText(charSetStr);
+	if (indexChar != -1) comboCharacterSet->setCurrentIndex(indexChar);
 
-	m_checkBoxModeClipboard->setChecked(modeClipboard);
-	m_checkBoxModeUseDynamic->setChecked(modeUseDynamic);
-	m_checkBoxModeFixAutoSuggest->setChecked(modeFixAutoSuggest);
-	m_checkBoxModeCheckCase->setChecked(modeCheckCase);
-	m_checkBoxModeTeenCode->setChecked(modeTeenCode);
-	m_checkBoxModeInsertChar->setChecked(modeInsertChar);
-	m_checkBoxModeUseLeftRight->setChecked(modeUseLeftRight);
+	int indexTask = comboNameTaskAI->findText(nameTaskAIStr);
+	if (indexTask != -1) comboNameTaskAI->setCurrentIndex(indexTask);
+
+	int indexSnippetString = comboNameSnippetString->findText(nameSnippetStringStr);
+	if (indexSnippetString != -1) comboNameSnippetString->setCurrentIndex(indexSnippetString);
+
+	int indexSnippetWords = comboNameSnippetWords->findText(nameSnippetWordsStr);
+	if (indexSnippetWords != -1) comboNameSnippetWords->setCurrentIndex(indexSnippetWords);
+
+	checkBoxUseDynamic->setChecked(modeUseDynamic);
+	checkBoxClipboard->setChecked(modeClipboard);
+	checkBoxFixAutoSuggest->setChecked(modeFixAutoSuggest);
+	checkBoxCheckCase->setChecked(modeCheckCase);
+	checkBoxTeenCode->setChecked(modeTeenCode);
+	checkBoxUseLeftRight->setChecked(modeUseLeftRight);
+
+	bool mode;
+	QCheckBox* checkBox;
+	QString stringWarning;
+
+
+	mode = modeUseDynamic;
+	checkBox = checkBoxUseDynamic;
+	stringWarning = "";
+	if (mode) {
+		stringWarning = "Luôn ở chế độ tiếng Anh, nhấn Ctrl + Shift trái để chuyển sang tiếng Việt.\nkhi thao tác chuột sẽ tự chuyển lại tiếng Anh.";
+	}
+	updateCheckBoxStyle(checkBox, stringWarning);
+
+	mode = modeClipboard;
+	checkBox = checkBoxClipboard;
+	stringWarning = "";
+	if (variable.listAppUseClipboard.contains(m_AppNameConfig.toLower())) {
+		if (!mode) {
+			stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong một số trường hợp";
+		}
+	}
+	else {
+		if (mode) {
+			stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này, có thể gây trễ và giật chữ khi gõ.";
+		}
+	}
+	updateCheckBoxStyle(checkBox, stringWarning);
+
+	mode = modeFixAutoSuggest;
+	checkBox = checkBoxFixAutoSuggest,
+	stringWarning = "";
+	if (variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower())) {
+		if (!mode) {
+			stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong một số trường hợp";
+		}
+	}
+	else {
+		if (mode) {
+			stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này, có thể gây trễ và giật chữ khi gõ.";
+		}
+	}
+	updateCheckBoxStyle(checkBox, stringWarning);
+}
+
+void ConfigUi::updateCheckBoxStyle(QCheckBox* checkBox, QString stringWarning)
+{
+	const char* CHECKBOX_WARNING_STYLE = R"(
+		QCheckBox {
+			color: #A63F0D;
+			font-weight: bold;
+			outline: none;
+		}
+
+		QCheckBox:hover {
+			color: #A63F0D;
+		}
+
+		QCheckBox::indicator {
+			width: 15px;
+			height: 15px;
+			border: 1px solid #A63F0D;
+			background: #DDDDDD;
+			border-radius: 5px;
+		}
+
+		QCheckBox::indicator:checked {
+			background-color: #A63F0D;
+		}
+
+		QCheckBox::indicator:hover {
+			border: 1px solid #FFFFFF;
+		}
+    )";
+
+	const char* CHECKBOX_DEFAULT_STYLE = R"(
+		QCheckBox {
+			color: #222222;
+			font-weight: bold;
+			outline: none;
+		}
+
+		QCheckBox:hover {
+			color: #111111;
+		}
+
+		QCheckBox::indicator {
+			width: 15px;
+			height: 15px;
+			border: 1px solid #AAAAAA;
+			background: #DDDDDD;
+			border-radius: 5px;
+		}
+
+		QCheckBox::indicator:checked {
+			background-color: #AAAAAA;
+		}
+
+		QCheckBox::indicator:hover {
+			border: 1px solid #FFFFFF;
+		}
+    )";
+
+	if (stringWarning.isEmpty()) {
+		checkBox->setStyleSheet(CHECKBOX_DEFAULT_STYLE);
+	}
+	else {
+		checkBox->setStyleSheet(CHECKBOX_WARNING_STYLE);
+	}
+	checkBox->setToolTip(stringWarning);
 }

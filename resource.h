@@ -20,7 +20,6 @@
 #define IDB_PNG13                       113
 #define IDB_PNG14                       114
 #define IDR_ACCELERATOR1                115
-#define IDB_BITMAP1                     116
 #define IDB_PNG15                       117
 
 // Next default values for new objects

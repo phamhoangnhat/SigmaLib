@@ -51,6 +51,7 @@ private:
     void onSaveButtonClicked();
     void onDefaultButtonClicked();
     void onCancelButtonClicked();
+    void onKeyAPIButtonClicked();
  
     QComboBox* taskCombo;
     QPushButton* addTaskBtn;
@@ -61,6 +62,7 @@ private:
     QPushButton* saveBtn;
     QPushButton* defaultBtn;
     QPushButton* cancelBtn;
+    QPushButton* keyAPIBtn;
 
     QPointer<CustomMessageBox> popup;
     QPointer<RenameDialog> renameDialog;

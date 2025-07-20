@@ -6,6 +6,8 @@
 #include "TaskAIResult.h"
 #include "CustomMessageBox.h"
 #include "TaskAIDatabase.h"
+#include "KeyAPIManage.h"
+#include "TypeWord.h"
 
 #include <QApplication>
 #include <QNetworkReply>
@@ -30,21 +32,16 @@ TaskAI& TaskAI::getInstance() {
 }
 
 TaskAI::TaskAI(QObject* parent) : QObject(parent) {
-	listKeyAPI = {
-		//"KEY API GEMINI 1",
-		//"KEY API GEMINI 2",
-		//"KEY API GEMINI 3",
-		//...
-	};
 }
 
 TaskAI::~TaskAI() {
 }
 
-void TaskAI::run(QString keyTaskAI) {
+void TaskAI::run(QString keyTaskAI, QString inputBase) {
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
 	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+	TypeWord& typeWord = TypeWord::getInstance();
 
 	if (popup) {
 		popup->hide();
@@ -60,28 +57,38 @@ void TaskAI::run(QString keyTaskAI) {
 	QString nameTaskAI = dataTemp.first;
 	QString promptTaskAI = dataTemp.second;
 	QString input;
+	QString stringTemp = inputBase.trimmed();
+	int numSpace = 0;
+	
+	if(!stringTemp.isEmpty()) {
+		input = stringTemp;
+		numSpace = inputBase.length() - stringTemp.length();
+	}
 
 	TaskAIResult* taskAIResult = TaskAIResult::getInstance();
 	QString windowTitle = getActiveWindowTitle();
 	if ((variable.nameCurrentWindow == "Sigma") && (windowTitle == "Xử lý tác vụ AI")) {
-		input = taskAIResult->taskAIResultEditor->textCursor().selectedText();
+		if (input.isEmpty()) {
+			input = taskAIResult->taskAIResultEditor->textCursor().selectedText();
+		}
 		flagInWindow = true;
 	}
 	else {
-		clipboard.flagUpdateBaseClipboard = false;
-		clipboard.flagBaseClipboard = false;
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		clipboard.simulateCopy();
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		input = QString::fromStdWString(clipboard.getClipboardText()).trimmed();
+		if (input.isEmpty()) {
+			variable.flagSendingKey = true;
+			clipboard.simulateCopy();
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			input = QString::fromStdWString(clipboard.getClipboardText()).trimmed();
+		}
 		flagInWindow = false;
 	}
 
 	QString prompt = promptTaskAI;
 	prompt.replace("{text}", input);
 
-	sendRequest(prompt);
+	sendRequest(prompt, inputBase.length(), numSpace);
 	showNotice(nameTaskAI);
+
 }
 
 void TaskAI::closeWindow() {
@@ -95,9 +102,11 @@ void TaskAI::closeWindow() {
 	}
 }
 
-void TaskAI::sendRequest(const QString& prompt) {
+void TaskAI::sendRequest(const QString& prompt, int numBack, int numSpace) {
+	KeyAPIManage* keyAPIManage = KeyAPIManage::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
+	QStringList listKeyAPI = keyAPIManage->listKeyAPI;
 
 	int randomIndex = QRandomGenerator::global()->bounded(listKeyAPI.size());
 	QString randomKey = listKeyAPI.at(randomIndex);
@@ -118,9 +127,11 @@ void TaskAI::sendRequest(const QString& prompt) {
 	QNetworkReply* reply = networkManager.post(request, data);
 
 	QObject::connect(reply, &QNetworkReply::finished, [=]() {
+		TypeWord& typeWord = TypeWord::getInstance();
+		Variable& variable = Variable::getInstance();
 		QApplication::instance()->removeEventFilter(this);
-
 		Clipboard& clipboard = Clipboard::getInstance();
+
 		if (interrupted) {
 			if (!popup) {
 				popup = new CustomMessageBox("Lỗi", nullptr);
@@ -130,10 +141,6 @@ void TaskAI::sendRequest(const QString& prompt) {
 
 			reply->abort();
 			reply->deleteLater();
-
-			flagIsSending = false;
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
-			clipboard.setBaseClipboard();
 			return;
 		}
 
@@ -165,7 +172,19 @@ void TaskAI::sendRequest(const QString& prompt) {
 						taskAIResult->setResultText(result);
 					}
 					else {
-						clipboard.sendUnicodeText(result.toStdWString());
+						variable.flagSendingKey = true;
+						if(numBack > 0) {
+							std::vector<INPUT> inputs;
+							for (int i = 0; i < numBack; i++) {
+								typeWord.addInput(VK_BACK, inputs);
+							}
+							SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
+							for (int i = 0; i < numSpace; i++) {
+								result = L" " + result;
+							}
+						}
+						clipboard.sendUnicodeText(result.toStdWString(), true);
+						std::this_thread::sleep_for(std::chrono::milliseconds(500));
 					}
 				}
 			}
@@ -178,9 +197,9 @@ void TaskAI::sendRequest(const QString& prompt) {
 			popup->showWindow();
 		}
 
-		flagIsSending = false;
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		clipboard.setBaseClipboard();
+		flagIsSending = false;
+		variable.flagSendingKey = false;
 		reply->deleteLater();
 		}
 	);

@@ -2,6 +2,7 @@
 #include "Variable.h"
 #include <Util.h>
 #include <ShortcutKeyEditor.h>
+#include <SigmaLib.h>
 
 #include <QPropertyAnimation>
 #include <QPushButton>
@@ -10,6 +11,8 @@
 #include <QSettings>
 #include <QLabel>
 #include <QComboBox>
+#include <QProcess>
+#include <QThread>
 
 QPointer<GeneralConfig> GeneralConfig::m_instance = nullptr;
 
@@ -34,12 +37,21 @@ void GeneralConfig::showWindow() {
 
 void GeneralConfig::hideWindow() {
 	if (m_instance && m_instance->isVisible()) {
+		if (m_instance->popup) {
+			m_instance->popup->closeWindow();
+			m_instance->popup.clear();
+		}
 		m_instance->fadeOut();
 	}
 }
 
 void GeneralConfig::closeWindow() {
 	if (m_instance) {
+		if (m_instance->popup) {
+			m_instance->popup->closeWindow();
+			m_instance->popup.clear();
+		}
+
 		QPropertyAnimation* anim = new QPropertyAnimation(m_instance, "windowOpacity");
 		anim->setDuration(300);
 		anim->setStartValue(m_instance->windowOpacity());
@@ -67,10 +79,12 @@ void GeneralConfig::reject() {
 GeneralConfig::GeneralConfig(QWidget* parent)
 	: QDialog(parent)
 {
+	Variable& variable = Variable::getInstance();
+
 	setWindowTitle("Cấu hình chung");
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 	setWindowIcon(QIcon(":/icon.png"));
-	resize(400, 260);
+	setFixedWidth(420);
 	setAttribute(Qt::WA_DeleteOnClose, false);
 	setWindowOpacity(0.0);
 
@@ -246,6 +260,14 @@ GeneralConfig::GeneralConfig(QWidget* parent)
         QFrame {
             background-color: #CCCCCC;
         }
+
+		QToolTip {
+			background-color: #D0D0D0;
+			color: #000000;
+			border: 1px solid #AAAAAA;
+			padding: 5px;
+			border-radius:10px;
+		}
 	)");
 
 	QPalette palette = this->palette();
@@ -299,19 +321,44 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 		};
 
 	addCheckboxRow(checkBoxAutoStart, labelShortcutAutoStart, "Khởi động cùng Windows");
+	if (variable.verSigmaExe > 0.0) {
+		addCheckboxRow(checkBoxAdmin, labelShortcutAdmin, "Chạy Sigma với quyền quản trị admin");
+	}
 	//addCheckboxRow(checkBoxAutoUpdate, labelShortcutAutoUpdate, "Tự động cập nhật khi khởi động");
-	addCheckboxRow(checkBoxUseSnippet, labelShortcutUseSnippet, "Cho phép gõ tắt");
+	addCheckboxRow(checkBoxRestore, labelShortcutRestore, "Khôi phục từ gốc khi gõ sai chính tả");
+	addCheckboxRow(checkBoxRemoveDiacTone, labelShortcutRemoveDiacTone, "Xóa toàn bộ dấu khi nhấn phím bỏ dấu");
 	addCheckboxRow(checkBoxLoopDiacTone, labelShortcutLoopDiacTone, "Cho phép bỏ dấu xoay vòng");
-	addCheckboxRow(checkBoxAutoAddVowel, labelShortcutAutoAddVowel, "Tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"");
-	addCheckboxRow(checkBoxShortcutLast, labelShortcutShortcutLast, "Cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"");
+	addCheckboxRow(checkBoxInsertChar, labelShortcutInsertChar, "Cho phép chèn ký tự bị thiếu");
 	addCheckboxRow(checkBoxAutoChangeLang, labelShortcutAutoChangeLang, "Tự động chuyển từ tiếng Anh đã ghi nhớ");
 
+	connect(checkBoxRemoveDiacTone, &QCheckBox::checkStateChanged, this, [this](int state) {
+		updateCheckBoxStyle("modeRemoveDiacTone", state == Qt::Checked);
+		});
+	connect(checkBoxLoopDiacTone, &QCheckBox::checkStateChanged, this, [this](int state){
+		updateCheckBoxStyle("modeLoopDiacTone", state == Qt::Checked);
+		});
+	connect(checkBoxInsertChar, &QCheckBox::checkStateChanged, this, [this](int state) {
+		updateCheckBoxStyle("modeInsertChar", state == Qt::Checked);
+		});
+	connect(checkBoxAutoChangeLang, &QCheckBox::checkStateChanged, this, [this](int state) {
+		updateCheckBoxStyle("modeAutoChangeLang", state == Qt::Checked);
+		});
+	
 	auto* separator = new QFrame(this);
 	separator->setFrameShape(QFrame::HLine);
 	separator->setFrameShadow(QFrame::Plain);
 	separator->setFixedHeight(1);
 	layout->addWidget(separator);
 	layout->addSpacing(5);
+
+	QLabel* noteLabel = new QLabel("Các tùy chọn màu đỏ mang đến trải nghiệm gõ mới. Người dùng mới\nnên cân nhắc trước khi dùng. Để dùng tốt nó, người dùng phải quen\nvới việc nhấn phím Ctrl bên trái bàn phím để chuyển từ đang gõ sang\ntiếng Anh.", this);
+	noteLabel->setStyleSheet(R"(
+		color: #666666;
+		font-style: italic;
+		background-color: rgba(220, 220, 220, 255);
+		text-align: center;
+	)");
+	layout->addWidget(noteLabel);
 
 	saveBtn = new QPushButton("Lưu", this);
 	defaultBtn = new QPushButton("Mặc định", this);
@@ -352,11 +399,14 @@ void GeneralConfig::loadWindow() {
 	if (indexInput != -1) comboInputMethod->setCurrentIndex(indexInput);
 
 	checkBoxAutoStart->setChecked(variable.modeAutoStart);
+	if (variable.verSigmaExe > 0.0) {
+		checkBoxAdmin->setChecked(variable.modeAdmin);
+	}
 	//checkBoxAutoUpdate->setChecked(variable.modeAutoUpdate);
-	checkBoxUseSnippet->setChecked(variable.modeUseSnippet);
+	checkBoxRestore->setChecked(variable.modeRestore);
+	checkBoxRemoveDiacTone->setChecked(variable.modeRemoveDiacTone);
 	checkBoxLoopDiacTone->setChecked(variable.modeLoopDiacTone);
-	checkBoxAutoAddVowel->setChecked(variable.modeAutoAddVowel);
-	checkBoxShortcutLast->setChecked(variable.modeShortcutLast);
+	checkBoxInsertChar->setChecked(variable.modeInsertChar);
 	checkBoxAutoChangeLang->setChecked(variable.modeAutoChangeLang);
 }
 
@@ -382,6 +432,7 @@ void GeneralConfig::fadeOut() {
 
 void GeneralConfig::updateShortcutLabels() {
 	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
+	Variable& variable = Variable::getInstance();
 
 	auto updateLabel = [&](QLabel* label, const QString& actionName) {
 		QString shortcut = shortcutKeyEditor->getShortcutKey(actionName);
@@ -396,10 +447,13 @@ void GeneralConfig::updateShortcutLabels() {
 
 	updateLabel(labelShortcutInputMethod, "Chuyển đổi kiểu gõ");
 	updateLabel(labelShortcutAutoStart, "Bật / tắt khởi động cùng Windows");
-	updateLabel(labelShortcutUseSnippet, "Bật / tắt cho phép gõ tắt");
+	if (variable.verSigmaExe > 0.0) {
+		updateLabel(labelShortcutAdmin, "");
+	}
+	updateLabel(labelShortcutRestore, "Bật / tắt khôi phục từ gốc khi gõ sai chính tả");
+	updateLabel(labelShortcutRemoveDiacTone, "Bật / tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu");
 	updateLabel(labelShortcutLoopDiacTone, "Bật / tắt cho phép bỏ dấu xoay vòng");
-	updateLabel(labelShortcutAutoAddVowel, "Bật / tắt tự động thêm dấu mũ các vần \"iê\" \"uê\" \"uô\" \"uyê\" \"yê\"");
-	updateLabel(labelShortcutShortcutLast, "Bật / tắt cho phép gõ tắt các âm cuối \"ch\" \"ng\" \"nh\"");
+	updateLabel(labelShortcutInsertChar, "Bật / tắt cho phép chèn ký tự bị thiếu");
 	updateLabel(labelShortcutAutoChangeLang, "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
 }
 
@@ -408,25 +462,39 @@ void GeneralConfig::onSaveButtonClicked() {
 
 	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeAutoStart = checkBoxAutoStart->isChecked();
+	if (variable.verSigmaExe > 0.0) {
+		variable.modeAdmin = checkBoxAdmin->isChecked();
+	}
+	else {
+		variable.modeAdmin = variable.MODEADMIN;
+	}
 	//variable.modeAutoUpdate = checkBoxAutoUpdate->isChecked();
-	variable.modeUseSnippet = checkBoxUseSnippet->isChecked();
+	variable.modeRestore = checkBoxRestore->isChecked();
+	variable.modeRemoveDiacTone = checkBoxRemoveDiacTone->isChecked();
+	variable.modeInsertChar = checkBoxInsertChar->isChecked();
 	variable.modeLoopDiacTone = checkBoxLoopDiacTone->isChecked();
-	variable.modeAutoAddVowel = checkBoxAutoAddVowel->isChecked();
-	variable.modeShortcutLast = checkBoxShortcutLast->isChecked();
 	variable.modeAutoChangeLang = checkBoxAutoChangeLang->isChecked();
 
 	QSettings settings(variable.appName, "Config");
 	settings.setValue("inputMethod", QString::fromStdWString(variable.inputMethod));
 	settings.setValue("modeAutoStart", variable.modeAutoStart);
-	setAutoStartApp(variable.modeAutoStart);
+	settings.setValue("modeAdmin", variable.modeAdmin);
+	createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
 	//settings.setValue("modeAutoUpdate", variable.modeAutoUpdate);
-	settings.setValue("modeUseSnippet", variable.modeUseSnippet);
+	settings.setValue("modeRestore", variable.modeRestore);
+	settings.setValue("modeRemoveDiacTone", variable.modeRemoveDiacTone);
 	settings.setValue("modeLoopDiacTone", variable.modeLoopDiacTone);
-	settings.setValue("modeAutoAddVowel", variable.modeAutoAddVowel);
-	settings.setValue("modeShortcutLast", variable.modeShortcutLast);
+	settings.setValue("modeInsertChar", variable.modeInsertChar);
 	settings.setValue("modeAutoChangeLang", variable.modeAutoChangeLang);
-
 	variable.update();
+
+	if (variable.modeAdmin && !isRunningAsAdmin()) {
+		if (!popup) {
+			popup = new CustomMessageBox("Thông báo", this);
+		}
+		popup->setMessage(QString("Bạn hãy tắt và khởi động lại Sigma để chạy ứng dụng với quyền admin."));
+		popup->showWindow();
+	}
 	hideWindow();
 }
 
@@ -438,14 +506,116 @@ void GeneralConfig::onDefaultButtonClicked()
 	if (indexInput != -1) comboInputMethod->setCurrentIndex(indexInput);
 
 	checkBoxAutoStart->setChecked(variable.MODEAUTOSTART);
+	if (variable.verSigmaExe > 0.0) {
+		checkBoxAdmin->setChecked(variable.MODEADMIN);
+	}
 	//checkBoxAutoUpdate->setChecked(variable.MODEAUTOUPDATE);
-	checkBoxUseSnippet->setChecked(variable.MODEUSESNIPPET);
+	checkBoxRestore->setChecked(variable.MODERESTORE);
+	checkBoxRemoveDiacTone->setChecked(variable.MODEREMOVEDIACTONE);
 	checkBoxLoopDiacTone->setChecked(variable.MODELOOPDIACTONE);
-	checkBoxAutoAddVowel->setChecked(variable.MODEAUTOADDVOWEL);
-	checkBoxShortcutLast->setChecked(variable.MODESHORTCUTLAST);
+	checkBoxInsertChar->setChecked(variable.MODEINSERTCHAR);
 	checkBoxAutoChangeLang->setChecked(variable.MODEAUTOCHANGELANG);
 }
 
 void GeneralConfig::onCancelButtonClicked() {
 	hideWindow();
+}
+
+void GeneralConfig::updateCheckBoxStyle(QString modeName, bool modeValue)
+{
+	const char* CHECKBOX_WARNING_STYLE = R"(
+		QCheckBox {
+			color: #A63F0D;
+			font-weight: bold;
+			outline: none;
+		}
+
+		QCheckBox:hover {
+			color: #A63F0D;
+		}
+
+		QCheckBox::indicator {
+			width: 15px;
+			height: 15px;
+			border: 1px solid #A63F0D;
+			background: #DDDDDD;
+			border-radius: 5px;
+		}
+
+		QCheckBox::indicator:checked {
+			background-color: #A63F0D;
+		}
+
+		QCheckBox::indicator:hover {
+			border: 1px solid #FFFFFF;
+		}
+    )";
+
+	const char* CHECKBOX_DEFAULT_STYLE = R"(
+		QCheckBox {
+			color: #222222;
+			font-weight: bold;
+			outline: none;
+		}
+
+		QCheckBox:hover {
+			color: #111111;
+		}
+
+		QCheckBox::indicator {
+			width: 15px;
+			height: 15px;
+			border: 1px solid #AAAAAA;
+			background: #DDDDDD;
+			border-radius: 5px;
+		}
+
+		QCheckBox::indicator:checked {
+			background-color: #AAAAAA;
+		}
+
+		QCheckBox::indicator:hover {
+			border: 1px solid #FFFFFF;
+		}
+    )";
+
+	QCheckBox* checkBox = nullptr;
+	QString stringWarning = "";
+
+	if (modeName == "modeRemoveDiacTone") {
+		checkBox = checkBoxRemoveDiacTone;
+		if (modeValue) {
+			stringWarning = "Phù hợp khi bạn muốn nhanh chóng chuyển từ có dấu sang không dấu hoàn toàn\nchỉ bằng một lần nhấn phím.";
+		}
+	}
+
+	if (modeName == "modeLoopDiacTone") {
+		checkBox = checkBoxLoopDiacTone;
+		if (modeValue) {
+			stringWarning = "Cho phép bạn gõ chuyển đổi nhiều dấu, bỏ dấu theo kiểu xoay vòng bằng cách\nnhấn phím dấu liên tục. Khi đang ở chế độ gõ tiếng Việt, nếu bạn gõ từ tiếng\nAnh, hãy nhấn phím Ctrl bên trái bàn phím để chuyển chế độ tiếng Anh cho từ\nđang gõ.";
+		}
+	}
+
+	if (modeName == "modeInsertChar") {
+		checkBox = checkBoxInsertChar;
+		if (modeValue) {
+			stringWarning = "Cho phép bạn chèn thêm ký tự vào đầu hoặc giữa từ đang gõ. Khi đang ở chế độ\ngõ tiếng Việt, nếu bạn gõ từ tiếng Anh, hệ thống có thể nhận nhầm thành từ tiếng\nViệt và không tự chuyển. Trong trường hợp đó, hãy nhấn phím Ctrl bên trái bàn\nphím để chuyển từ đang gõ sang tiếng Anh.";
+		}
+	}
+
+	if (modeName == "modeAutoChangeLang") {
+		checkBox = checkBoxAutoChangeLang;
+		if (modeValue) {
+			stringWarning = "Hệ thống có thể tự động chuyển từ không theo ý muốn của bạn.\nLúc đó, hãy nhấn phím Ctrl bên trái bàn phím để quay trở lại.";
+		}
+	}
+
+	if (stringWarning.isEmpty()) {
+		checkBox->setStyleSheet(CHECKBOX_DEFAULT_STYLE);
+	}
+	else {
+		checkBox->setStyleSheet(CHECKBOX_WARNING_STYLE);
+	}
+	checkBox->setToolTip(stringWarning);
+
 }

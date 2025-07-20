@@ -1,6 +1,8 @@
 #ifndef GENERALCONFIG_H
 #define GENERALCONFIG_H
 
+#include "CustomMessageBox.h"
+
 #include <QDialog>
 #include <QPointer>
 #include <QCloseEvent>
@@ -19,11 +21,12 @@ public:
 
     QComboBox* comboInputMethod = nullptr;
     QCheckBox* checkBoxAutoStart;
+    QCheckBox* checkBoxAdmin;
     //QCheckBox* checkBoxAutoUpdate;
-    QCheckBox* checkBoxUseSnippet;
+    QCheckBox* checkBoxRestore;
+    QCheckBox* checkBoxRemoveDiacTone;
     QCheckBox* checkBoxLoopDiacTone;
-    QCheckBox* checkBoxAutoAddVowel;
-    QCheckBox* checkBoxShortcutLast;
+    QCheckBox* checkBoxInsertChar;
     QCheckBox* checkBoxAutoChangeLang;
 
 protected:
@@ -42,18 +45,21 @@ private:
     void onDefaultButtonClicked();
     void onCancelButtonClicked();
     void updateShortcutLabels();
+    void updateCheckBoxStyle(QString modeName, bool modeValue);
 
     QPushButton* saveBtn;
     QPushButton* defaultBtn;
     QPushButton* cancelBtn;
     QLabel* labelShortcutInputMethod = nullptr;
     QLabel* labelShortcutAutoStart = nullptr;
-    QLabel* labelShortcutUseSnippet = nullptr;
+    QLabel* labelShortcutAdmin = nullptr;
+    QLabel* labelShortcutRestore = nullptr;
+    QLabel* labelShortcutRemoveDiacTone = nullptr;
     QLabel* labelShortcutLoopDiacTone = nullptr;
-    QLabel* labelShortcutAutoAddVowel = nullptr;
-    QLabel* labelShortcutShortcutLast = nullptr;
+    QLabel* labelShortcutInsertChar = nullptr;
     QLabel* labelShortcutAutoChangeLang = nullptr;
 
+    QPointer<CustomMessageBox> popup;
     static QPointer<GeneralConfig> m_instance;
 };
 
