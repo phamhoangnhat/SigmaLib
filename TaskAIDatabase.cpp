@@ -39,6 +39,15 @@ void TaskAIDatabase::loadDataTaskAI()
 
 	addDataTaskAIDefault(dataTaskAI);
 	listNameTaskAI = createListNameTaskAI(dataTaskAI);
+	dataCheckSpell = qMakePair(
+		"Kiểm tra chính tả",
+		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
+		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
+		"Tự động nhận diện ngôn ngữ của văn bản và sửa theo ngôn ngữ đó.\n"
+		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
+		"Các từ ngữ nước ngoài không cần dịch, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai.\n"
+		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
+	);
 }
 
 void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI)
@@ -66,17 +75,17 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
 		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
 		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
-		"Không viết lại toàn bộ câu trừ khi cần thiết.\n"
 		"Các từ nước ngoài thì không dịch sang tiếng Việt, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai."
+		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 
 	dataTaskAI.remove("02. KIỂM TRA CHÍNH TẢ TIẾNG ANH");
 	dataTaskAI["02. KIỂM TRA CHÍNH TẢ TIẾNG ANH"] = qMakePair(
 		"02. Kiểm tra chính tả tiếng Anh",
-		"Correct spelling and grammar in the following passage:\n{text}\n"
-		"Return only the corrected result, without any comments.\n"
-		"Preserve the original capitalization (uppercase, title case) of words unless clearly incorrect.\n"
-		"Do not reformat or paraphrase sentences unnecessarily."
+		"Correct spelling and grammar in the following English passage:\n{text}\n"
+		"Return only the corrected version, without any explanations or annotations.\n"
+		"Preserve the original capitalization (UPPERCASE or Title Case) unless clearly incorrect.\n"
+		"If there are no errors, return the original passage exactly as is."
 	);
 
 	dataTaskAI.remove("03. DỊCH SANG TIẾNG VIỆT");
@@ -104,6 +113,7 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
 		"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
 		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Không sửa lỗi chính tả hoặc ngữ pháp."
+		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 }
 

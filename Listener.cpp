@@ -127,7 +127,7 @@ bool Listener::addChar(int vkCode)
 			wchar_t keyChar = buffer[0];
 			typeWord.addChar(keyChar);
 		}
-
+		flagCheckSpell = true;
 		return true;
 	}
 	else
@@ -240,6 +240,32 @@ bool Listener::switchLang(int vkCode)
 	}
 }
 
+bool Listener::checkSpell(int vkCode)
+{
+	if ((vkCode == VK_RCONTROL)
+		&& ((std::chrono::steady_clock::now() - lastCallControl) < minIntervalSingle)
+		&& (keyNormalFull.size() == 0)
+		&& (keyModifierFull.size() == 1)
+		&& (keyMouseFull.size() == 0))
+	{;
+		TypeWord& typeWord = TypeWord::getInstance();
+		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+		TaskAI& taskAI = TaskAI::getInstance();
+
+		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
+		if (!flagCheckSpell || stringBase.isEmpty()) {
+			return false;
+		}
+
+		releaseKey(vkCode);
+		taskAI.run(taskAIDatabase.dataCheckSpell, stringBase, true);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 bool Listener::passSwitchWindow(int vkCode)
 {
 	if ((vkCode == VK_TAB)
@@ -319,18 +345,20 @@ bool Listener::checkFunction(int vkCode)
 
 		int index = vkCode - 0x70;
 		QString keyTaskAI;
+		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
+
 		if (index >= 0 && index < taskAIDatabase.dataTaskAI.size()) {
 			auto it = taskAIDatabase.dataTaskAI.constBegin();
 			std::advance(it, index);
 			keyTaskAI = it.key();
 		}
-		else {
+		
+		if (keyTaskAI.isEmpty()) {
 			numHotkey = -1;
 			return false;
 		}
-		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
-		taskAI.run(keyTaskAI, stringBase);
-		typeWord.reset(true);
+
+		taskAI.run(taskAIDatabase.dataTaskAI[keyTaskAI], stringBase, true);
 		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
@@ -346,7 +374,6 @@ bool Listener::checkFunction(int vkCode)
 	}
 
 	QString nameAction = shortcutKeyEditor->getAction(vkCode);
-
 
 	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
@@ -482,10 +509,14 @@ bool Listener::checkFunction(int vkCode)
 
 	if ((nameAction == "Thực hiện tác vụ AI mặc định") && (numHotkey == 0))
 	{
+		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 		QString keyTaskAI = variable.nameTaskAI.toUpper();
 		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
-		taskAI.run(keyTaskAI, stringBase);
-		typeWord.reset(true);
+		if (keyTaskAI.isEmpty()) {
+			numHotkey = -1;
+			return false;
+		}
+		taskAI.run(taskAIDatabase.dataTaskAI[keyTaskAI], stringBase, true);
 		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
@@ -727,7 +758,8 @@ void Listener::checkKeyMouse(WPARAM wParam)
 	{
 		TypeWord& typeWord = TypeWord::getInstance();
 		Variable& variable = Variable::getInstance();
-
+		
+		flagCheckSpell = false;
 		updateMousePress(wParam);
 		updateMouseRelease(wParam);
 
@@ -807,6 +839,7 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
+	TaskAI& taskAI = TaskAI::getInstance();
 
 	if ((nCode >= 0) && (!variable.flagSendingKey)) {
 		KBDLLHOOKSTRUCT* kbdStruct = (KBDLLHOOKSTRUCT*)lParam;
@@ -820,6 +853,9 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 		if (wParam == WM_KEYDOWN) {
 			variable.flagSendingKey = true;
 			variable.vkCodeCurrent = vkCode;
+			if (taskAI.flagIsSending) {
+				taskAI.interrupted = true;
+			}
 
 			listener.updateKeyPress(vkCode);
 			(
@@ -842,6 +878,7 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 				listener.checkHotkey(vkCode)
 				|| listener.switchLangGlobal(vkCode)
 				|| listener.switchLang(vkCode)
+				|| listener.checkSpell(vkCode)
 			);
 
 			listener.updateKeyRelease(vkCode);

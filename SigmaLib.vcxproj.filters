@@ -103,6 +103,9 @@
     <ClCompile Include="KeyAPIManage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MessageApiKeyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clipboard.h">
@@ -183,6 +186,9 @@
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="KeyAPIManage.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MessageApiKeyBox.h">
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
   </ItemGroup>

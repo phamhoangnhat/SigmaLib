@@ -82,7 +82,12 @@ void Variable::loadGeneralConfig()
 		inputMethod = INPUTMETHOD;
 	}
 	modeAutoStart = settings.value("modeAutoStart", MODEAUTOSTART).toBool();
-	modeAdmin = settings.value("modeAdmin", MODEADMIN).toBool();
+	if (isUserAdmin()) {
+		modeAdmin = settings.value("modeAdmin", MODEADMIN).toBool();
+	}
+	else {
+		modeAdmin = false;
+	}
 	createAdminTaskInScheduler(modeAutoStart, modeAdmin);
 	modeAutoUpdate = settings.value("modeAutoUpdate", MODEAUTOUPDATE).toBool();
 	modeRestore = settings.value("modeRestore", MODERESTORE).toBool();

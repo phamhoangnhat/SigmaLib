@@ -36,18 +36,20 @@ Clipboard::~Clipboard() {
 }
 
 wstring Clipboard::getClipboardText() {
-	if (!OpenClipboard(NULL)) return baseClipboard;
+	if (!OpenClipboard(NULL)) {
+		return L"";
+	}
 
 	HANDLE hData = GetClipboardData(CF_UNICODETEXT);
 	if (!hData) {
 		CloseClipboard();
-		return baseClipboard;
+		return L"";
 	}
 
 	wchar_t* clipboardText = static_cast<wchar_t*>(GlobalLock(hData));
 	if (!clipboardText) {
 		CloseClipboard();
-		return baseClipboard;
+		return L"";
 	}
 
 	wstring text(clipboardText);

@@ -400,7 +400,15 @@ void GeneralConfig::loadWindow() {
 
 	checkBoxAutoStart->setChecked(variable.modeAutoStart);
 	if (variable.verSigmaExe > 0.0) {
-		checkBoxAdmin->setChecked(variable.modeAdmin);
+		if (isUserAdmin()) {
+			checkBoxAdmin->setEnabled(true);
+			checkBoxAdmin->setChecked(variable.modeAdmin);
+		}
+		else {
+			variable.modeAdmin = false;
+			checkBoxAdmin->setEnabled(false);
+			checkBoxAdmin->setChecked(variable.modeAdmin);
+		}
 	}
 	//checkBoxAutoUpdate->setChecked(variable.modeAutoUpdate);
 	checkBoxRestore->setChecked(variable.modeRestore);
@@ -463,7 +471,12 @@ void GeneralConfig::onSaveButtonClicked() {
 	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeAutoStart = checkBoxAutoStart->isChecked();
 	if (variable.verSigmaExe > 0.0) {
-		variable.modeAdmin = checkBoxAdmin->isChecked();
+		if (isUserAdmin()) {
+			variable.modeAdmin = checkBoxAdmin->isChecked();
+		}
+		else {
+			variable.modeAdmin = false;
+		}
 	}
 	else {
 		variable.modeAdmin = variable.MODEADMIN;
@@ -507,7 +520,12 @@ void GeneralConfig::onDefaultButtonClicked()
 
 	checkBoxAutoStart->setChecked(variable.MODEAUTOSTART);
 	if (variable.verSigmaExe > 0.0) {
-		checkBoxAdmin->setChecked(variable.MODEADMIN);
+		if (isUserAdmin()) {
+			checkBoxAdmin->setChecked(variable.MODEADMIN);
+		}
+		else {
+			checkBoxAdmin->setEnabled(false);
+		}
 	}
 	//checkBoxAutoUpdate->setChecked(variable.MODEAUTOUPDATE);
 	checkBoxRestore->setChecked(variable.MODERESTORE);

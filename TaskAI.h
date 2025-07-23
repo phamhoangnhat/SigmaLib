@@ -2,6 +2,7 @@
 #define TASKAI_H
 
 #include "CustomMessageBox.h"
+#include "MessageApiKeyBox.h"
 #include <QString>
 #include <QStringList>
 #include <QObject>
@@ -14,7 +15,7 @@ class TaskAI : public QObject {
 
 public:
     static TaskAI& getInstance();
-    void run(QString keyTaskAI, QString inputBase);
+    void run(QPair<QString, QString> dataAI, QString inputBase, bool flagShowNotice = true);
     void closeWindow();
     bool flagOpenWindow = false;
     bool flagInWindow = false;
@@ -25,12 +26,13 @@ private:
     explicit TaskAI(QObject* parent = nullptr);
     ~TaskAI();
 
-    void sendRequest(const QString& prompt, int numBack, int numSpace);
+    void sendRequest(const QString& prompt, QString inputBase, int numSpace);
     void showNotice(QString& name);
     QString removeMarkdownFormatting(const QString& input);
 
     QNetworkAccessManager networkManager;
-    QPointer<CustomMessageBox> popup;
+    QPointer<CustomMessageBox> popup1;
+    QPointer<MessageApiKeyBox> popup2;
 };
 
 #endif // TASKAI_H

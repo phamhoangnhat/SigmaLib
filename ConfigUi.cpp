@@ -499,7 +499,6 @@ void ConfigUi::updateShortcutLabels() {
 
 	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
 	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
-	updateLabel(labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
 	updateLabel(labelShortcutUseDynamic, "Bật / tắt sử dụng chế độ tiếng Việt chủ động");
 	updateLabel(labelShortcutClipboard, "Bật / tắt sử dụng clipboard khi gửi phím");
 	updateLabel(labelShortcutFixAutoSuggest, "Bật / tắt tương thích với ứng dụng có gợi ý từ");

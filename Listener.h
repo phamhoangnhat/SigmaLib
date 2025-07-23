@@ -23,6 +23,7 @@ public:
     bool flagHoldKeyShift;
     bool flagHoldKeyMenu;
     bool flagRejectHook;
+    bool flagCheckSpell = false;
     int numHotkey = -1;
 
     POINT lastMousePoint;
@@ -40,6 +41,7 @@ public:
     bool moveRight(int vkCode);
     bool switchLangGlobal(int vkCode);
     bool switchLang(int vkCode);
+    bool checkSpell(int vkCode);
     bool passSwitchWindow(int vkCode);
     bool passResetBuffer(int vkCode);
     bool resetBuffer(int vkCode);

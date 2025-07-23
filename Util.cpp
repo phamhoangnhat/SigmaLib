@@ -9,6 +9,8 @@
 #include <map>
 #include <vector>
 #include <Psapi.h>
+#include <Lm.h>
+#include <Lmcons.h>
 #include <QStringList.h>
 #include <QRegularExpression.h>
 #include <QFileInfo.h>
@@ -16,6 +18,8 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QSettings>
+#pragma comment(lib, "Netapi32.lib")
+
 
 std::wstring toUpperCase(const std::wstring& s)
 {
@@ -179,34 +183,76 @@ bool setAutoStartApp(bool enable) {
 
 void createAdminTaskInScheduler(bool modeAutoStart, bool modeAdmin)
 {
-    setAutoStartApp(false);
     QString taskName = "SigmaRunAsAdmin";
 
     if (!modeAutoStart) {
+        setAutoStartApp(false);
         QStringList args = { "/Delete", "/F", "/TN", "\"" + taskName + "\"" };
         runTaskHidden("schtasks.exe", args);
+        return;
     }
-    else {
-        wchar_t exePath[MAX_PATH];
-        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-        QString exeStr = QString::fromWCharArray(exePath);
-        QStringList args;
 
-        if (modeAdmin) {
-            args << "/Create" << "/F" << "/RL" << "HIGHEST"
-                << "/SC" << "ONLOGON"
-                << "/TN" << "\"" + taskName + "\""
-                << "/TR" << "\"" + exeStr + "\"";
-        }
-        else {
-            args << "/Create" << "/F"
-                << "/SC" << "ONLOGON"
-                << "/TN" << "\"" + taskName + "\""
-                << "/TR" << "\"" + exeStr + "\"";
-        }
-
+    if (!modeAdmin || !isUserAdmin()) {
+        setAutoStartApp(true);
+        QStringList args = { "/Delete", "/F", "/TN", "\"" + taskName + "\"" };
         runTaskHidden("schtasks.exe", args);
+        return;
     }
+
+    setAutoStartApp(false);
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+    QString exeStr = QString::fromWCharArray(exePath);
+    QStringList args;
+
+    args << "/Create" << "/F"
+        << "/SC" << "ONLOGON"
+        << "/TN" << "\"" + taskName + "\""
+        << "/TR" << "\"" + exeStr + "\""
+        << "/RL" << "HIGHEST";
+
+    runTaskHidden("schtasks.exe", args);
+}
+
+
+bool isUserAdmin()
+{
+    wchar_t username[UNLEN + 1];
+    DWORD usernameLen = UNLEN + 1;
+
+    if (!GetUserNameW(username, &usernameLen)) {
+        return false;
+    }
+
+    LPLOCALGROUP_USERS_INFO_0 pBuf = NULL;
+    DWORD entriesRead = 0;
+    DWORD totalEntries = 0;
+
+    NET_API_STATUS nStatus = NetUserGetLocalGroups(
+        NULL, 
+        username,
+        0,
+        0,
+        (LPBYTE*)&pBuf,
+        MAX_PREFERRED_LENGTH,
+        &entriesRead,
+        &totalEntries
+    );
+
+    if (nStatus != NERR_Success || pBuf == NULL) {
+        return false;
+    }
+
+    bool isAdmin = false;
+    for (DWORD i = 0; i < entriesRead; ++i) {
+        if (_wcsicmp(pBuf[i].lgrui0_name, L"Administrators") == 0) {
+            isAdmin = true;
+            break;
+        }
+    }
+
+    NetApiBufferFree(pBuf);
+    return isAdmin;
 }
 
 bool runTaskHidden(const QString& exe, const QStringList& arguments) {

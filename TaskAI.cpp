@@ -5,7 +5,7 @@
 #include "TaskAIEditor.h"
 #include "TaskAIResult.h"
 #include "CustomMessageBox.h"
-#include "TaskAIDatabase.h"
+#include "MessageApiKeyBox.h"
 #include "KeyAPIManage.h"
 #include "TypeWord.h"
 
@@ -37,25 +37,22 @@ TaskAI::TaskAI(QObject* parent) : QObject(parent) {
 TaskAI::~TaskAI() {
 }
 
-void TaskAI::run(QString keyTaskAI, QString inputBase) {
+void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagShowNotice) {
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
-	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
 
-	if (popup) {
-		popup->hide();
+	if (popup1) {
+		popup1->hide();
+	}
+	if (popup2) {
+		popup2->hide();
 	}
 	interrupted = false;
-
-	if (!taskAIDatabase.dataTaskAI.contains(keyTaskAI) || flagIsSending) {
-		return;
-	}
 	flagIsSending = true;
 
-	QPair<QString, QString> dataTemp = taskAIDatabase.dataTaskAI[keyTaskAI];
-	QString nameTaskAI = dataTemp.first;
-	QString promptTaskAI = dataTemp.second;
+	QString nameTaskAI = dataAI.first;
+	QString promptTaskAI = dataAI.second;
 	QString input;
 	QString stringTemp = inputBase.trimmed();
 	int numSpace = 0;
@@ -83,26 +80,41 @@ void TaskAI::run(QString keyTaskAI, QString inputBase) {
 		flagInWindow = false;
 	}
 
+	if (input.isEmpty()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		clipboard.setBaseClipboard();
+		flagOpenWindow = false;
+		flagIsSending = false;
+		variable.flagSendingKey = false;
+		typeWord.reset(true);
+		return;
+	}
+
 	QString prompt = promptTaskAI;
 	prompt.replace("{text}", input);
 
-	sendRequest(prompt, inputBase.length(), numSpace);
-	showNotice(nameTaskAI);
-
+	sendRequest(prompt, inputBase, numSpace);
+	if (flagShowNotice) {
+		showNotice(nameTaskAI);
+	}
 }
 
 void TaskAI::closeWindow() {
 	if (instance) {
-		if (popup) {
-			popup->closeWindow();
-			popup.clear();
+		if (popup1) {
+			popup1->closeWindow();
+			popup1.clear();
+		}
+		if (popup2) {
+			popup2->closeWindow();
+			popup2.clear();
 		}
 		delete instance;
 		instance = nullptr;
 	}
 }
 
-void TaskAI::sendRequest(const QString& prompt, int numBack, int numSpace) {
+void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace) {
 	KeyAPIManage* keyAPIManage = KeyAPIManage::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
@@ -133,11 +145,18 @@ void TaskAI::sendRequest(const QString& prompt, int numBack, int numSpace) {
 		Clipboard& clipboard = Clipboard::getInstance();
 
 		if (interrupted) {
-			if (!popup) {
-				popup = new CustomMessageBox("Lỗi", nullptr);
+			if (!popup1) {
+				popup1 = new CustomMessageBox("Lỗi", nullptr);
 			}
-			popup->setMessage("Bạn đã hủy tác vụ!");
-			popup->showWindow();
+			popup1->setMessage("Bạn đã hủy tác vụ!");
+			popup1->showWindow();
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			clipboard.setBaseClipboard();
+			flagOpenWindow = false;
+			flagIsSending = false;
+			variable.flagSendingKey = false;
+			typeWord.reset(true);
 
 			reply->abort();
 			reply->deleteLater();
@@ -173,33 +192,58 @@ void TaskAI::sendRequest(const QString& prompt, int numBack, int numSpace) {
 					}
 					else {
 						variable.flagSendingKey = true;
-						if(numBack > 0) {
-							std::vector<INPUT> inputs;
-							for (int i = 0; i < numBack; i++) {
-								typeWord.addInput(VK_BACK, inputs);
-							}
-							SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
+
+						if(!inputBase.isEmpty()) {
 							for (int i = 0; i < numSpace; i++) {
 								result = L" " + result;
 							}
+
+							int numBack = inputBase.length();
+							int numMin = std::min(inputBase.length(), result.length());
+							int samePrefixLen = 0;
+							for (int i = 0; i < inputBase.length(); ++i) {
+								if ((i < numMin) && inputBase[i] == result[i]) {
+									numBack--;
+									samePrefixLen++;
+								}
+								else {
+									break;
+								}
+							}
+
+							if (samePrefixLen > 0) {
+								result = result.mid(samePrefixLen);
+							}
+
+							if (numBack > 0) {
+								std::vector<INPUT> inputs;
+								for (int i = 0; i < numBack; i++) {
+									typeWord.addInput(VK_BACK, inputs);
+								}
+								SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
+
+								int timeDelay = std::clamp(numBack * 10, 50, 300);
+								std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
+							}
 						}
 						clipboard.sendUnicodeText(result.toStdWString(), true);
-						std::this_thread::sleep_for(std::chrono::milliseconds(500));
 					}
 				}
 			}
 		}
 		else {
-			if (!popup) {
-				popup = new CustomMessageBox("Lỗi", nullptr);
+			if (!popup2) {
+				popup2 = new MessageApiKeyBox(nullptr);
 			}
-			popup->setMessage("Kết nối tới máy chủ thất bại.\nHãy kiểm tra Internet và thử lại.");
-			popup->showWindow();
+			popup2->showWindow();
 		}
 
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
+		flagOpenWindow = false;
 		flagIsSending = false;
 		variable.flagSendingKey = false;
+		typeWord.reset(true);
 		reply->deleteLater();
 		}
 	);

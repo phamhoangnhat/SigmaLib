@@ -15,6 +15,7 @@ public:
     QMap<QString, QPair<QString, QString>> dataTaskAI;
     QStringList listNameTaskAI;
     QSet<QString> listNameDefaultTaskAI;
+    QPair<QString, QString> dataCheckSpell;
 
     void loadDataTaskAI();
     void addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI);
