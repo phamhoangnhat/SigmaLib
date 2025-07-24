@@ -92,12 +92,14 @@ private:
     void onTableChanged(QTableWidgetItem* item);
     void onsaveButtonClicked();
     void onCancelButtonClicked();
+	void onCreateKeyButtonClicked();
     void fadeIn();
     void fadeOut();
 
     bool isLoading = false;
 
     QTableWidget* table;
+	QPushButton* createKeyBtn;
     QPushButton* saveBtn;
     QPushButton* cancelBtn;
     static QPointer<KeyAPIManage> m_instance;

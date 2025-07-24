@@ -462,6 +462,9 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 	bool valueMode;
 
 	if (nameMode == "modeAutoStart") {
+		if(!isLoggingByAdmin()){
+			variable.modeAdmin = false;
+		}
 		variable.modeAutoStart = !variable.modeAutoStart;
 		createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
 	}

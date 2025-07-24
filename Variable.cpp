@@ -82,7 +82,7 @@ void Variable::loadGeneralConfig()
 		inputMethod = INPUTMETHOD;
 	}
 	modeAutoStart = settings.value("modeAutoStart", MODEAUTOSTART).toBool();
-	if (isUserAdmin()) {
+	if (isLoggingByAdmin()) {
 		modeAdmin = settings.value("modeAdmin", MODEADMIN).toBool();
 	}
 	else {

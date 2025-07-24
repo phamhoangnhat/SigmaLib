@@ -400,7 +400,7 @@ void GeneralConfig::loadWindow() {
 
 	checkBoxAutoStart->setChecked(variable.modeAutoStart);
 	if (variable.verSigmaExe > 0.0) {
-		if (isUserAdmin()) {
+		if (isLoggingByAdmin()) {
 			checkBoxAdmin->setEnabled(true);
 			checkBoxAdmin->setChecked(variable.modeAdmin);
 		}
@@ -471,7 +471,7 @@ void GeneralConfig::onSaveButtonClicked() {
 	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeAutoStart = checkBoxAutoStart->isChecked();
 	if (variable.verSigmaExe > 0.0) {
-		if (isUserAdmin()) {
+		if (isLoggingByAdmin()) {
 			variable.modeAdmin = checkBoxAdmin->isChecked();
 		}
 		else {
@@ -520,7 +520,7 @@ void GeneralConfig::onDefaultButtonClicked()
 
 	checkBoxAutoStart->setChecked(variable.MODEAUTOSTART);
 	if (variable.verSigmaExe > 0.0) {
-		if (isUserAdmin()) {
+		if (isLoggingByAdmin()) {
 			checkBoxAdmin->setChecked(variable.MODEADMIN);
 		}
 		else {

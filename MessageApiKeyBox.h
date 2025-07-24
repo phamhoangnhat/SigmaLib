@@ -26,12 +26,10 @@ private:
     void fadeOutAndHide();
     void onCloseButton();
     void onAddKeyButton();
-    void onCreateKeyButton();
 
     QLabel* label;
     QPushButton* closeButton;
     QPushButton* addKeyButton;
-    QPushButton* createKeyButton;
     QWidget* referenceWidget = nullptr;
 
     bool m_forceClose = false;

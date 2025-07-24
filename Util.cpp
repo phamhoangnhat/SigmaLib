@@ -192,7 +192,7 @@ void createAdminTaskInScheduler(bool modeAutoStart, bool modeAdmin)
         return;
     }
 
-    if (!modeAdmin || !isUserAdmin()) {
+    if (!modeAdmin || !isLoggingByAdmin()) {
         setAutoStartApp(true);
         QStringList args = { "/Delete", "/F", "/TN", "\"" + taskName + "\"" };
         runTaskHidden("schtasks.exe", args);
@@ -215,7 +215,7 @@ void createAdminTaskInScheduler(bool modeAutoStart, bool modeAdmin)
 }
 
 
-bool isUserAdmin()
+bool isLoggingByAdmin()
 {
     wchar_t username[UNLEN + 1];
     DWORD usernameLen = UNLEN + 1;

@@ -14,6 +14,7 @@
 #include <QTextStream>
 #include <QChar>
 #include <QVBoxLayout>
+#include <QDesktopServices>
 
 QPointer<KeyAPIManage> KeyAPIManage::m_instance = nullptr;
 
@@ -87,12 +88,14 @@ KeyAPIManage::KeyAPIManage(QWidget* parent)
 	table->verticalHeader()->setDefaultSectionSize(20);
 	table->horizontalHeader()->setHighlightSections(false);
 
+	createKeyBtn = new QPushButton("Tạo khóa");
 	saveBtn = new QPushButton("Lưu và đóng");
 	cancelBtn = new QPushButton("Hủy");
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	QHBoxLayout* bottomLayout = new QHBoxLayout();
+	bottomLayout->addWidget(createKeyBtn);
 	bottomLayout->addWidget(saveBtn);
 	bottomLayout->addWidget(cancelBtn);
 
@@ -177,6 +180,7 @@ KeyAPIManage::KeyAPIManage(QWidget* parent)
     )");
 
 	connect(table, &QTableWidget::itemChanged, this, &KeyAPIManage::onTableChanged);
+	connect(createKeyBtn, &QPushButton::clicked, this, &KeyAPIManage::onCreateKeyButtonClicked);
 	connect(saveBtn, &QPushButton::clicked, this, &KeyAPIManage::onsaveButtonClicked);
 	connect(cancelBtn, &QPushButton::clicked, this, &KeyAPIManage::onCancelButtonClicked);
 
@@ -298,6 +302,11 @@ void KeyAPIManage::onsaveButtonClicked()
 
 void KeyAPIManage::onCancelButtonClicked() {
 	hideWindow();
+}
+
+void KeyAPIManage::onCreateKeyButtonClicked()
+{
+	QDesktopServices::openUrl(QUrl("https://aistudio.google.com/app/apikey"));
 }
 
 KeyAPIManage::~KeyAPIManage() {}

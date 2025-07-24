@@ -30,7 +30,7 @@ QString toTitleWord(const QString& word);
 QString getActiveWindowAppName();
 bool setAutoStartApp(bool enable);
 void createAdminTaskInScheduler(bool modeAutoStart, bool modeAdmin);
-bool isUserAdmin();
+bool isLoggingByAdmin();
 bool runTaskHidden(const QString& exe, const QStringList& arguments);
 bool isRunningAsAdmin();
 QString getActiveWindowTitle();

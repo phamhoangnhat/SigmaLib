@@ -34,15 +34,12 @@ MessageApiKeyBox::MessageApiKeyBox(QWidget* reference)
 
     closeButton = new QPushButton("Đóng", this);
     addKeyButton = new QPushButton("Thêm khóa", this);
-    createKeyButton = new QPushButton("Tạo khóa", this);
 
     closeButton->setFixedHeight(32);
     addKeyButton->setFixedHeight(32);
-    createKeyButton->setFixedHeight(32);
 
     connect(closeButton, &QPushButton::clicked, this, &MessageApiKeyBox::onCloseButton);
     connect(addKeyButton, &QPushButton::clicked, this, &MessageApiKeyBox::onAddKeyButton);
-    connect(createKeyButton, &QPushButton::clicked, this, &MessageApiKeyBox::onCreateKeyButton);
 
     layout->addStretch();
     layout->addWidget(label);
@@ -50,9 +47,8 @@ MessageApiKeyBox::MessageApiKeyBox(QWidget* reference)
 
     auto* buttonLayout = new QHBoxLayout;
     buttonLayout->setSpacing(10);
-    buttonLayout->addWidget(createKeyButton);
-    buttonLayout->addWidget(addKeyButton);
     buttonLayout->addWidget(closeButton);
+    buttonLayout->addWidget(addKeyButton);
     layout->addLayout(buttonLayout);
 
     setStyleSheet(R"(
@@ -179,12 +175,8 @@ void MessageApiKeyBox::onCloseButton()
 
 void MessageApiKeyBox::onAddKeyButton()
 {
+    fadeOutAndHide();
     KeyAPIManage::showWindow();
-}
-
-void MessageApiKeyBox::onCreateKeyButton()
-{
-    QDesktopServices::openUrl(QUrl("https://aistudio.google.com/app/apikey"));
 }
 
 void MessageApiKeyBox::paintEvent(QPaintEvent* event)
