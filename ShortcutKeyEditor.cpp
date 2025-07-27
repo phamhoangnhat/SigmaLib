@@ -117,18 +117,18 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Gọi bảng hướng dẫn sử dụng",
         "Đóng ứng dụng Sigma",
         "Thực hiện tác vụ AI mặc định",
-        "Bật / tắt sử dụng chế độ tiếng Việt chủ động",
-        "Bật / tắt sử dụng clipboard khi gửi phím",
-        "Bật / tắt tương thích với ứng dụng có gợi ý từ",
-        "Bật / tắt tự động viết hoa thông minh",
-        "Bật / tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"",
-        "Bật / tắt dùng phím ← → để điều hướng từng từ",
-        "Bật / tắt khởi động cùng Windows",
-        "Bật / tắt khôi phục từ gốc khi gõ sai chính tả",
-        "Bật / tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu",
-        "Bật / tắt cho phép bỏ dấu xoay vòng",
-        "Bật / tắt cho phép chèn ký tự bị thiếu",
-        "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
+        "Bật | tắt sử dụng chế độ tiếng Việt chủ động",
+        "Bật | tắt sử dụng clipboard khi gửi phím",
+        "Bật | tắt tương thích với ứng dụng có gợi ý từ",
+        "Bật | tắt tự động viết hoa thông minh",
+        "Bật | tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"",
+        "Bật | tắt dùng phím ← → để điều hướng từng từ",
+        "Bật | tắt khởi động cùng Windows",
+        "Bật | tắt khôi phục từ gốc khi gõ sai chính tả",
+        "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu",
+        "Bật | tắt cho phép bỏ dấu xoay vòng",
+        "Bật | tắt cho phép chèn ký tự bị thiếu",
+        "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
     };
 
     dataShortcutKeyDefault = {
@@ -341,10 +341,11 @@ void ShortcutKeyEditor::changeShortcutKey(int index) {
 }
 
 void ShortcutKeyEditor::saveChanges() {
+    Variable& variable = Variable::getInstance();
     dataShortcutKeyReverse.clear();
     dataShortcutKey = dataShortcutKeyCurrent;
 
-    QSettings settings("SigmaApp", "ShortcutKeys");
+    QSettings settings(variable.appName, "ShortcutKeys");
     for (int i = 0; i < listShortcutKey.size(); ++i) {
         const QString& key = listShortcutKey[i];
         QString shortcutKey = dataShortcutKey.value(key, QString());
@@ -361,8 +362,9 @@ void ShortcutKeyEditor::saveChanges() {
 }
 
 void ShortcutKeyEditor::loadFromSettings() {
+    Variable& variable = Variable::getInstance();
     flagUpdating = true;
-    QSettings settings("SigmaApp", "ShortcutKeys");
+    QSettings settings(variable.appName, "ShortcutKeys");
 
     dataShortcutKey.clear();
     dataShortcutKeyReverse.clear();

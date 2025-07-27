@@ -17,7 +17,7 @@ public:
     void setClipboardText(const std::wstring& text);
     void getBaseClipboard();
     void setBaseClipboard();
-    void sendUnicodeText(const std::wstring& text, bool flagWait = false);
+    void sendUnicodeText(const std::wstring& text, int timeDelay = 0);
     void simulateCopy();
     void start();
     void stop();

@@ -23,7 +23,6 @@ void TypeWord::switchLangGlobal()
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	ConfigUi& configUi = ConfigUi::getInstance();
-	listener.flagRejectHook = true;
 
 	if (listWord.empty()) {
 		listWord.push_back(Word());
@@ -53,7 +52,6 @@ void TypeWord::switchLang()
 {
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
-	listener.flagRejectHook = true;
 
 	if (listWord.empty()) {
 		listWord.push_back(Word());
@@ -79,7 +77,6 @@ void TypeWord::addChar(wchar_t character)
 {
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
-
 	if (listWord.empty()) {
 		listWord.push_back(Word());
 		posWord = 0;
@@ -525,7 +522,7 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 
 	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 	inputs.clear();
-	clipboard.sendUnicodeText(stringAdd, false);
+	clipboard.sendUnicodeText(stringAdd, 20);
 
 	if (stringSnippet != L"") {
 		reset();

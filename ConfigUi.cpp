@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <psapi.h>
 
-
 ConfigUi& ConfigUi::getInstance() {
 	static ConfigUi instance;
 	return instance;
@@ -499,12 +498,12 @@ void ConfigUi::updateShortcutLabels() {
 
 	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
 	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
-	updateLabel(labelShortcutUseDynamic, "Bật / tắt sử dụng chế độ tiếng Việt chủ động");
-	updateLabel(labelShortcutClipboard, "Bật / tắt sử dụng clipboard khi gửi phím");
-	updateLabel(labelShortcutFixAutoSuggest, "Bật / tắt tương thích với ứng dụng có gợi ý từ");
-	updateLabel(labelShortcutCheckCase, "Bật / tắt tự động viết hoa thông minh");
-	updateLabel(labelShortcutTeenCode, "Bật / tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
-	updateLabel(labelShortcutUseLeftRight, "Bật / tắt dùng phím ← → để điều hướng từng từ");
+	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ động");
+	updateLabel(labelShortcutClipboard, "Bật | tắt sử dụng clipboard khi gửi phím");
+	updateLabel(labelShortcutFixAutoSuggest, "Bật | tắt tương thích với ứng dụng có gợi ý từ");
+	updateLabel(labelShortcutCheckCase, "Bật | tắt tự động viết hoa thông minh");
+	updateLabel(labelShortcutTeenCode, "Bật | tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
+	updateLabel(labelShortcutUseLeftRight, "Bật | tắt dùng phím ← → để điều hướng từng từ");
 }
 
 

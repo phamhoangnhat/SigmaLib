@@ -649,6 +649,10 @@ bool Word::checkPosTone() {
 }
 
 void Word::removeChar() {
+	Variable& variable = Variable::getInstance();
+	TypeWord& typeWord = TypeWord::getInstance();
+
+
 	if (flagAddCharSpace) {
 		removeCharSpace();
 	}
@@ -683,6 +687,7 @@ void Word::removeChar() {
 			}
 		}
 	}
+
 
 	checkCharGI();
 	updateListCharDisplay();

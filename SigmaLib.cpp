@@ -16,6 +16,8 @@
 #include "SnippetEditor.h"
 #include "ShortcutKeyEditor.h"
 #include <KeyAPIManage.h>
+#include <CharsetRegistryWatcher.h>
+#include <LangRegistryWatcher.h>
 
 #include <QApplication>
 #include <QTimer>
@@ -86,6 +88,8 @@ void SigmaLib::run()
     TrayIcon::showWindow();
     Clipboard::getInstance().start();
     Listener::getInstance().start();
+    CharsetRegistryWatcher::getInstance().startWatching();
+    LangRegistryWatcher::getInstance().startWatching();
 }
 
 void SigmaLib::stop() {

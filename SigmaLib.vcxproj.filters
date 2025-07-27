@@ -106,6 +106,12 @@
     <ClCompile Include="MessageApiKeyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CharsetRegistryWatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LangRegistryWatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clipboard.h">
@@ -189,6 +195,12 @@
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MessageApiKeyBox.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CharsetRegistryWatcher.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="LangRegistryWatcher.h">
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
   </ItemGroup>

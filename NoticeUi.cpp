@@ -110,16 +110,21 @@ void NoticeUi::doClose() {
 
 void NoticeUi::moveToActiveWindow() {
 	HWND hwndFocused = GetForegroundWindow();
+	if (!hwndFocused) {
+		moveToCenterScreen();
+		return;
+	}
+
 	HWND hwndTop = GetAncestor(hwndFocused, GA_ROOT);
 
 	if (!hwndTop) {
-		move(100, 100);
+		moveToCenterScreen();
 		return;
 	}
 
 	RECT rect;
 	if (!GetWindowRect(hwndTop, &rect)) {
-		move(100, 100);
+		moveToCenterScreen();
 		return;
 	}
 
@@ -127,7 +132,7 @@ void NoticeUi::moveToActiveWindow() {
 	MONITORINFO monitorInfo = {};
 	monitorInfo.cbSize = sizeof(MONITORINFO);
 	if (!GetMonitorInfo(hMonitor, &monitorInfo)) {
-		move(100, 100);
+		moveToCenterScreen();
 		return;
 	}
 
@@ -138,7 +143,7 @@ void NoticeUi::moveToActiveWindow() {
 	visibleRect.bottom = valueMin(rect.bottom, monitorInfo.rcMonitor.bottom);
 
 	if (visibleRect.left >= visibleRect.right || visibleRect.top >= visibleRect.bottom) {
-		move(100, 100);
+		moveToCenterScreen();
 		return;
 	}
 
@@ -158,7 +163,7 @@ void NoticeUi::moveToActiveWindow() {
 	}
 
 	if (!screen) {
-		move(100, 100);
+		moveToCenterScreen();
 		return;
 	}
 
@@ -186,6 +191,16 @@ void NoticeUi::moveToActiveWindow() {
 	x = std::clamp(x, screenGeom.left(), screenGeom.right() - winW);
 	y = std::clamp(y, screenGeom.top(), screenGeom.bottom() - winH);
 
+	move(x, y);
+}
+
+void NoticeUi::moveToCenterScreen() {
+	QScreen* screen = QGuiApplication::primaryScreen();
+	if (!screen) return;
+
+	QRect screenGeom = screen->geometry();
+	int x = screenGeom.left() + (screenGeom.width() - width()) / 2;
+	int y = screenGeom.top() + (screenGeom.height() - height()) / 2;
 	move(x, y);
 }
 

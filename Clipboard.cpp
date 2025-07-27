@@ -116,14 +116,14 @@ void Clipboard::setBaseClipboard()
 	}
 }
 
-void Clipboard::sendUnicodeText(const wstring& text, bool flagWait) {
+void Clipboard::sendUnicodeText(const wstring& text, int timeDelay) {
 	Listener& listener = Listener::getInstance();
 
 	//qDebug() << "sendUnicodeText Start";
 	if (text.size() != 0) {
 		setClipboardText(text);
-		if (flagWait) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		if (timeDelay != 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
 		}
 		bool flagShiftLeftPress = ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0);
 		bool flagShiftRightPress = ((GetAsyncKeyState(VK_RSHIFT) & 0x8000) != 0);

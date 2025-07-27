@@ -96,7 +96,9 @@ void Variable::loadGeneralConfig()
 	modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
 	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
 
-	listAppUseClipboard = { "acad" };
+	listAppUseClipboard = {
+		//"acad" 
+	};
 
 	listAppFixAutoSuggest = {
 		//Trình duyệt web
@@ -1303,6 +1305,9 @@ bool Variable::loadSettingsWindow()
 		update();
 		namePreviousWindow = nameCurrentWindow;
 		return true;
+	}
+	if ((nameCurrentWindow == "acad") && (getActiveWindowTitle() == "Enhanced Attribute Editor")) {
+		modeClipboard = true;
 	}
 	return false;
 }

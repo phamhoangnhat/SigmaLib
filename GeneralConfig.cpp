@@ -454,15 +454,15 @@ void GeneralConfig::updateShortcutLabels() {
 		};
 
 	updateLabel(labelShortcutInputMethod, "Chuyển đổi kiểu gõ");
-	updateLabel(labelShortcutAutoStart, "Bật / tắt khởi động cùng Windows");
+	updateLabel(labelShortcutAutoStart, "Bật | tắt khởi động cùng Windows");
 	if (variable.verSigmaExe > 0.0) {
 		updateLabel(labelShortcutAdmin, "");
 	}
-	updateLabel(labelShortcutRestore, "Bật / tắt khôi phục từ gốc khi gõ sai chính tả");
-	updateLabel(labelShortcutRemoveDiacTone, "Bật / tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu");
-	updateLabel(labelShortcutLoopDiacTone, "Bật / tắt cho phép bỏ dấu xoay vòng");
-	updateLabel(labelShortcutInsertChar, "Bật / tắt cho phép chèn ký tự bị thiếu");
-	updateLabel(labelShortcutAutoChangeLang, "Bật / tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
+	updateLabel(labelShortcutRestore, "Bật | tắt khôi phục từ gốc khi gõ sai chính tả");
+	updateLabel(labelShortcutRemoveDiacTone, "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu");
+	updateLabel(labelShortcutLoopDiacTone, "Bật | tắt cho phép bỏ dấu xoay vòng");
+	updateLabel(labelShortcutInsertChar, "Bật | tắt cho phép chèn ký tự bị thiếu");
+	updateLabel(labelShortcutAutoChangeLang, "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
 }
 
 void GeneralConfig::onSaveButtonClicked() {

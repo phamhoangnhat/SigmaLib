@@ -104,8 +104,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CharsetRegistryWatcher.cpp" />
     <ClCompile Include="GeneralConfig.cpp" />
     <ClCompile Include="KeyAPIManage.cpp" />
+    <ClCompile Include="LangRegistryWatcher.cpp" />
     <ClCompile Include="MessageApiKeyBox.cpp" />
     <ClCompile Include="RenameSnippetDialog.cpp" />
     <ClCompile Include="ShortcutKeyEditor.cpp" />
@@ -125,6 +127,8 @@
     <QtMoc Include="RenameSnippetDialog.h" />
     <QtMoc Include="KeyAPIManage.h" />
     <QtMoc Include="MessageApiKeyBox.h" />
+    <QtMoc Include="CharsetRegistryWatcher.h" />
+    <QtMoc Include="LangRegistryWatcher.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="ShortcutKeyEditor.h" />
     <ClInclude Include="SigmaLib.h" />

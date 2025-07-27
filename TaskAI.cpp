@@ -180,6 +180,19 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 			}
 			result = removeMarkdownFormatting(result);
 
+			if (!result.isEmpty()) {
+				int numCharMax = 1;
+				std::wstring stringTemp = result.toStdWString();
+				if (variable.characterSet == L"VNI Windows") {
+					stringTemp = convertCharset(stringTemp, variable.mapUniToVni, numCharMax);
+					result = QString::fromStdWString(stringTemp);
+				}
+				if (variable.characterSet == L"TCVN3 (ABC)") {
+					stringTemp = convertCharset(stringTemp, variable.mapUniToAbc, numCharMax);
+					result = QString::fromStdWString(stringTemp);
+				}
+			}
+
 			if (!interrupted) {
 				TaskAIResult* taskAIResult = TaskAIResult::getInstance();
 				if (flagInWindow) {
@@ -222,11 +235,11 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 								}
 								SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 
-								int timeDelay = std::clamp(numBack * 10, 50, 300);
+								int timeDelay = std::clamp(numBack * 10, 100, 1000);
 								std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
 							}
 						}
-						clipboard.sendUnicodeText(result.toStdWString(), true);
+						clipboard.sendUnicodeText(result.toStdWString(), 100);
 					}
 				}
 			}

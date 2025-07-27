@@ -1,0 +1,85 @@
+#include "CharsetRegistryWatcher.h"
+#include "Variable.h"
+#include <QSettings>
+#include <QDebug>
+#include <windows.h>
+
+CharsetRegistryWatcher::CharsetRegistryWatcher() {}
+CharsetRegistryWatcher::~CharsetRegistryWatcher() {
+    stopWatching();
+    wait();
+}
+
+CharsetRegistryWatcher& CharsetRegistryWatcher::getInstance() {
+    static CharsetRegistryWatcher instance;
+    return instance;
+}
+
+void CharsetRegistryWatcher::startWatching() {
+    if (isRunning()) return;
+
+    exitThread = false;
+    resetRegistryValue();
+    start();
+}
+
+void CharsetRegistryWatcher::stopWatching() {
+    exitThread = true;
+}
+
+bool CharsetRegistryWatcher::isWatching() const {
+    return isRunning();
+}
+
+void CharsetRegistryWatcher::resetRegistryValue() {
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoCharset", QSettings::NativeFormat);
+    QString current = settings.value("Value", "").toString();
+    if (!current.isEmpty()) {
+        flagInternalChange = true;
+        settings.setValue("Value", "");
+    }
+    else {
+        flagInternalChange = false;
+    }
+}
+
+void CharsetRegistryWatcher::run() {
+    HKEY hKey;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Sigma\\AutoCharset", 0, KEY_NOTIFY, &hKey) != ERROR_SUCCESS) {
+        return;
+    }
+
+    while (!exitThread) {
+        if (RegNotifyChangeKeyValue(hKey, FALSE, REG_NOTIFY_CHANGE_LAST_SET, NULL, FALSE) == ERROR_SUCCESS) {
+            handleRegistryChange();
+        }
+        QThread::msleep(10);
+    }
+
+    RegCloseKey(hKey);
+}
+
+void CharsetRegistryWatcher::handleRegistryChange() {
+    if (flagInternalChange) {
+        flagInternalChange = false;
+        return;
+    }
+
+    Variable& variable = Variable::getInstance();
+    QString characterSet;
+
+    QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoCharset", QSettings::NativeFormat);
+    QString value = settings.value("Value", "").toString().trimmed();
+
+    if (value == "Unicode" || value == "VNI Windows" || value == "TCVN3 (ABC)") {
+        characterSet = value;
+    }
+    else {
+        QSettings settings(variable.appName, "ConfigUi");
+        settings.beginGroup(variable.nameCurrentWindow);
+        characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString();
+    }
+    variable.characterSet = characterSet.toStdWString();
+    variable.update();
+    resetRegistryValue();
+}

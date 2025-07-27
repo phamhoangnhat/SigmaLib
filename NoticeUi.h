@@ -45,6 +45,7 @@ private:
     void doHide();
     void doClose();
     void moveToActiveWindow();
+    void moveToCenterScreen();
 
     void startFadeEffect();
 
