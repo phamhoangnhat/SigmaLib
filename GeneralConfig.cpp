@@ -326,22 +326,22 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 	}
 	//addCheckboxRow(checkBoxAutoUpdate, labelShortcutAutoUpdate, "Tự động cập nhật khi khởi động");
 	addCheckboxRow(checkBoxRestore, labelShortcutRestore, "Khôi phục từ gốc khi gõ sai chính tả");
+	addCheckboxRow(checkBoxAutoChangeLang, labelShortcutAutoChangeLang, "Tự động chuyển từ tiếng Anh đã ghi nhớ");
 	addCheckboxRow(checkBoxRemoveDiacTone, labelShortcutRemoveDiacTone, "Xóa toàn bộ dấu khi nhấn phím bỏ dấu");
 	addCheckboxRow(checkBoxLoopDiacTone, labelShortcutLoopDiacTone, "Cho phép bỏ dấu xoay vòng");
 	addCheckboxRow(checkBoxInsertChar, labelShortcutInsertChar, "Cho phép chèn ký tự bị thiếu");
-	addCheckboxRow(checkBoxAutoChangeLang, labelShortcutAutoChangeLang, "Tự động chuyển từ tiếng Anh đã ghi nhớ");
 
 	connect(checkBoxRemoveDiacTone, &QCheckBox::checkStateChanged, this, [this](int state) {
 		updateCheckBoxStyle("modeRemoveDiacTone", state == Qt::Checked);
+		updateNoteLabelVisibility();
 		});
 	connect(checkBoxLoopDiacTone, &QCheckBox::checkStateChanged, this, [this](int state){
 		updateCheckBoxStyle("modeLoopDiacTone", state == Qt::Checked);
+		updateNoteLabelVisibility();
 		});
 	connect(checkBoxInsertChar, &QCheckBox::checkStateChanged, this, [this](int state) {
 		updateCheckBoxStyle("modeInsertChar", state == Qt::Checked);
-		});
-	connect(checkBoxAutoChangeLang, &QCheckBox::checkStateChanged, this, [this](int state) {
-		updateCheckBoxStyle("modeAutoChangeLang", state == Qt::Checked);
+		updateNoteLabelVisibility();
 		});
 	
 	auto* separator = new QFrame(this);
@@ -351,9 +351,12 @@ GeneralConfig::GeneralConfig(QWidget* parent)
 	layout->addWidget(separator);
 	layout->addSpacing(5);
 
-	QLabel* noteLabel = new QLabel("Các tùy chọn màu đỏ mang đến trải nghiệm gõ mới. Người dùng mới\nnên cân nhắc trước khi dùng. Để dùng tốt nó, người dùng phải quen\nvới việc nhấn phím Ctrl bên trái bàn phím để chuyển từ đang gõ sang\ntiếng Anh.", this);
+	noteLabel = new QLabel("Các tùy chọn màu đỏ mang đến trải nghiệm gõ mới. Người dùng mới\nnên cân nhắc trước khi dùng. Để dùng tốt nó, người dùng phải quen\nvới việc nhấn phím Ctrl bên trái bàn phím để chuyển từ đang gõ sang\ntiếng Anh | Việt.", this);
+	noteLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+	noteLabel->setWordWrap(true);
+	noteLabel->setVisible(false);
 	noteLabel->setStyleSheet(R"(
-		color: #666666;
+		color: #A63F0D;
 		font-style: italic;
 		background-color: rgba(220, 220, 220, 255);
 		text-align: center;
@@ -412,10 +415,10 @@ void GeneralConfig::loadWindow() {
 	}
 	//checkBoxAutoUpdate->setChecked(variable.modeAutoUpdate);
 	checkBoxRestore->setChecked(variable.modeRestore);
+	checkBoxAutoChangeLang->setChecked(variable.modeAutoChangeLang);
 	checkBoxRemoveDiacTone->setChecked(variable.modeRemoveDiacTone);
 	checkBoxLoopDiacTone->setChecked(variable.modeLoopDiacTone);
 	checkBoxInsertChar->setChecked(variable.modeInsertChar);
-	checkBoxAutoChangeLang->setChecked(variable.modeAutoChangeLang);
 }
 
 void GeneralConfig::fadeIn() {
@@ -459,10 +462,10 @@ void GeneralConfig::updateShortcutLabels() {
 		updateLabel(labelShortcutAdmin, "");
 	}
 	updateLabel(labelShortcutRestore, "Bật | tắt khôi phục từ gốc khi gõ sai chính tả");
+	updateLabel(labelShortcutAutoChangeLang, "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
 	updateLabel(labelShortcutRemoveDiacTone, "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu");
 	updateLabel(labelShortcutLoopDiacTone, "Bật | tắt cho phép bỏ dấu xoay vòng");
 	updateLabel(labelShortcutInsertChar, "Bật | tắt cho phép chèn ký tự bị thiếu");
-	updateLabel(labelShortcutAutoChangeLang, "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ");
 }
 
 void GeneralConfig::onSaveButtonClicked() {
@@ -483,10 +486,10 @@ void GeneralConfig::onSaveButtonClicked() {
 	}
 	//variable.modeAutoUpdate = checkBoxAutoUpdate->isChecked();
 	variable.modeRestore = checkBoxRestore->isChecked();
+	variable.modeAutoChangeLang = checkBoxAutoChangeLang->isChecked();
 	variable.modeRemoveDiacTone = checkBoxRemoveDiacTone->isChecked();
 	variable.modeInsertChar = checkBoxInsertChar->isChecked();
 	variable.modeLoopDiacTone = checkBoxLoopDiacTone->isChecked();
-	variable.modeAutoChangeLang = checkBoxAutoChangeLang->isChecked();
 
 	QSettings settings(variable.appName, "Config");
 	settings.setValue("inputMethod", QString::fromStdWString(variable.inputMethod));
@@ -495,10 +498,10 @@ void GeneralConfig::onSaveButtonClicked() {
 	createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
 	//settings.setValue("modeAutoUpdate", variable.modeAutoUpdate);
 	settings.setValue("modeRestore", variable.modeRestore);
+	settings.setValue("modeAutoChangeLang", variable.modeAutoChangeLang);
 	settings.setValue("modeRemoveDiacTone", variable.modeRemoveDiacTone);
 	settings.setValue("modeLoopDiacTone", variable.modeLoopDiacTone);
 	settings.setValue("modeInsertChar", variable.modeInsertChar);
-	settings.setValue("modeAutoChangeLang", variable.modeAutoChangeLang);
 	variable.update();
 
 	if (variable.modeAdmin && !isRunningAsAdmin()) {
@@ -529,10 +532,10 @@ void GeneralConfig::onDefaultButtonClicked()
 	}
 	//checkBoxAutoUpdate->setChecked(variable.MODEAUTOUPDATE);
 	checkBoxRestore->setChecked(variable.MODERESTORE);
+	checkBoxAutoChangeLang->setChecked(variable.MODEAUTOCHANGELANG);
 	checkBoxRemoveDiacTone->setChecked(variable.MODEREMOVEDIACTONE);
 	checkBoxLoopDiacTone->setChecked(variable.MODELOOPDIACTONE);
 	checkBoxInsertChar->setChecked(variable.MODEINSERTCHAR);
-	checkBoxAutoChangeLang->setChecked(variable.MODEAUTOCHANGELANG);
 }
 
 void GeneralConfig::onCancelButtonClicked() {
@@ -621,13 +624,6 @@ void GeneralConfig::updateCheckBoxStyle(QString modeName, bool modeValue)
 		}
 	}
 
-	if (modeName == "modeAutoChangeLang") {
-		checkBox = checkBoxAutoChangeLang;
-		if (modeValue) {
-			stringWarning = "Hệ thống có thể tự động chuyển từ không theo ý muốn của bạn.\nLúc đó, hãy nhấn phím Ctrl bên trái bàn phím để quay trở lại.";
-		}
-	}
-
 	if (stringWarning.isEmpty()) {
 		checkBox->setStyleSheet(CHECKBOX_DEFAULT_STYLE);
 	}
@@ -636,4 +632,13 @@ void GeneralConfig::updateCheckBoxStyle(QString modeName, bool modeValue)
 	}
 	checkBox->setToolTip(stringWarning);
 
+}
+
+void GeneralConfig::updateNoteLabelVisibility() {
+	bool showNote = checkBoxRemoveDiacTone->isChecked()
+		|| checkBoxLoopDiacTone->isChecked()
+		|| checkBoxInsertChar->isChecked();
+
+	noteLabel->setVisible(showNote);
+	this->adjustSize();
 }

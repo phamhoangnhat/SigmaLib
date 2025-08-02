@@ -331,8 +331,6 @@
 						phím tắt; từ đang gõ sẽ tự động chuyển theo chế độ mới — không cần xóa và gõ lại.</li>
 					<li>Cho phép chuyển đổi tạm thời giữa tiếng Anh và tiếng Việt ngay tại từ đang gõ, giúp hạn chế lỗi
 						khi gõ văn bản tiếng Việt có xen lẫn một vài từ tiếng Anh.</li>
-					<li>Cơ chế bỏ dấu xoay vòng thông minh cho phép thêm, xóa hoặc thay đổi dấu dễ dàng chỉ với một phím
-						duy nhất.</li>
 					<li>Cho phép sử dụng đồng thời nhiều kiểu gõ như Telex, VNI và tùy biến, phù hợp với máy tính dùng
 						chung giữa nhiều người có thói quen khác nhau.</li>
 					<li>Chế độ khôi phục từ tiếng Anh thông minh khi người dùng không chủ đích gõ tiếng Việt, giảm lỗi
@@ -671,6 +669,11 @@
 							<td></td>
 						</tr>
 						<tr>
+							<td>Tự động chuyển từ tiếng Anh đã ghi nhớ</td>
+							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
+							<td></td>
+						</tr>
+						<tr>
 							<td style="color: rgba(240, 162, 132, 0.9);">Xóa toàn bộ dấu khi nhấn phím bỏ dấu</td>
 							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
 							<td></td>
@@ -682,11 +685,6 @@
 						</tr>
 						<tr>
 							<td style="color: rgba(240, 162, 132, 0.9);">Cho phép chèn ký tự bị thiếu</td>
-							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td style="color: rgba(240, 162, 132, 0.9);">Tự động chuyển từ tiếng Anh đã ghi nhớ</td>
 							<td><code>Bật</code> <code class="default-value">Tắt</code></td>
 							<td></td>
 						</tr>
@@ -956,6 +954,44 @@
 
 				<p> <em>Gợi ý:</em> Bạn nên gán phím tắt cho tùy chọn này để bật/tắt nhanh chóng khi cần.</p>
 
+				<h4>Tự động chuyển từ tiếng Anh đã ghi nhớ</h4>
+
+				<p>
+					Khi bật tùy chọn này, Sigma sẽ ghi nhớ các từ <code>tiếng Anh</code> mà bạn từng tự chuyển ngôn ngữ bằng cách nhấn <code>Ctrl trái</code> hoặc nhấn hai lần phím dấu. Từ đó về sau, khi bạn gõ lại những từ này, Sigma sẽ tự động chuyển sang chế độ <code>tiếng Anh</code>.
+				</p>
+
+				<p>
+					Tính năng này rất hữu ích nếu bạn đang dùng kiểu gõ <code>Telex</code> hoặc <code>Tích hợp</code> – vì các từ tiếng Anh dễ bị hiểu lầm là tiếng Việt có dấu, ví dụ như:
+				</p>
+
+				<ul>
+					<code>t</code> <code>e</code> <code>s</code> <code>t</code>→ <code>tét</code>
+				</ul>
+
+				<p>
+					Khi gặp các từ bị hiểu sai như vậy, bạn chỉ cần nhấn <code>Ctrl trái</code> hoặc nhấn thêm phím dấu để chuyển sang tiếng Anh. Nếu bạn bấm <code>dấu cách</code> hoặc <code>dấu câu</code> để kết thúc gõ từ, Sigma sẽ ghi nhớ từ đó là tiếng Anh và tự động xử lý đúng vào những lần sau.
+				</p>
+
+				<p>
+					Nếu sau này bạn muốn gõ từ đó theo kiểu tiếng Việt trở lại, chỉ cần nhấn <code>Ctrl trái</code> một lần nữa hoặc nhấn <code>Backspace</code>. Sigma sẽ quay lại chế độ tiếng Việt và quên từ đó trong danh sách ghi nhớ.
+				</p>
+
+				<ul>
+					<li><code>t</code> <code>e</code> <code>s</code> <code>s</code> <code>t</code> → <code>test</code></li>
+					<li>Hoặc<code>t</code> <code>e</code> <code>s</code> <code>t</code> → <code>tét</code> nhấn <code>Ctrl trái</code> → <code>test</code> </li>
+					<li>Từ <code>test</code> đã lưu vào danh sách, lần sau gõ <code>t</code> <code>e</code> <code>s</code> <code>t</code>→ <code>test</code></li>
+					<li><code>t</code> <code>e</code> <code>s</code> <code>t</code>→ <code>test</code> nhấn <code>Ctrl trái</code> hoặc <code>Backspace</code> → <code>tét</code>. Khi đó từ <code>test</code> đã xóa khỏi danh sách</li>
+				</ul>
+				<p>
+					Sigma lưu danh sách ghi nhớ riêng cho từng ứng dụng để đảm bảo từ gõ đúng ngữ cảnh.
+				</p>
+
+				<p><strong>Ví dụ:</strong></p>
+				<ul>
+					<li>Trong <strong>AutoCAD</strong>: gõ <code>e</code> <code>x</code> → <code>ex</code> (tự động chuyển sang tiếng Anh)</li>
+					<li>Trong ứng dụng khác: gõ <code>e</code> <code>x</code> → <code>ẽ</code> (vẫn giữ nguyên tiếng Việt)</li>
+				</ul>
+
 				<h4>Xóa toàn bộ dấu khi nhấn phím bỏ dấu</h4>
 
 				<p>
@@ -998,7 +1034,6 @@
 					chóng chuyển từ có dấu sang không dấu hoàn toàn chỉ bằng một lần nhấn phím.
 				</p>
 
-
 				<h4>Cho phép bỏ dấu xoay vòng</h4>
 				<p>
 					Khi bật tùy chọn này, bạn có thể nhấn lặp lại phím dấu như <code>s</code>, <code>f</code>,
@@ -1022,79 +1057,17 @@
 
 				<h4>Cho phép chèn ký tự bị thiếu</h4>
 				<p>
-					Gõ thiếu ký tự → chỉ cần bổ sung → Sigma sẽ tự động tìm vị trí hợp lý để chèn và sắp xếp lại vần.
-					Tính năng này cũng hỗ trợ khi bạn gõ sai thứ tự các ký tự do gõ nhanh — Sigma sẽ tự điều chỉnh lại
-					nếu nhận diện được từ hợp lệ.
+					Gõ thiếu ký tự → chỉ cần bổ sung → Sigma sẽ tự động tìm vị trí hợp lý để chèn và sắp xếp lại vần. Tính năng này cũng hỗ trợ khi bạn gõ sai thứ tự các ký tự do gõ nhanh — Sigma sẽ tự điều chỉnh lại nếu nhận diện được từ hợp lệ.
 				</p>
 				<p>
 					<strong>Ví dụ:</strong> Gõ <code>h</code> <code>o</code> <code>n</code> <code>g</code>, gõ thêm
 					<code>a</code> → <code>hoang</code>.
 				</p>
 				<p>
-					Rất hữu ích khi bạn thường xuyên gõ nhanh, giúp hạn chế lỗi chính tả và duy trì tốc độ gõ mạch lạc.
-					Tuy nhiên, khi bật tính năng này, Sigma sẽ trở nên rất “nhạy” với tiếng Việt, nên có thể gây bất
-					tiện trong các ứng dụng gõ nhiều tiếng Anh.
+					Rất hữu ích khi bạn thường xuyên gõ nhanh, giúp hạn chế lỗi chính tả và duy trì tốc độ gõ mạch lạc. Tuy nhiên, khi bật tính năng này, Sigma sẽ trở nên rất “nhạy” với tiếng Việt, nên có thể gây bất tiện trong các ứng dụng gõ nhiều tiếng Anh.
 				</p>
 				<p>
-					Do đó, tính năng này được thiết kế để cấu hình riêng cho từng ứng dụng. Bạn được khuyến khích bật nó
-					cho các phần mềm chuyên gõ tiếng Việt (như trình soạn thảo văn bản, mạng xã hội...) và tắt trong các
-					phần mềm chủ yếu gõ tiếng Anh (như IDE hoặc trình duyệt tài liệu kỹ thuật).
-				</p>
-
-				<h4>Tự động chuyển từ tiếng Anh đã ghi nhớ</h4>
-				<p>
-					Khi bật tùy chọn này, Sigma sẽ ghi nhớ các từ <code>tiếng Anh</code> mà bạn từng tự chuyển ngôn ngữ
-					thủ công trong quá trình gõ. Những lần sau, khi bạn gõ lại các từ đó, Sigma sẽ tự động chuyển sang
-					chế độ <code>tiếng Anh</code> để giữ nguyên chính tả.
-				</p>
-
-				<p>
-					Tùy chọn này đặc biệt hữu ích khi bạn sử dụng kiểu gõ <code>Telex</code> hoặc <code>Tích hợp</code>
-					kết hợp với hai tính năng nâng cao: <code>Khôi phục từ gốc nếu gõ không hợp lệ</code> và
-					<code>Cho phép chèn ký tự bị thiếu</code>.
-				</p>
-
-				<p>
-					<code>Cho phép chèn ký tự bị thiếu</code> là một tính năng tiên tiến của Sigma, giúp bạn gõ nhanh và
-					linh hoạt, kể cả khi thứ tự hoặc vị trí ký tự không chính xác. Tuy nhiên, tính năng này có thể khiến
-					Sigma trở nên quá “nhạy” với tiếng Việt, dễ hiểu nhầm các từ tiếng Anh thành từ có dấu.
-				</p>
-
-				<p>
-					Với tùy chọn này, bạn chỉ cần chuyển sang <code>tiếng Anh</code> một lần bằng <code>Ctrl trái</code>
-					khi gặp từ bị hiểu nhầm. Sigma sẽ ghi nhớ hành động đó và tự động áp dụng <code>tiếng Anh</code> cho
-					từ này ở những lần gõ sau. Càng sử dụng, hệ thống càng học chính xác hơn và trở nên thông minh hơn
-					theo thói quen của bạn.
-				</p>
-
-				<p><strong>Ví dụ:</strong></p>
-				<ul>
-					<li>Gõ <code>t</code> <code>e</code> <code>s</code> <code>t</code> → <code>tét</code></li>
-					<li>
-						Gõ <code>e</code> <code>x</code> <code>t</code> <code>r</code> <code>e</code> <code>m</code>
-						<code>e</code> → <code>mểt</code>
-					</li>
-					<li>Gõ <code>o</code> <code>k</code> <code>e</code> → <code>koe</code></li>
-					<li>Gõ <code>a</code> <code>h</code> → <code>ha</code></li>
-					<li>
-						Gõ <code>e</code> <code>x</code> <code>t</code> <code>r</code> <code>i</code> <code>m</code> →
-						<code>miểt</code>
-					</li>
-				</ul>
-				<p>
-					Nếu bạn nhấn <code>Ctrl trái</code> để chuyển sang <code>tiếng Anh</code> khi gõ các từ trên, Sigma
-					sẽ ghi nhớ hành động đó. Những lần sau, từ sẽ được gõ đúng bằng <code>tiếng Anh</code> mà không cần
-					bạn chuyển thủ công nữa.
-				</p>
-				<p>
-					Nếu sau này bạn chuyển lại từ đó bằng <code>tiếng Việt</code>, Sigma sẽ tự động xóa khỏi danh sách
-					đã
-					ghi nhớ để đảm bảo tính linh hoạt.
-				</p>
-				<p>
-					Danh sách các từ tiếng Anh đã ghi nhớ sẽ được lưu riêng cho từng ứng dụng. Điều này có nghĩa là mỗi
-					ứng dụng (ví dụ: trình duyệt, phần mềm chat, phần mềm lập trình...) sẽ có một danh sách từ ghi nhớ
-					riêng biệt. Sigma sẽ tự động áp dụng chuyển ngôn ngữ phù hợp tùy theo ứng dụng bạn đang sử dụng.
+					Do đó, tính năng này được thiết kế để cấu hình riêng cho từng ứng dụng. Bạn được khuyến khích bật nó cho các phần mềm chuyên gõ tiếng Việt (như trình soạn thảo văn bản, mạng xã hội...) và tắt trong các phần mềm chủ yếu gõ tiếng Anh (như IDE hoặc trình duyệt tài liệu kỹ thuật).
 				</p>
 
 				<h4>Lưu ý khi bật các tính năng cải tiến</h4>
@@ -1104,33 +1077,21 @@
 					<li><code>Xóa toàn bộ dấu khi nhấn phím bỏ dấu</code></li>
 					<li><code>Cho phép bỏ dấu xoay vòng</code></li>
 					<li><code>Cho phép chèn ký tự bị thiếu</code></li>
-					<li><code>Tự động chuyển từ tiếng Anh đã ghi nhớ</code></li>
 				</ul>
 
 				<p>
 					Tuy nhiên, khi bật các tính năng này, nếu bạn đang ở chế độ tiếng Việt và muốn gõ các từ tiếng Anh,
 					các từ đó có thể bị tự động biến đổi không như mong muốn. Lúc này, bạn sẽ không thể chuyển sang
-					tiếng Anh bằng cách quen thuộc là gõ hai lần phím dấu. Thay vào đó, bạn cần <strong>
-						nhấn phím Ctrl
-						trái
-					</strong>
+					tiếng Anh bằng cách quen thuộc là gõ hai lần phím dấu. Thay vào đó, bạn cần <strong>nhấn phím Ctrl trái</strong>
 					để chuyển từ đang gõ sang tiếng Anh.
 				</p>
 
 				<p>
-					Đây là thao tác đặc thù của Sigma – không có trong các bộ gõ khác – nên người mới sử dụng cần làm
-					quen dần.
-					Chỉ nên bật các tính năng trên khi bạn đã quen với thao tác dùng <strong>phím Ctrl trái</strong> để
-					chuyển ngôn ngữ trong lúc đang gõ.
+					Đây là thao tác đặc thù của Sigma – không có trong các bộ gõ khác – nên người mới sử dụng cần làm quen dần. Chỉ nên bật các tính năng trên khi bạn đã quen với thao tác dùng <strong>phím Ctrl trái</strong> để chuyển ngôn ngữ trong lúc đang gõ.
 				</p>
 
 				<p>
-					Nếu người dùng bật các tùy chọn cải tiến này, Sigma sẽ tự động đổi màu dòng chữ của tùy chọn liên
-					quan sang
-					<strong>màu đỏ</strong> kèm theo lưu ý, nhằm cảnh báo rằng thiết lập này có thể gây khó khăn cho
-					người mới sử dụng,
-					hoặc với những người vẫn muốn duy trì cách gõ thông thường. Việc này giúp người dùng nhận biết và
-					cân nhắc trước khi bật.
+					Nếu người dùng bật các tùy chọn cải tiến này, Sigma sẽ tự động đổi màu dòng chữ của tùy chọn liên quan sang <strong>màu đỏ</strong> kèm theo lưu ý, nhằm cảnh báo rằng thiết lập này có thể gây khó khăn cho người mới sử dụng, hoặc với những người vẫn muốn duy trì cách gõ thông thường. Việc này giúp người dùng nhận biết và cân nhắc trước khi bật.
 				</p>
 			</div>
 
@@ -1480,61 +1441,57 @@
 							<td><code>Shift → `</code></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Sử dụng chế độ tiếng Việt chủ động</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Sử dụng chế độ tiếng Việt chủ động</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Sử dụng clipboard khi gửi phím</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Sử dụng clipboard khi gửi phím</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Tương thích với ứng dụng có gợi ý từ</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Tương thích với ứng dụng có gợi ý từ</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Tự động viết hoa thông minh</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Tự động viết hoa thông minh</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Cho phép dùng phụ âm đầu "f" "j" "w" "z"</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Cho phép dùng phụ âm đầu "f" "j" "w" "z"</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Dùng phím ← → để điều hướng từng từ</code> cho ứng dụng</td>
+							<td>Bật | Tắt <code>Dùng phím ← → để điều hướng từng từ</code> cho ứng dụng</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Khởi động cùng Windows</code></td>
+							<td>Bật | Tắt <code>Khởi động cùng Windows</code></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Khôi phục từ gốc khi gõ sai chính tả</code></td>
+							<td>Bật | Tắt <code>Khôi phục từ gốc khi gõ sai chính tả</code></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Xóa toàn bộ dấu khi nhấn phím bỏ dấu</code></td>
+							<td>Bật | Tắt <code>Tự động chuyển từ tiếng Anh đã ghi nhớ</code></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Cho phép bỏ dấu xoay vòng</code></td>
+							<td>Bật | Tắt <code>Xóa toàn bộ dấu khi nhấn phím bỏ dấu</code></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Cho phép chèn ký tự bị thiếu</code></td>
+							<td>Bật | Tắt <code>Cho phép bỏ dấu xoay vòng</code></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td>Bật / Tắt <code>Tự động chuyển từ tiếng Anh đã ghi nhớ</code></td>
+							<td>Bật | Tắt <code>Cho phép chèn ký tự bị thiếu</code></td>
 							<td></td>
 						</tr>
 					</tbody>
 				</table>
 
-				<p>Các phím tắt trong bảng này là mặc định khi cài đặt <strong>Sigma</strong>. Người dùng có thể
-					<strong>thêm</strong>, <strong>xóa</strong> hoặc <strong>tắt</strong> các phím tắt này bằng cách
-					nhấp vào biểu tượng <strong>Sigma</strong> trên khay hệ thống và chọn
-					<code>Trình quản lý phím tắt</code>.
-				</p>
+				<p>Các phím tắt trong bảng này là mặc định khi cài đặt <strong>Sigma</strong>. Người dùng có thể <strong>thêm</strong>, <strong>xóa</strong> hoặc <strong>tắt</strong> các phím tắt này bằng cách nhấp vào biểu tượng <strong>Sigma</strong> trên khay hệ thống và chọn<code>Trình quản lý phím tắt</code>.</p>
 			</div>
 
 			<div class="section">
@@ -1561,61 +1518,163 @@
 
 			<div class="section">
 				<h2 id="sum-other">10. Các vấn đề khác</h2>
-				<h4>Lưu ý khi gõ trong Notepad</h3>
-					<p>Khi sử dụng <strong>Notepad</strong> trên Windows 11, nếu bật <strong>Spell check</strong> (kiểm
-						tra
-						chính tả), bạn sẽ gặp lỗi gõ tiếng Việt: mất chữ, nhảy chữ, gõ không đúng.</p>
-					<p><strong>Để gõ tiếng Việt đúng trong Notepad, bắt buộc phải tắt Spell check</strong>. Hiện không
-						có
-						cách nào khác.</p>
+				<h3>Lưu ý khi gõ trong Notepad</h3>
+				<p>
+					Khi sử dụng <strong>Notepad</strong> trên Windows 11, nếu bật <strong>Spell check</strong> (kiểm
+					tra
+					chính tả), bạn sẽ gặp lỗi gõ tiếng Việt: mất chữ, nhảy chữ, gõ không đúng.
+				</p>
+				<p>
+					<strong>Để gõ tiếng Việt đúng trong Notepad, bắt buộc phải tắt Spell check</strong>. Hiện không
+					có
+					cách nào khác.
+				</p>
 
-					<p>Cách tắt Spell check trong Notepad (Windows 11):</p>
-					<ul>
-						<li>Mở <strong>Notepad</strong>.</li>
-						<li>Nhấn vào biểu tượng <strong>bánh răng (Cài đặt / Settings)</strong> ở góc trên bên phải cửa
-							sổ.
-						</li>
-						<li>Tìm mục <strong>Spell check</strong> (hoặc <strong>Kiểm tra chính tả</strong>).</li>
-						<li>Tắt công tắc <strong>Spell check</strong>.</li>
-					</ul>
+				<p>Cách tắt Spell check trong Notepad (Windows 11):</p>
+				<ul>
+					<li>Mở <strong>Notepad</strong>.</li>
+					<li>
+						Nhấn vào biểu tượng <strong>bánh răng (Cài đặt / Settings)</strong> ở góc trên bên phải cửa
+						sổ.
+					</li>
+					<li>Tìm mục <strong>Spell check</strong> (hoặc <strong>Kiểm tra chính tả</strong>).</li>
+					<li>Tắt công tắc <strong>Spell check</strong>.</li>
+				</ul>
 
-					<h4>Sử dụng AI Gemini trong Sigma</h4>
-					<p>
-						Các tác vụ AI trong Sigma được thực hiện bằng cách kết nối internet và gửi yêu cầu (API request)
-						đến hệ thống trí tuệ nhân tạo Gemini. Sigma đã tích hợp sẵn nhiều khóa API Gemini, được cập nhật
-						liên tục để phục vụ người dùng.
-					</p>
-					<p>
-						Tuy nhiên, nếu có quá nhiều người cùng sử dụng, một số khóa có thể bị quá tải và không thực hiện
-						được tác vụ AI.
-					</p>
-					<p>
-						Để sử dụng một cách ổn định và độc lập, người dùng có thể <strong>tạo khóa API Gemini của riêng
-							mình</strong> và thêm vào Sigma bằng cách:
-					</p>
+				<h3>Sử dụng AI Gemini trong Sigma</h3>
+				<p>
+					Các tác vụ AI trong Sigma được thực hiện bằng cách kết nối internet và gửi yêu cầu (API request)
+					đến hệ thống trí tuệ nhân tạo Gemini. Sigma đã tích hợp sẵn nhiều khóa API Gemini, được cập nhật
+					liên tục để phục vụ người dùng.
+				</p>
+				<p>
+					Tuy nhiên, nếu có quá nhiều người cùng sử dụng, một số khóa có thể bị quá tải và không thực hiện
+					được tác vụ AI.
+				</p>
+				<p>
+					Để sử dụng một cách ổn định và độc lập, người dùng có thể <strong>
+						tạo khóa API Gemini của riêng
+						mình
+					</strong> và thêm vào Sigma bằng cách:
+				</p>
+				<ul>
+					<li>Nhấp vào biểu tượng Sigma ở khay hệ thống (góc dưới bên phải màn hình).</li>
+					<li>Chọn <code>Trình quản lý tác vụ AI</code>.</li>
+					<li>
+						Kích vào nút <code>Khóa API Gemini</code>, một giao diện sẽ hiện ra để bạn nhập khóa riêng.
+					</li>
+				</ul>
+				<p>
+					Bạn có thể tạo khóa API Gemini tại:
+				</p>
+				<ul>
+					<li>
+						<strong>
+							<a href="https://aistudio.google.com/app/apikey" class="download-button"
+							   target="_blank">
+								Tạo khóa API Gemini
+							</a>
+						</strong>
+					</li>
+				</ul>
+				<p>
+					Nên nhập <strong>nhiều khóa API</strong>, Sigma sẽ tự động chọn ngẫu nhiên một khóa từ
+					danh sách này mỗi khi thực hiện tác vụ AI, giúp giảm nguy cơ bị giới hạn.
+				</p>
+
+				<h3>Tạo tiện ích điều khiển Sigma tự động theo từng ứng dụng</h3>
+
+				<p>
+					Sigma cho phép các phần mềm bên ngoài điều khiển chế độ gõ <code>Anh/Việt</code> và <code>bảng mã</code> một cách tự động thông qua khóa Registry. Bạn có thể tận dụng tính năng này để tạo tiện ích nhỏ hoặc thêm vào phần mềm của mình để điều chỉnh Sigma mà không cần thao tác thủ công.
+				</p>
+
+				<p>
+					Toàn bộ điều khiển được thực hiện thông qua khóa: <code>HKEY_CURRENT_USER\Software\Sigma\AutoSigma</code>
+				</p>
+
+				<h4>Điều khiển chế độ gõ và bảng mã bằng Registry</h4>
+
+				<table border="1" cellpadding="6" cellspacing="0">
+					<thead>
+						<tr>
+							<th>Key</th>
+							<th>Giá trị</th>
+							<th>Chức năng</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td rowspan="3"><code>FlagASIGAutoLang</code></td>
+							<td><code>True</code></td>
+							<td>Chuyển sang chế độ gõ tiếng Việt</td>
+						</tr>
+						<tr>
+							<td><code>False</code></td>
+							<td>Chuyển sang chế độ gõ tiếng Anh</td>
+						</tr>
+						<tr>
+							<td><code>Reset</code></td>
+							<td>Trả lại chế độ gõ đã lưu riêng cho ứng dụng hiện tại</td>
+						</tr>
+
+						<tr>
+							<td rowspan="4"><code>FlagASIGAutoCharSet</code></td>
+							<td><code>Unicode</code></td>
+							<td>Thiết lập bảng mã Unicode</td>
+						</tr>
+						<tr>
+							<td><code>TCVN3 (ABC)</code></td>
+							<td>Thiết lập bảng mã TCVN3 (ABC)</td>
+						</tr>
+						<tr>
+							<td><code>VNI Windows</code></td>
+							<td>Thiết lập bảng mã VNI Windows</td>
+						</tr>
+						<tr>
+							<td><code>Reset</code></td>
+							<td>Trả lại bảng mã đã lưu riêng cho ứng dụng hiện tại</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h4>Tích hợp tự động với AutoCAD bằng Auto Sigma.lsp</h4>
+
+				<p>
+					Sigma hỗ trợ <strong>tự động điều chỉnh chế độ gõ Anh/Việt và bảng mã</strong> khi bạn tạo hoặc chỉnh sửa đối tượng <code>TEXT / MTEXT</code> trong AutoCAD. Điều này được thực hiện thông qua một tiện ích <code>AutoLISP</code> có tên <strong>Auto Sigma.lsp</strong>.
+				</p>
+
+				<p>
+					<strong>
+						<a href="https://raw.githubusercontent.com/phamhoangnhat/Sigma/main/Auto%20Sigma.rar"
+						   class="download-button" target="_blank">
+							Tải Auto Sigma.lsp
+						</a>
+					</strong>
+				</p>
+
+				<p><strong>Các tính năng chính:</strong></p>
+				<ul>
+					<li>Mỗi khi bạn tạo mới hoặc sửa đổi đối tượng text, Sigma sẽ:</li>
 					<ul>
-						<li>Nhấp vào biểu tượng Sigma ở khay hệ thống (góc dưới bên phải màn hình).</li>
-						<li>Chọn <code>Trình quản lý tác vụ AI</code>.</li>
-						<li>Kích vào nút <code>Khóa API Gemini</code>, một giao diện sẽ hiện ra để bạn nhập khóa riêng.
-						</li>
+						<li>Phân tích font chữ của đối tượng để tự động chọn bảng mã phù hợp (Unicode, TCVN3, VNI...)</li>
+						<li>Chuyển sang chế độ gõ tiếng Việt để bạn gõ có dấu chính xác.</li>
 					</ul>
-					<p>
-						Bạn có thể tạo khóa API Gemini tại:
-					</p>
-					<ul>
-						<li>
-							<strong>
-								<a href="https://aistudio.google.com/app/apikey" class="download-button"
-									target="_blank">
-									Tạo khóa API Gemini
-								</a>
-							</strong>
-						</li>
-					</ul>
-					<p>
-						Nên nhập <strong>nhiều khóa API</strong>, Sigma sẽ tự động chọn ngẫu nhiên một khóa từ
-						danh sách này mỗi khi thực hiện tác vụ AI, giúp giảm nguy cơ bị giới hạn.
-					</p>
+				</ul>
+
+				<p><strong>Gợi ý sử dụng:</strong></p>
+				<ul>
+					<li>Đưa file <code>Auto Sigma.lsp</code> vào <strong>Startup Suite</strong> trong AutoCAD để tiện ích tự chạy mỗi khi mở bản vẽ.</li>
+					<li>Gõ lệnh <code>ASIG</code> trong AutoCAD để thay đổi các thiết lập tự động của Sigma bất kỳ lúc nào.</li>
+				</ul>
+
+				<p>
+					Với tính năng này, bạn không còn phải chuyển bảng mã hay chế độ gõ thủ công mỗi lần làm việc với nhiều loại font khác nhau trong AutoCAD.
+				</p>
+
+				<p>
+					Khi các giá trị trên được cập nhật, Sigma sẽ tự động nhận biết và điều chỉnh chế độ gõ phù hợp. Điều này rất hữu ích khi bạn muốn thay đổi nhanh cấu hình gõ mỗi khi mở một phần mềm cụ thể.
+				</p>
+
 			</div>
 		</div>
 

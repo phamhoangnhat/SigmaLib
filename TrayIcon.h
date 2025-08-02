@@ -36,6 +36,7 @@ private:
 
     QAction* addActionToMenu(const QString& text, const QString& iconPath, const QObject* receiver, const char* slot);
     void updateMenuShortcutText();
+    void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void doShow();
     void doHide();
     void doClose();

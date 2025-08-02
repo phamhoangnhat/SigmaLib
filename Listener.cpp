@@ -253,6 +253,7 @@ bool Listener::checkSpell(int vkCode)
 		}
 
 		releaseKey(vkCode);
+		taskAI.flagOpenWindow = false;
 		taskAI.run(taskAIDatabase.dataCheckSpell, stringBase, true);
 		return true;
 	}
@@ -581,6 +582,14 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
+	if ((nameAction == "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeGeneralConfig("modeAutoChangeLang");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
 	if ((nameAction == "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeRemoveDiacTone");
@@ -600,14 +609,6 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Bật | tắt cho phép chèn ký tự bị thiếu") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeInsertChar");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeGeneralConfig("modeAutoChangeLang");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;

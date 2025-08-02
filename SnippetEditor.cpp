@@ -133,6 +133,7 @@ SnippetEditor::SnippetEditor(QWidget* parent)
 
         QTableWidget {
 			background-color: #DADADA;
+			color: #000000;
             border: 1px solid #AAAAAA;
             border-radius: 10px;
             font-size: 12px;
@@ -146,6 +147,7 @@ SnippetEditor::SnippetEditor(QWidget* parent)
         QTableWidget::item {
             padding: 0px 10px;
             border: none;
+			color: #000000;
         }
 
         QTableWidget::item:selected {

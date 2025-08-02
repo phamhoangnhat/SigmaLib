@@ -270,7 +270,7 @@ void TypeWord::addWord(int posWordTemp)
 	Variable& variable = Variable::getInstance();
 
 	Word& wordPrevious = listWord[posWordTemp - 1];
-	updateDataChangeLang(wordPrevious);
+	wordPrevious.addDataAutoChangeLang();
 
 	//if (posWordTemp > 1) {
 	//	Word& wordPrev = listWord[posWordTemp - 2];
@@ -471,6 +471,11 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 		valueMode = variable.modeRestore;
 	}
 
+	if (nameMode == "modeAutoChangeLang") {
+		variable.modeAutoChangeLang = !variable.modeAutoChangeLang;
+		valueMode = variable.modeAutoChangeLang;
+	}
+
 	if (nameMode == "modeRemoveDiacTone") {
 		variable.modeRemoveDiacTone = !variable.modeRemoveDiacTone;
 		valueMode = variable.modeRemoveDiacTone;
@@ -484,11 +489,6 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 	if (nameMode == "modeInsertChar") {
 		variable.modeInsertChar = !variable.modeInsertChar;
 		valueMode = variable.modeInsertChar;
-	}
-
-	if (nameMode == "modeAutoChangeLang") {
-		variable.modeAutoChangeLang = !variable.modeAutoChangeLang;
-		valueMode = variable.modeAutoChangeLang;
 	}
 
 	QSettings settings(variable.appName, "Config");
@@ -726,6 +726,11 @@ void TypeWord::showChangeConfig(QString nameMode)
 		displayText = "Khôi phục từ gốc khi gõ sai chính tả";
 	}
 
+	if (nameMode == "modeAutoChangeLang") {
+		valueMode = variable.modeAutoChangeLang;
+		displayText = "Tự động chuyển từ tiếng Anh đã ghi nhớ";
+	}
+
 	if (nameMode == "modeRemoveDiacTone") {
 		valueMode = variable.modeRemoveDiacTone;
 		displayText = "Xóa toàn bộ dấu khi nhấn phím bỏ dấu";
@@ -739,11 +744,6 @@ void TypeWord::showChangeConfig(QString nameMode)
 	if (nameMode == "modeInsertChar") {
 		valueMode = variable.modeInsertChar;
 		displayText = "Cho phép chèn ký tự bị thiếu";
-	}
-
-	if (nameMode == "modeAutoChangeLang") {
-		valueMode = variable.modeAutoChangeLang;
-		displayText = "Tự động chuyển từ tiếng Anh đã ghi nhớ";
 	}
 
 	if(valueMode){
@@ -865,28 +865,6 @@ void TypeWord::calStringSnippet()
 	}
 }
 
-void TypeWord::updateDataChangeLang(Word& word)
-{
-	Variable& variable = Variable::getInstance();
-	std::wstring stringWordEng = listCharToString(word.listCharOrigin);
-	if (word.numSwitchLang) {
-		QString qWord = QString::fromStdWString(stringWordEng).toLower();
-		std::wstring lowerWord(reinterpret_cast<const wchar_t*>(qWord.utf16()), qWord.length());
-		if (word.flagLangViet) {
-			std::wstring stringTemp = L"";
-			for (wchar_t character : lowerWord) {
-				stringTemp += character;
-				variable.dataAutoChangeLang.erase(stringTemp);
-			}
-		}
-		else {
-			if (lowerWord.size() > 1) {
-				variable.dataAutoChangeLang.insert(lowerWord);
-			}
-		}
-	}
-}
-
 std::wstring TypeWord::createStringDisplayAll()
 {
 	std::wstring stringDisplayAll;
@@ -907,7 +885,7 @@ void TypeWord::reset(bool flagCheckChangeLangEng)
 		ConfigUi::getInstance().saveSettings(variable.nameCurrentWindow, "flagLangVietGlobal", strFlagLangVietGlobal);
 	}
 	if (!listWord.empty()) {
-		updateDataChangeLang(listWord.back());
+		listWord.back().addDataAutoChangeLang();
 		clipboard.setBaseClipboard();
 	}
 

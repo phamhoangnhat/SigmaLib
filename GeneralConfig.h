@@ -28,6 +28,7 @@ public:
     QCheckBox* checkBoxLoopDiacTone;
     QCheckBox* checkBoxInsertChar;
     QCheckBox* checkBoxAutoChangeLang;
+    QLabel* noteLabel;
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -46,6 +47,7 @@ private:
     void onCancelButtonClicked();
     void updateShortcutLabels();
     void updateCheckBoxStyle(QString modeName, bool modeValue);
+    void updateNoteLabelVisibility();
 
     QPushButton* saveBtn;
     QPushButton* defaultBtn;

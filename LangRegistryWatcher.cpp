@@ -68,17 +68,22 @@ void LangRegistryWatcher::handleRegistryChange() {
     Variable& variable = Variable::getInstance();
     bool flagLangVietGlobal;
 
+    QMap<QString, bool> mapLang = {
+        { "TRUE",   true},
+        { "FALSE",  false}
+    };
     QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoLang", QSettings::NativeFormat);
-    QString value = settings.value("Value", "").toString().trimmed().toLower();
+    QString value = settings.value("Value", "").toString().trimmed().toUpper();
 
-    if (value == "true" || value == "false") {
-        flagLangVietGlobal = (value == "true");
+    if (mapLang.contains(value)) {
+        flagLangVietGlobal = mapLang[value];
     }
     else {
         QSettings settings(variable.appName, "ConfigUi");
         settings.beginGroup(variable.nameCurrentWindow);
         flagLangVietGlobal = settings.value("flagLangVietGlobal", variable.FLAGLANGVIETGLOBAL).toBool();
     }
+
     variable.flagLangVietGlobal = flagLangVietGlobal;
     resetRegistryValue();
 }

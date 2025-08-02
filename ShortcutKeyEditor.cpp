@@ -125,10 +125,10 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Bật | tắt dùng phím ← → để điều hướng từng từ",
         "Bật | tắt khởi động cùng Windows",
         "Bật | tắt khôi phục từ gốc khi gõ sai chính tả",
+        "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
         "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu",
         "Bật | tắt cho phép bỏ dấu xoay vòng",
         "Bật | tắt cho phép chèn ký tự bị thiếu",
-        "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
     };
 
     dataShortcutKeyDefault = {

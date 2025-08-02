@@ -18,10 +18,10 @@ public:
     const bool MODEADMIN = false;
     const bool MODEAUTOSTART = true;
     const bool MODERESTORE = true;
+    const bool MODEAUTOCHANGELANG = false;
     const bool MODEREMOVEDIACTONE = false;
     const bool MODELOOPDIACTONE = false;
     const bool MODEINSERTCHAR = false;
-    const bool MODEAUTOCHANGELANG = false;
 
     const bool FLAGLANGVIETGLOBAL = false;
     const std::wstring CHARACTERSET = L"Unicode";
@@ -45,10 +45,10 @@ public:
     bool modeAdmin;
     bool modeAutoUpdate;
     bool modeRestore;
+    bool modeAutoChangeLang;
     bool modeRemoveDiacTone;
     bool modeLoopDiacTone;
     bool modeInsertChar;
-    bool modeAutoChangeLang;
 
     bool flagLangVietGlobal;
     std::wstring characterSet;

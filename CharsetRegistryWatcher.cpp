@@ -68,11 +68,15 @@ void CharsetRegistryWatcher::handleRegistryChange() {
     Variable& variable = Variable::getInstance();
     QString characterSet;
 
+    QMap<QString, QString> mapCharset = {
+        { "UNICODE",        "Unicode" },
+        { "VNI WINDOWS",    "VNI Windows" },
+        { "TCVN3 (ABC)",    "TCVN3 (ABC)" }
+    };
     QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoCharset", QSettings::NativeFormat);
-    QString value = settings.value("Value", "").toString().trimmed();
-
-    if (value == "Unicode" || value == "VNI Windows" || value == "TCVN3 (ABC)") {
-        characterSet = value;
+    QString value = settings.value("Value", "").toString().trimmed().toUpper();
+    if (mapCharset.contains(value)) {
+        characterSet = mapCharset[value];
     }
     else {
         QSettings settings(variable.appName, "ConfigUi");

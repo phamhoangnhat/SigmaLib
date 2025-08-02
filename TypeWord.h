@@ -47,7 +47,6 @@ public:
     void showInputMethod();
     void showChangeConfig(QString nameMode);
     void calStringSnippet();
-    void updateDataChangeLang(Word& wordPrevious);
     std::wstring createStringDisplayAll();
 
 private:

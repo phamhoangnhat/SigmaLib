@@ -121,7 +121,6 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 			std::unordered_set<wchar_t>& dataCheckModeRestore = variable.dataCheckModeRestore;
 			bool flagRestore = (dataCheckModeRestore.find(character) != dataCheckModeRestore.end());
 			if (variable.modeRestore && flagRestore) {
-				flagAddCharInvalid = true;
 				result = addCharInvalid(character);
 			}
 			else {
@@ -149,8 +148,8 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 		stateAdd++;
 	}
 
-	updateListCharDisplay();
 	checkAutoChangeLang();
+	updateListCharDisplay();
 	calStepChangeDisplay();
 	return result;
 }
@@ -322,6 +321,7 @@ bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, st
 							listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
 						}
 						listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
+						listCharVietInvalid.clear();
 						addCharInvalid(character);
 
 						//numCharD = numCharDTemp;
@@ -376,6 +376,7 @@ bool Word::addKeyRemoveDiacToneD(wchar_t character)
 				listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
 			}
 			listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
+			listCharVietInvalid.clear();
 			addCharInvalid(character);
 			result = true;
 		}
@@ -649,9 +650,10 @@ bool Word::checkPosTone() {
 }
 
 void Word::removeChar() {
-	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
+	Variable& variable = Variable::getInstance();
 
+	removeDataAutoChangeLang();
 
 	if (flagAddCharSpace) {
 		removeCharSpace();
@@ -688,13 +690,11 @@ void Word::removeChar() {
 		}
 	}
 
-
 	checkCharGI();
 	updateListCharDisplay();
 	calStepChangeDisplay();
 
 	if (listCharDisplayNew.empty()) {
-		Variable& variable = Variable::getInstance();
 		numSwitchLang = 0;
 		flagAddCharSpace = true;
 		flagAddCharInvalid = false;
@@ -933,12 +933,9 @@ void Word::checkAutoChangeLang()
 		QString qWord = QString::fromStdWString(stringWordEng).toLower();
 		std::wstring lowerWord(reinterpret_cast<const wchar_t*>(qWord.utf16()), qWord.length());
 		if (variable.dataAutoChangeLang.find(lowerWord) != variable.dataAutoChangeLang.end()) {
-			flagLangViet = false;
-			numSwitchLang++;
-			if (numSwitchLang >= 2) {
-				typeWord.showLanguage();
-			}
-			updateListCharDisplay();
+			listCharViet = std::vector<std::wstring>(listCharOrigin.begin(), listCharOrigin.end() - 1);
+			listCharVietInvalid.clear();
+			addCharInvalid(listCharOrigin.back()[0]);
 		}
 	}
 }
@@ -1007,7 +1004,6 @@ void Word::findListCharDisplay()
 			listCharDisplayNew.insert(listCharDisplayNew.end(), listCharVietStart.begin(), listCharVietStart.end());
 			listCharDisplayNew.insert(listCharDisplayNew.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
 			listCharDisplayNew.insert(listCharDisplayNew.end(), listCharVietEnd.begin(), listCharVietEnd.end());
-			listCharDisplayNew.insert(listCharDisplayNew.end(), listCharVietInvalid.begin(), listCharVietInvalid.end());
 		}
 	}
 	else {
@@ -1054,19 +1050,25 @@ void Word::calStepChangeDisplay() {
 void Word::switchLang(bool* flagLangVietTemp)
 {
 	TypeWord& typeWord = TypeWord::getInstance();
+	Variable& variable = Variable::getInstance();
 
 	bool flagLangVietOld = flagLangViet;
 	if (flagLangVietTemp == nullptr) {
-		if (flagLangViet) {
-			flagLangViet = false;
+		if (flagAddCharInvalid) {
+			flagAddCharInvalid = false;
+			clearListCharVietInvalid();
+			flagLangViet = true;
 		}
 		else {
-			listCharVietInvalid.clear();
-			flagLangViet = true;
+			flagLangViet = !flagLangViet;
 		}
 	}
 	else {
 		flagLangViet = *flagLangVietTemp;
+	}
+
+	if (flagLangViet) {
+		removeDataAutoChangeLang();
 	}
 
 	updateListCharDisplay();
@@ -1083,6 +1085,49 @@ void Word::switchLang(bool* flagLangVietTemp)
 			}
 		}
 	}
+}
+
+void Word::addDataAutoChangeLang()
+{
+	Variable& variable = Variable::getInstance();
+
+	if ((flagLangViet && flagAddCharInvalid) ||
+		(!flagLangViet && numSwitchLang))
+	{
+		std::wstring stringDisplay = listCharToString(listCharDisplayCurrent);
+		QString qstringDisplayLower = QString::fromStdWString(stringDisplay).toLower();
+		std::wstring stringDisplayLower(reinterpret_cast<const wchar_t*>(qstringDisplayLower.utf16()), qstringDisplayLower.length());
+		if (stringDisplayLower.size() > 1) {
+			variable.dataAutoChangeLang.insert(stringDisplayLower);
+		}
+	}
+}
+
+void Word::removeDataAutoChangeLang()
+{
+	Variable& variable = Variable::getInstance();
+
+	std::wstring stringDisplay = listCharToString(listCharDisplayCurrent);
+	QString qstringDisplayLower = QString::fromStdWString(stringDisplay).toLower();
+	std::wstring stringDisplayLower(reinterpret_cast<const wchar_t*>(qstringDisplayLower.utf16()), qstringDisplayLower.length());
+	std::wstring stringTemp = L"";
+	for (wchar_t character : stringDisplayLower) {
+		stringTemp += character;
+		variable.dataAutoChangeLang.erase(stringTemp);
+	}
+}
+
+void Word::clearListCharVietInvalid()
+{
+	for (auto it = listCharVietInvalid.rbegin(); it != listCharVietInvalid.rend(); ++it) {
+		if (!listCharOrigin.empty() && listCharOrigin.back() == *it) {
+			listCharOrigin.pop_back();
+		}
+		else {
+			break;
+		}
+	}
+	listCharVietInvalid.clear();
 }
 
 

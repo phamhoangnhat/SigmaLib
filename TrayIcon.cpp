@@ -45,6 +45,7 @@ TrayIcon::TrayIcon(QObject* parent)
 	actionQuit = addActionToMenu("Đóng ứng dụng Sigma", ":/iconQuit.png", this, SLOT(onQuit()));
 
 	connect(menu, &QMenu::aboutToShow, this, &TrayIcon::updateMenuShortcutText);
+	connect(tray, &QSystemTrayIcon::activated, this, &TrayIcon::onTrayIconActivated);
 	tray->setContextMenu(menu);
 }
 
@@ -132,6 +133,16 @@ void TrayIcon::updateMenuShortcutText() {
 	updateAction(actionQuit, "Đóng ứng dụng Sigma", "Đóng ứng dụng Sigma");
 }
 
+void TrayIcon::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+	if (reason == QSystemTrayIcon::Trigger) {
+		if (menu && tray) {
+			QPoint pos = QCursor::pos();
+			int menuHeight = menu->sizeHint().height();
+			pos.setY(pos.y() - menuHeight);
+			menu->popup(pos);
+		}
+	}
+}
 
 void TrayIcon::onGeneralConfig() {
 	GeneralConfig::showWindow();

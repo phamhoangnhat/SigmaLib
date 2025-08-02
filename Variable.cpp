@@ -91,10 +91,10 @@ void Variable::loadGeneralConfig()
 	createAdminTaskInScheduler(modeAutoStart, modeAdmin);
 	modeAutoUpdate = settings.value("modeAutoUpdate", MODEAUTOUPDATE).toBool();
 	modeRestore = settings.value("modeRestore", MODERESTORE).toBool();
+	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
 	modeRemoveDiacTone = settings.value("modeRemoveDiacTone", MODEREMOVEDIACTONE).toBool();
 	modeLoopDiacTone = settings.value("modeLoopDiacTone", MODELOOPDIACTONE).toBool();
 	modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
-	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
 
 	listAppUseClipboard = {
 		//"acad" 
@@ -164,31 +164,31 @@ void Variable::initMapCharacterSetBase()
 
 	{
 		std::map<wchar_t, std::vector<std::wstring>> vni;
-		vni[L'A'] = { L"a", L"aù", L"aø", L"aû", L"aõ", L"aï" };
+		vni[L'A'] = { L"a",  L"aù", L"aø", L"aû", L"aõ", L"aï" };
 		vni[L'B'] = { L"aê", L"aé", L"aè", L"aú", L"aü", L"aë" };
 		vni[L'C'] = { L"aâ", L"aá", L"aà", L"aå", L"aã", L"aä" };
-		vni[L'D'] = { L"e", L"eù", L"eø", L"eû", L"eõ", L"eï" };
+		vni[L'D'] = { L"e",  L"eù", L"eø", L"eû", L"eõ", L"eï" };
 		vni[L'E'] = { L"eâ", L"eá", L"eà", L"eå", L"eã", L"eä" };
-		vni[L'F'] = { L"i", L"í", L"ì", L"æ", L"ó", L"ò" };
-		vni[L'G'] = { L"o", L"où", L"oø", L"oû", L"oõ", L"oï" };
+		vni[L'F'] = { L"i",  L"í",  L"ì",  L"æ",  L"ó",  L"ò" };
+		vni[L'G'] = { L"o",  L"où", L"oø", L"oû", L"oõ", L"oï" };
 		vni[L'H'] = { L"oâ", L"oá", L"oà", L"oå", L"oã", L"oä" };
-		vni[L'I'] = { L"ô", L"ôù", L"ôø", L"ôû", L"ôõ", L"ôï" };
-		vni[L'J'] = { L"u", L"uù", L"uø", L"uû", L"uõ", L"uï" };
-		vni[L'K'] = { L"ö", L"öù", L"öø", L"öû", L"öõ", L"öï" };
-		vni[L'L'] = { L"y", L"yù", L"yø", L"yû", L"yõ", L"î" };
+		vni[L'I'] = { L"ô",  L"ôù", L"ôø", L"ôû", L"ôõ", L"ôï" };
+		vni[L'J'] = { L"u",  L"uù", L"uø", L"uû", L"uõ", L"uï" };
+		vni[L'K'] = { L"ö",  L"öù", L"öø", L"öû", L"öõ", L"öï" };
+		vni[L'L'] = { L"y",  L"yù", L"yø", L"yû", L"yõ", L"î" };
 		vni[L'M'] = { L"ñ" };
-		vni[L'N'] = { L"A", L"AÙ", L"AØ", L"AÛ", L"AÕ", L"AÏ" };
+		vni[L'N'] = { L"A",  L"AÙ", L"AØ", L"AÛ", L"AÕ", L"AÏ" };
 		vni[L'O'] = { L"AÊ", L"AÉ", L"AÈ", L"AÚ", L"AÜ", L"AË" };
 		vni[L'P'] = { L"AÂ", L"AÁ", L"AÀ", L"AÅ", L"AÃ", L"AÄ" };
-		vni[L'Q'] = { L"E", L"EÙ", L"EØ", L"EÛ", L"EÕ", L"EÏ" };
+		vni[L'Q'] = { L"E",  L"EÙ", L"EØ", L"EÛ", L"EÕ", L"EÏ" };
 		vni[L'R'] = { L"EÂ", L"EÁ", L"EÀ", L"EÅ", L"EÃ", L"EÄ" };
-		vni[L'S'] = { L"I", L"Í", L"Ì", L"Æ", L"Ó", L"Ò" };
-		vni[L'T'] = { L"O", L"OÙ", L"OØ", L"OÛ", L"OÕ", L"OÏ" };
+		vni[L'S'] = { L"I",  L"Í",  L"Ì",  L"Æ",  L"Ó",  L"Ò" };
+		vni[L'T'] = { L"O",  L"OÙ", L"OØ", L"OÛ", L"OÕ", L"OÏ" };
 		vni[L'U'] = { L"OÂ", L"OÁ", L"OÀ", L"OÅ", L"OÃ", L"OÄ" };
-		vni[L'V'] = { L"Ô", L"ÔÙ", L"ÔØ", L"ÔÛ", L"ÔÕ", L"ÔÏ" };
-		vni[L'W'] = { L"U", L"UÙ", L"UØ", L"UÛ", L"UÕ", L"UÏ" };
-		vni[L'X'] = { L"Ö", L"ÖÙ", L"ÖØ", L"ÖÛ", L"ÖÕ", L"ÖÏ" };
-		vni[L'Y'] = { L"Y", L"YÙ", L"YØ", L"YÛ", L"YÕ", L"Î" };
+		vni[L'V'] = { L"Ô",  L"ÔÙ", L"ÔØ", L"ÔÛ", L"ÔÕ", L"ÔÏ" };
+		vni[L'W'] = { L"U",  L"UÙ", L"UØ", L"UÛ", L"UÕ", L"UÏ" };
+		vni[L'X'] = { L"Ö",  L"ÖÙ", L"ÖØ", L"ÖÛ", L"ÖÕ", L"ÖÏ" };
+		vni[L'Y'] = { L"Y",  L"YÙ", L"YØ", L"YÛ", L"YÕ", L"Î" };
 		vni[L'Z'] = { L"Ñ" };
 		mapCharacterSetBase[L"VNI Windows"] = vni;
 	}

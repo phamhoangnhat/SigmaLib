@@ -82,6 +82,9 @@ public:
     void findListCharDisplay();
     void calStepChangeDisplay();
     void switchLang(bool* flagLangVietTemp = nullptr);
+    void addDataAutoChangeLang();
+	void removeDataAutoChangeLang();
+    void clearListCharVietInvalid();
 };
 
 #endif
