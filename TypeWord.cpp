@@ -271,17 +271,9 @@ void TypeWord::addWord(int posWordTemp)
 
 	Word& wordPrevious = listWord[posWordTemp - 1];
 	wordPrevious.addDataAutoChangeLang();
-
-	//if (posWordTemp > 1) {
-	//	Word& wordPrev = listWord[posWordTemp - 2];
-	//	Variable& variable = Variable::getInstance();
-	//	if (variable.modeRestore && wordPrev.flagLangViet && !(wordPrev.listCharVietInvalid.empty())) {
-	//		wordPrev.flagLangViet = false;
-	//	}
-	//}
-
 	wordPrevious.keyPassDiac.clear();
 	wordPrevious.keyPassEnd.clear();
+
 	listWord.insert(listWord.begin() + posWordTemp, Word());
 	posWord = posWordTemp;
 	flagTypeWord = false;
@@ -796,12 +788,11 @@ void TypeWord::calStringSnippet()
 		if (length >= count) {
 			stringKeyTemp = stringTotal.substr(length - count);
 
-			stringKey = toLowerCase(stringKeyTemp);
-			if ((count > 1) && (std::iswupper(stringKeyTemp[1]))) {
-				stringKey[1] = std::toupper(stringKey[1]);
-			}
-			else if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
-				stringKey[0] = std::toupper(stringKey[0]);
+			stringKey = stringKeyTemp;
+			if (stringKey.size() > 2) {
+				for (size_t i = 2; i < stringKey.size(); ++i) {
+					stringKey[i] = std::towlower(stringKey[i]);
+				}
 			}
 
 			if (snippetEditor->mapSnippetString.count(stringKey)) {
@@ -816,8 +807,8 @@ void TypeWord::calStringSnippet()
 	}
 
 	if ((stringSnippet == L"") && !stringTotal.empty()) {
-		wchar_t charSpace1 = stringTotal.back();
-		if (variable.setCharSpaceSnippet.count(charSpace1)) {
+		wchar_t charSpace = stringTotal.back();
+		if (variable.setCharSpaceSnippet.count(charSpace)) {
 			stringTotal = stringTotal.substr(0, length - 1);
 			length = static_cast<int>(stringTotal.size());
 			for (auto it = snippetEditor->setCountWords.rbegin(); it != snippetEditor->setCountWords.rend(); ++it) {
@@ -827,26 +818,22 @@ void TypeWord::calStringSnippet()
 					stringKeyTemp = stringTotal.substr(length - count);
 				}
 				else if (length > count) {
-					wchar_t charSpace2 = stringTotal[length - count - 1];
-					if (variable.setCharSpaceSnippet.count(charSpace2)) {
-						stringKeyTemp = stringTotal.substr(length - count);
-					}
+					stringKeyTemp = stringTotal.substr(length - count);
 				}
 				else {
 					continue;
 				}
 
-				stringKey = toLowerCase(stringKeyTemp);
-				if ((count > 1) && (std::iswupper(stringKeyTemp[1]))) {
-					stringKey[1] = std::toupper(stringKey[1]);
-				}
-				else if ((count > 0) && (std::iswupper(stringKeyTemp[0]))) {
-					stringKey[0] = std::toupper(stringKey[0]);
+				stringKey = stringKeyTemp;
+				if (stringKey.size() > 2) {
+					for (size_t i = 2; i < stringKey.size(); ++i) {
+						stringKey[i] = std::towlower(stringKey[i]);
+					}
 				}
 
 				if (snippetEditor->mapSnippetWords.count(stringKey)) {
 					stringSnippet = snippetEditor->mapSnippetWords[stringKey];
-					stringSnippet += charSpace1;
+					stringSnippet += charSpace;
 					numKeySnippet = static_cast<int>(stringKey.size()) + 1;
 					continue;
 				}
@@ -901,6 +888,7 @@ TypeWord::TypeWord() {
 	stringSnippet = L"";
 	numKeySnippet = 0;
 	colorUI = QColor(150, 150, 150);
+	numChangeCase = 0;
 }
 
 TypeWord::~TypeWord() {}

@@ -613,12 +613,13 @@ void ConfigUi::loadSettings() {
 	}
 	m_isLoading = false;
 
+	bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
 
 	QSettings settings(variable.appName, "ConfigUi");
 	settings.beginGroup(m_AppNameConfig);
-	bool flagLangVietGlobal = settings.value("flagLangVietGlobal", variable.FLAGLANGVIETGLOBAL).toBool();
+	bool flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 	std::wstring characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString().toStdWString();
 	variable.nameTaskAI = settings.value("nameTaskAI", variable.NAMETASKAI).toString();
 	variable.nameSnippetString = settings.value("nameSnippetString", variable.NAMESNIPPETSTRING).toString();

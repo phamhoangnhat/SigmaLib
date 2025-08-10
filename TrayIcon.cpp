@@ -41,6 +41,7 @@ TrayIcon::TrayIcon(QObject* parent)
 	actionSnippetEditor = addActionToMenu("Trình quản lý gõ tắt", ":/iconSnippetEdittor.png", this, SLOT(onConfigSnippetEditor()));
 	actionResetConfigUi = addActionToMenu("Xóa thiết lập đã lưu", ":/iconReset.png", this, SLOT(onResetConfigUi()));
 	actionFeedback = addActionToMenu("Đóng góp ý kiến", ":/iconFeedback.png", this, SLOT(onFeedback()));
+	actionSigmaGroup = addActionToMenu("Tham gia cộng đồng", ":/iconSigmaGroup.png", this, SLOT(onSigmaGroup()));
 	actionHelp = addActionToMenu("Hướng dẫn sử dụng", ":/iconHelp.png", this, SLOT(onHelp()));
 	actionQuit = addActionToMenu("Đóng ứng dụng Sigma", ":/iconQuit.png", this, SLOT(onQuit()));
 
@@ -208,6 +209,10 @@ void TrayIcon::onHelp() {
 	tempFile.close();
 
 	QDesktopServices::openUrl(QUrl::fromLocalFile(tempPath));
+}
+
+void TrayIcon::onSigmaGroup() {
+	QDesktopServices::openUrl(QUrl("https://zalo.me/g/xlhxrd938"));
 }
 
 void TrayIcon::onQuit() {

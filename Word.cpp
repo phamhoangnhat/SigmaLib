@@ -26,7 +26,7 @@ Word::Word() {
 	numBackspace = 0;
 	stringAdd = L"";
 	modeChangeCase = 0;
-	numChangeCase = -1;
+	numChangeCaseDisplay = 0;
 	flagChangeLangEng = false;
 }
 
@@ -655,6 +655,20 @@ void Word::removeChar() {
 
 	removeDataAutoChangeLang();
 
+	if (variable.modeCheckCase) {
+		if (
+			(numChangeCaseDisplay == 1) ||
+			(numChangeCaseDisplay == 2) ||
+			(numChangeCaseDisplay == 3))
+		{
+			typeWord.numChangeCase = 0;
+			numChangeCaseDisplay = 0;
+			findListCharDisplay();
+			calStepChangeDisplay();
+			return;
+		}
+	}
+
 	if (flagAddCharSpace) {
 		removeCharSpace();
 	}
@@ -795,6 +809,8 @@ bool Word::removeCharInvalid() {
 
 bool Word::changeCase()
 {
+	TypeWord& typeWord = TypeWord::getInstance();
+
 	std::vector<std::wstring> listCharDisplayTemp = listCharDisplayNew;
 	modeChangeCase %= 3;
 	switch (modeChangeCase)
@@ -803,10 +819,12 @@ bool Word::changeCase()
 		convertVectorToTitle(listCharDisplayTemp);
 		if (listCharDisplayTemp == listCharDisplayNew) {
 			changeUpperCase();
+			typeWord.numChangeCase = 3;
 			modeChangeCase += 1;
 		}
 		else {
 			changeTitleCase();
+			typeWord.numChangeCase = 2;
 		}
 		break;
 
@@ -814,10 +832,12 @@ bool Word::changeCase()
 		convertVectorToUpper(listCharDisplayTemp);
 		if (listCharDisplayTemp == listCharDisplayNew) {
 			changeLowerCase();
+			typeWord.numChangeCase = 0;
 			modeChangeCase += 1;
 		}
 		else {
 			changeUpperCase();
+			typeWord.numChangeCase = 3;
 		}
 		break;
 
@@ -825,9 +845,11 @@ bool Word::changeCase()
 		convertVectorToLower(listCharDisplayTemp);
 		if (listCharDisplayTemp == listCharDisplayNew) {
 			changeTitleCase();
+			typeWord.numChangeCase = 2;
 			modeChangeCase += 1;
 		}
 		else {
+			typeWord.numChangeCase = 0;
 			changeLowerCase();
 		}
 		break;
@@ -944,51 +966,74 @@ void Word::updateListCharDisplay() {
 	TypeWord& typeWord = TypeWord::getInstance();
 	Variable& variable = Variable::getInstance();
 
+	findListCharDisplay();
+	typeWord.calStringSnippet();
 	if (variable.modeCheckCase) {
-		findListCharDisplay();
-
-		if ((listCharDisplayNew.size() == 0) && (numChangeCase != -1)) {
-			numChangeCase = -1;
+		if ((typeWord.numChangeCase <= 2) && (listCharDisplayNew.size() == 2)) {
+			std::wstring lastChar = listCharOrigin[listCharOrigin.size() - 1];
+			std::wstring secondLastChar = listCharOrigin[listCharOrigin.size() - 2];
+			if (islower(secondLastChar[0]) && iswupper(lastChar[0])) {
+				typeWord.numChangeCase = 2;
+			}
 		}
 
-		if ((listCharDisplayNew.size() == 1) && (numChangeCase == 3)) {
-			numChangeCase = 1;
+		if ((typeWord.numChangeCase <= 3) && (listCharDisplayNew.size() == 2)) {
+			std::wstring lastChar = listCharOrigin[listCharOrigin.size() - 1];
+			std::wstring secondLastChar = listCharOrigin[listCharOrigin.size() - 2];
+			if (iswupper(secondLastChar[0]) && iswupper(lastChar[0])) {
+				typeWord.numChangeCase = 3;
+			}
 		}
+		
+		if ((typeWord.numChangeCase <= 1) && (listCharDisplayNew.size() == 1)) {
+			if (typeWord.listWord.size() == 1) {
+				typeWord.numChangeCase = 1;
+				numChangeCaseDisplay = 2;
+			}
 
-		if (variable.vkCodePrevious == VK_RETURN) {
-			numChangeCase = 1;
-		}
-
-		if ((listCharSpaceNew.size() == 1) && (listCharSpaceNew[0] == L" ") && (listCharDisplayNew.size() == 0)) {
-			if (typeWord.listWord.size() > 1) {
-				Word& wordPrevious = typeWord.listWord[typeWord.posWord - 1];
-				std::wstring stringCurrent = listCharToString(wordPrevious.listCharSpaceCurrent) + listCharToString(wordPrevious.listCharDisplayCurrent);
-				if (variable.setPunctuation.count(stringCurrent)) {
-					numChangeCase = 2;
+			std::wstring stringTemp;
+			stringTemp = listCharToString(listCharSpaceNew);
+			if (variable.setPunctuation.count(stringTemp)) {
+				typeWord.numChangeCase = 1;
+				numChangeCaseDisplay = 2;
+			}
+			else {
+				if (typeWord.listWord.size() > 1) {
+					Word& wordPrevious = typeWord.listWord[typeWord.posWord - 1];
+					stringTemp = listCharToString(wordPrevious.listCharSpaceNew);
+					if (variable.setPunctuation.count(stringTemp)) {
+						typeWord.numChangeCase = 1;
+						numChangeCaseDisplay = 2;
+					}
 				}
 			}
 		}
 
-		if (listCharDisplayNew.size() == 2) {
-			std::wstring lastChar = listCharOrigin.back();
-			if (iswupper(lastChar[0])) {
-				numChangeCase = 3;
+		if (typeWord.numChangeCase == 2) {
+			if ((typeWord.listWord.size() == 1) || (listCharSpaceNew.size() > 0)) {
+				numChangeCaseDisplay = 2;
+			}
+			else {
+				numChangeCaseDisplay = 1;
 			}
 		}
 
-		if ((numChangeCase == 1) || (numChangeCase == 2)) {
-			if (listCharDisplayNew.size() == 1) {
-				changeTitleCase();
-			}
+		if (typeWord.numChangeCase == 3) {
+			numChangeCaseDisplay = 3;
 		}
 
-		if (numChangeCase == 3) {
-			changeUpperCase();
+		if (variable.modeCheckCase) {
+			if (numChangeCaseDisplay == 1) {
+				convertVectorToLower(listCharDisplayNew);
+			}
+			if (numChangeCaseDisplay == 2) {
+				convertVectorToTitle(listCharDisplayNew);
+			}
+			if (numChangeCaseDisplay == 3) {
+				convertVectorToUpper(listCharDisplayNew);
+			}
 		}
 	}
-
-	findListCharDisplay();
-	typeWord.calStringSnippet();
 }
 
 void Word::findListCharDisplay()
@@ -1078,11 +1123,9 @@ void Word::switchLang(bool* flagLangVietTemp)
 		numSwitchLang = 0;
 	}
 	else {
-		if (flagLangVietOld != flagLangViet) {
-			numSwitchLang++;
-			if (numSwitchLang >= 2) {
-				typeWord.showLanguage();
-			}
+		numSwitchLang++;
+		if (numSwitchLang >= 2) {
+			typeWord.showLanguage();
 		}
 	}
 }
@@ -1129,5 +1172,3 @@ void Word::clearListCharVietInvalid()
 	}
 	listCharVietInvalid.clear();
 }
-
-

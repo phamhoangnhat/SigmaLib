@@ -24,6 +24,7 @@ public slots:
     void onConfigSnippetEditor();
     void onResetConfigUi();
     void onFeedback();
+    void onSigmaGroup();
     void onHelp();
     void onQuit();
 
@@ -53,6 +54,7 @@ private:
     QAction* actionSnippetEditor = nullptr;
     QAction* actionResetConfigUi = nullptr;
     QAction* actionFeedback = nullptr;
+    QAction* actionSigmaGroup = nullptr;
     QAction* actionHelp = nullptr;
     QAction* actionQuit = nullptr;
 };

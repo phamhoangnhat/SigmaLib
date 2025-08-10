@@ -274,8 +274,8 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
     layout->addWidget(separator);
     layout->addSpacing(5);
 
-    QLabel* noteLabel = new QLabel("Ghi chú: Tất cả các phím tắt trên đều thực hiện bằng cách nhấn lần lượt phím Shift rồi phím chính", this);
-    noteLabel->setStyleSheet("color: #666666; font-style: italic;");
+    QLabel* noteLabel = new QLabel("Ghi chú: Tất cả các phím tắt trên đều thực hiện bằng cách nhấn thả lần lượt phím Shift rồi nhấn thả phím chính", this);
+    noteLabel->setStyleSheet("color: #A63F0D; font-style: italic;");
     layout->addWidget(noteLabel);
 
     saveBtn = new QPushButton("Lưu");

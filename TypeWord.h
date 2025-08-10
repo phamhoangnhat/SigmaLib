@@ -17,6 +17,7 @@ public:
     std::wstring stringSnippet;
     int numKeySnippet;
     int posWord;
+    int numChangeCase;
     bool flagTypeWord;
     QColor colorUI;
 

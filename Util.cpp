@@ -333,16 +333,18 @@ std::wstring convertCharset(const std::wstring& string, std::map<std::wstring, s
     std::wstring stringSub = L"";
     bool matched;
 
-    int pos = 0;
-    while (pos < string.size()) {
+    size_t pos = 0;
+    const size_t length = string.size();
+    while (pos < length) {
         matched = false;
         for (int numChar = numCharMax; numChar >= 1; --numChar) {
-            if (pos + numChar <= string.size()) {
+            if (pos + static_cast<size_t>(numChar) <= length) {
                 std::wstring key = string.substr(pos, numChar);
-                if (mapConvert.count(key)) {
+                auto it = mapConvert.find(key);
+                if (it != mapConvert.end()) {
                     matched = true;
                     pos += numChar;
-                    stringSub = mapConvert[key];
+                    stringSub = it->second;
                     break;
                 }
             }

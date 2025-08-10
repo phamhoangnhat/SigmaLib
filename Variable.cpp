@@ -126,6 +126,23 @@ void Variable::loadGeneralConfig()
 		"acad",
 		//"photoshop", "illustrator", "coreldraw", "blender", "krita", "sketchup"
 	};
+
+	listAppLangVietGlobal = {
+		//Trình duyệt web
+		"chrome", "coccoc", "brave", "msedge", "opera", "vivaldi", "firefox",
+
+		//Ứng dụng chat nhắn tin
+		"zalo", "telegram", "discord", "whatsapp", "skype", "slack", "teams", "ms teams",
+
+		//Ứng dụng họp / học trực tuyến
+		"zoom", "classin", "cisco", "webex", "atmgr",
+
+		//Ứng dụng văn phòng (Microsoft & WPS)
+		"applicationframehost", "winword", "excel", "powerpnt", "outlook", "msaccess", "onenote", "wps", "et", "wpp", "soffice", "notepad",
+
+		//Ghi chú / Markdown / Quản lý nội dung
+		"notion", "obsidian", "joplin", "marktext", "typora",
+	};
 }
 
 void Variable::initMapCharacterSetBase()
@@ -1270,13 +1287,17 @@ bool Variable::loadSettingsWindow()
 	if (nameCurrentWindow != namePreviousWindow) {
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 		SnippetEditor* snippetEditor = SnippetEditor::getInstance();
+		TypeWord& typeWord = TypeWord::getInstance();
 
+		typeWord.numChangeCase = 0;
+
+		bool modeLangVietGlobalDefault = listAppLangVietGlobal.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
 
 		QSettings settings(appName, "ConfigUi");
 		settings.beginGroup(nameCurrentWindow);
-		flagLangVietGlobal = settings.value("flagLangVietGlobal", FLAGLANGVIETGLOBAL).toBool();
+		flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
 		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
 		nameSnippetString = settings.value("nameSnippetString", NAMESNIPPETSTRING).toString();

@@ -79,9 +79,10 @@ void LangRegistryWatcher::handleRegistryChange() {
         flagLangVietGlobal = mapLang[value];
     }
     else {
+        bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(variable.nameCurrentWindow.toLower()) ? true : false;
         QSettings settings(variable.appName, "ConfigUi");
         settings.beginGroup(variable.nameCurrentWindow);
-        flagLangVietGlobal = settings.value("flagLangVietGlobal", variable.FLAGLANGVIETGLOBAL).toBool();
+        flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
     }
 
     variable.flagLangVietGlobal = flagLangVietGlobal;

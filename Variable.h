@@ -23,7 +23,6 @@ public:
     const bool MODELOOPDIACTONE = false;
     const bool MODEINSERTCHAR = false;
 
-    const bool FLAGLANGVIETGLOBAL = false;
     const std::wstring CHARACTERSET = L"Unicode";
     const QString NAMETASKAI = "01. Kiểm tra chính tả tiếng Việt";
     const QString NAMESNIPPETSTRING = "Không sử dụng";
@@ -63,7 +62,6 @@ public:
     bool modeUseLeftRight;
 
     bool flagSendingKey = false;
-    int vkCodePrevious;
     int vkCodeCurrent;
 
     std::map<std::wstring, std::map<wchar_t, std::vector<std::wstring>>> mapCharacterSetBase;
@@ -106,6 +104,7 @@ public:
     std::map<std::wstring, std::wstring> dataChangeCaseUpper;
     std::unordered_set<std::wstring> dataAutoChangeLang;
 
+    QSet<QString> listAppLangVietGlobal;
     QSet<QString> listAppUseClipboard;
     QSet<QString> listAppFixAutoSuggest;
 

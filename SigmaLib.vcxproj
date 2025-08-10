@@ -182,6 +182,7 @@
     <Image Include="iconRenameItem.png" />
     <Image Include="iconReset.png" />
     <Image Include="iconShortcutKey.png" />
+    <Image Include="iconSigmaGroup.png" />
     <Image Include="iconSnippetEdittor.png" />
     <Image Include="iconTaskAI.png" />
   </ItemGroup>

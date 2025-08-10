@@ -365,7 +365,7 @@ void SnippetEditor::loadSnippetFromFile() {
 			QString key = parts[0].trimmed().toLower();
 			QString val = parts.mid(1).join("=").trimmed();
 
-			if (!key.isEmpty() &&
+			if ((key.length() > 1) &&
 				!key.contains(' ') &&
 				(snippetTemp.find(key.toStdWString()) == snippetTemp.end()) &&
 				!val.isEmpty())
@@ -430,8 +430,10 @@ void SnippetEditor::updateTotal()
 	mapCountSnippet.clear();
 	dataSnippetTotal = dataSnippet;
 
-	QString keyTemp;
-	QString valTemp;
+	QString qKey;
+	QString qVal;
+	QString qKeyTemp;
+	QString qValTemp;
 	std::wstring key;
 	std::wstring val;
 	std::set<int> setCount;
@@ -439,23 +441,41 @@ void SnippetEditor::updateTotal()
 	for (const auto& [nameSnippetTemp, snippetTemp] : dataSnippet) {
 		setCount.clear();
 		for (const auto& [keyW, valW] : snippetTemp) {
-			keyTemp = QString::fromStdWString(keyW);
-			valTemp = QString::fromStdWString(valW);
-			count = keyTemp.length();
+			qKey = QString::fromStdWString(keyW);
+			qVal = QString::fromStdWString(valW);
+			count = qKey.length();
 			setCount.insert(count);
-			if (count >= 1) {
-				keyTemp[0] = keyTemp[0].toUpper();
-				key = keyTemp.toStdWString();
-				val = toTitle(valTemp).toStdWString();
-				dataSnippetTotal[nameSnippetTemp].insert({ key, val });
-			}
-			if (count >= 2) {
-				keyTemp[0] = keyTemp[0].toLower();
-				keyTemp[1] = keyTemp[1].toUpper();
-				key = keyTemp.toStdWString();
-				val = valTemp.toUpper().toStdWString();
-				dataSnippetTotal[nameSnippetTemp].insert({ key, val });
-			}
+
+			qKeyTemp = qKey;
+			qValTemp = qVal;
+			key = qKeyTemp.toStdWString();
+			val = qValTemp.toStdWString();
+			dataSnippetTotal[nameSnippetTemp].insert({ key, val });
+
+			qKeyTemp = qKey;
+			qKeyTemp[0] = qKeyTemp[0].toUpper();
+			qValTemp = qVal;
+			qValTemp = toTitle(qValTemp);
+			key = qKeyTemp.toStdWString();
+			val = qValTemp.toStdWString();
+			dataSnippetTotal[nameSnippetTemp].insert({ key, val });
+
+			qKeyTemp = qKey;
+			qKeyTemp[1] = qKeyTemp[1].toUpper();
+			qValTemp = qVal;
+			qValTemp = toTitle(qValTemp);
+			key = qKeyTemp.toStdWString();
+			val = qValTemp.toStdWString();
+			dataSnippetTotal[nameSnippetTemp].insert({ key, val });
+
+			qKeyTemp = qKey;
+			qKeyTemp[0] = qKeyTemp[0].toUpper();
+			qKeyTemp[1] = qKeyTemp[1].toUpper();
+			qValTemp = qVal;
+			qValTemp = qValTemp.toUpper();
+			key = qKeyTemp.toStdWString();
+			val = qValTemp.toStdWString();
+			dataSnippetTotal[nameSnippetTemp].insert({ key, val });
 		}
 		mapCountSnippet[nameSnippetTemp] = setCount;
 		listNameSnippet.insert(nameSnippetTemp);
@@ -666,7 +686,7 @@ void SnippetEditor::onsaveButtonClicked()
 		for (const auto& pair : snippetTable) {
 			QString key = pair.first.trimmed().toLower();
 			QString val = pair.second.trimmed();
-			if (!key.isEmpty() &&
+			if ((key.length() > 1) &&
 				!key.contains(' ') &&
 				(snippetTemp.find(key.toStdWString()) == snippetTemp.end()) &&
 				!val.isEmpty())

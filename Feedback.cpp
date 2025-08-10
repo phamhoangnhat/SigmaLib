@@ -87,7 +87,7 @@ Feedback::Feedback(QWidget* parent)
 
 	setLayout(mainLayout);
 
-	feedbackEditor->setPlaceholderText("Chúng tôi rất mong nhận được phản hồi từ bạn ở đây. Bạn cũng có thể để lại thông tin liên hệ để chúng tôi hỗ trợ tốt hơn.");
+	feedbackEditor->setPlaceholderText("Chúng tôi rất mong nhận được phản hồi từ bạn ở đây. Hoặc có thể liên lạc qua Zalo: 0933648160 để trao đổi trực tiếp.");
 	connect(sendButton, &QPushButton::clicked, this, &Feedback::onSendClicked);
 	connect(cancelButton, &QPushButton::clicked, this, &Feedback::onCancelClicked);
 
