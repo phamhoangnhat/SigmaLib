@@ -463,15 +463,6 @@ void SnippetEditor::updateTotal()
 			qKeyTemp = qKey;
 			qKeyTemp[1] = qKeyTemp[1].toUpper();
 			qValTemp = qVal;
-			qValTemp = toTitle(qValTemp);
-			key = qKeyTemp.toStdWString();
-			val = qValTemp.toStdWString();
-			dataSnippetTotal[nameSnippetTemp].insert({ key, val });
-
-			qKeyTemp = qKey;
-			qKeyTemp[0] = qKeyTemp[0].toUpper();
-			qKeyTemp[1] = qKeyTemp[1].toUpper();
-			qValTemp = qVal;
 			qValTemp = qValTemp.toUpper();
 			key = qKeyTemp.toStdWString();
 			val = qValTemp.toStdWString();

@@ -788,10 +788,13 @@ void TypeWord::calStringSnippet()
 		if (length >= count) {
 			stringKeyTemp = stringTotal.substr(length - count);
 
-			stringKey = stringKeyTemp;
+			stringKey = toLowerCase(stringKeyTemp);
 			if (stringKey.size() > 2) {
-				for (size_t i = 2; i < stringKey.size(); ++i) {
-					stringKey[i] = std::towlower(stringKey[i]);
+				if (std::iswupper(stringKeyTemp[1])) {
+					stringKey[1] = stringKeyTemp[1];
+				}
+				else if (std::iswupper(stringKeyTemp[0])) {
+					stringKey[0] = stringKeyTemp[0];
 				}
 			}
 
@@ -824,10 +827,13 @@ void TypeWord::calStringSnippet()
 					continue;
 				}
 
-				stringKey = stringKeyTemp;
+				stringKey = toLowerCase(stringKeyTemp);
 				if (stringKey.size() > 2) {
-					for (size_t i = 2; i < stringKey.size(); ++i) {
-						stringKey[i] = std::towlower(stringKey[i]);
+					if (std::iswupper(stringKeyTemp[1])) {
+						stringKey[1] = stringKeyTemp[1];
+					}
+					else if (std::iswupper(stringKeyTemp[0])) {
+						stringKey[0] = stringKeyTemp[0];
 					}
 				}
 

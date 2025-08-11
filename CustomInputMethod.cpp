@@ -287,9 +287,21 @@ void CustomInputMethod::saveChanges() {
 
 void CustomInputMethod::loadFromSettings() {
     Variable& variable = Variable::getInstance();
-	inputMethodTemp = variable.inputMethodBase;
-
     flagUpdatingInput = true;
+
+    inputMethodTemp = variable.mapInputMethodBase[L"Tích hợp"];
+    QSettings settings(variable.appName, "InputMethodCustom");
+    if (settings.contains("data")) {
+        QStringList stored = settings.value("data").toStringList();
+        for (int i = 0; i < std::min(15, static_cast<int>(stored.size())); ++i) {
+            QString stringRaw = QString::fromStdWString(inputMethodTemp[i]);
+            if (i < stored.size()) {
+                stringRaw += stored[i];
+            }
+            variable.addKeyInputMethod(stringRaw, i, inputMethodTemp);
+        }
+    }
+
     for (int index = 0; index < inputFields.size(); ++index) {
         int indexChar = indexListChar[index];
         QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);

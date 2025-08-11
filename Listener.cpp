@@ -865,6 +865,7 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 				|| listener.resetBuffer(vkCode));
 
 			variable.flagSendingKey = false;
+			variable.vkCodePrevious = vkCode;
 		}
 
 		if (wParam == WM_KEYUP) {

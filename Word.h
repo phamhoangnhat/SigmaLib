@@ -37,7 +37,7 @@ public:
     int numBackspace;
     std::wstring stringAdd;
     int modeChangeCase;
-    int numChangeCaseDisplay;
+    int numChangeCase;
     bool flagChangeLangEng;
 
     Word();

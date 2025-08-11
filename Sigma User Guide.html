@@ -318,7 +318,7 @@
 		</div>
 		<button class="menu-toggle">☰</button>
 		<div class="container">
-			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 1.9.1</h1>
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 1.9.3</h1>
 			<div class="section">
 				<h2 id="sum-intro">1. Giới thiệu</h2>
 				<p>
@@ -500,15 +500,15 @@
 							<td><code>o → ô</code></td>
 						</tr>
 						<tr>
-							<td><code>W</code></td>
+							<td><code>W</code> <code>]</code></td>
 							<td><code>7</code></td>
-							<td><code>W</code> <code>7</code> <code>...</code> </td>
+							<td><code>W</code> <code>]</code> <code>7</code> <code>...</code> </td>
 							<td><code>o → ơ</code></td>
 						</tr>
 						<tr>
-							<td><code>W</code></td>
+							<td><code>W</code> <code>[</code></td>
 							<td><code>7</code></td>
-							<td><code>W</code> <code>7</code> <code>...</code> </td>
+							<td><code>W</code> <code>[</code> <code>7</code> <code>...</code> </td>
 							<td><code>u → ư</code></td>
 						</tr>
 						<tr>
@@ -525,13 +525,6 @@
 
 				<p>Bạn có thể tùy biến thêm kiểu gõ <code>Tích hợp</code> bằng cách nhấp vào biểu tượng Sigma ở khay hệ
 					thống (góc dưới bên phải màn hình), sau đó chọn mục <code>Tùy chỉnh kiểu gõ tích hợp</code>.</p>
-
-				<p>Ví dụ: bạn có thể thiết lập gõ <code>[</code> để thay cho dấu đầu của chữ <code>ơ</code>,
-					<code>]</code> để thay cho dấu đầu của chữ <code>ư</code>, giống như các bộ gõ tiếng Việt khác.
-					Khi đó:
-					<br>Gõ <code>o</code> <code>[</code> → <code>ơ</code>
-					<br>Gõ <code>[</code> → <code>ơ</code>
-				</p>
 
 				<p><strong>Khuyến nghị:</strong> Nên sử dụng kiểu gõ <code>Tích hợp</code> trên các máy tính dùng
 					chung để đảm bảo tính linh hoạt cho nhiều người dùng.</p>
@@ -867,24 +860,24 @@
 
 				<h4>Tự động viết hoa thông minh</h4>
 				<p>
-					Khi bật tùy chọn này, Sigma sẽ tự động áp dụng quy tắc viết hoa theo ngữ cảnh, giúp giảm thao tác và vẫn đảm bảo đúng chính tả.
+					Tính năng này giúp bạn tự động viết hoa chữ cái đầu câu hoặc sau dấu câu mà không cần giữ phím
+					<code>Shift</code>.
 				</p>
-
 				<ul>
 					<li>
-						<code>Sentence case:</code> Tự động viết hoa chữ cái đầu tiên của từ ở đầu dòng hoặc đầu câu (không cần giữ phím <code>Shift</code>). Bạn có thể nhấn <code>Backspace</code> để quay lại trạng thái ban đầu.
+						Khi xuống dòng hoặc nhập các dấu câu như <code>.</code>, <code>!</code>, <code>?</code>, ký tự
+						đầu tiên của câu kế tiếp sẽ được viết hoa tự động.
 					</li>
 					<li>
-						<code>Title Case:</code> Nếu bạn chủ động viết hoa ký tự thứ 2 của một từ, (ví dụ gõ <code>vI...</code>), Sigma sẽ chuyển sang chế độ Title Case
-						cho tất cả các từ gõ tiếp theo (chữ cái đầu mỗi từ viết hoa, các ký tự sau viết thường).
-						Chế độ này sẽ duy trì cho đến khi bạn nhấn <code>Backspace</code>.
-					</li>
-					<li>
-						<code>UPPERCASE:</code> Nếu bạn viết hoa ký tự thứ nhất và thứ hai của một từ (ví dụ gõ <code>VI...</code>),
-						Sigma sẽ chuyển sang chế độ UPPERCASE cho tất cả các từ gõ tiếp theo (toàn bộ ký tự đều viết hoa).
-						Chế độ này sẽ duy trì cho đến khi bạn nhấn <code>Backspace</code>.
+						Nếu bạn viết hoa ký tự thứ hai trong một từ (ví dụ: <code>vIệt</code>), Sigma sẽ hiểu rằng bạn
+						muốn viết hoa toàn bộ từ đó và sẽ tự động chuyển thành <code>VIỆT</code>.
 					</li>
 				</ul>
+				<p>
+					Điều này giúp tiết kiệm thao tác khi gõ nhanh, đồng thời vẫn đảm bảo đúng quy tắc chính tả. Tính
+					năng
+					đặc biệt hữu ích khi soạn thảo văn bản hoặc hội thoại.
+				</p>
 
 				<h4>Cho phép dùng phụ âm đầu "f", "j", "w", "z"</h4>
 				<p>

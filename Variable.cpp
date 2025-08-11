@@ -245,13 +245,13 @@ void Variable::initMapCharacterSetBase()
 void Variable::initMapInputMethodBase()
 {
 	mapInputMethodBase[L"Telex"] = {
-		L"Z",	L"S",	L"F",	L"R",	L"X",	L"J",	L"",	L"W",	L"A",	L"E",	L"O",	L"W",	L"W",	L"",	L"D"
+		L"Z",	L"S",	L"F",	L"R",	L"X",	L"J",	L"",	L"W",	L"A",	L"E",	L"O",	L"W]",	L"W[",	L"",	L"D"
 	};
 	mapInputMethodBase[L"Vni"] = {
 		L"0",	L"1",	L"2",	L"3",	L"4",	L"5",	L"",	L"8",	L"6",	L"6",	L"6",	L"7",	L"7",	L"",	L"9"
 	};
 	mapInputMethodBase[L"Tích hợp"] = {
-		L"Z0",	L"S1",	L"F2",	L"R3",	L"X4",	L"J5",	L"",	L"W8",	L"A6",	L"E6",	L"O6",	L"W7",	L"W7",	L"",	L"D9"
+		L"Z0",	L"S1",	L"F2",	L"R3",	L"X4",	L"J5",	L"",	L"W8",	L"A6",	L"E6",	L"O6",	L"W7]",	L"W7[",	L"",	L"D9"
 	};
 }
 

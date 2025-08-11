@@ -62,6 +62,7 @@ public:
     bool modeUseLeftRight;
 
     bool flagSendingKey = false;
+    int vkCodePrevious;
     int vkCodeCurrent;
 
     std::map<std::wstring, std::map<wchar_t, std::vector<std::wstring>>> mapCharacterSetBase;
