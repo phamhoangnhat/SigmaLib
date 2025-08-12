@@ -99,7 +99,6 @@ bool Listener::addChar(int vkCode)
 {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
-
 	if ((variable.setVirtualKeyCodeValid.find(vkCode) != variable.setVirtualKeyCodeValid.end())
 		//&& ((keyNormalFull.size() == 1) && checkKeyNormal(vkCode))
 		&& ((keyModifierFull.size() == 0) || ((keyModifierFull.size() == 1) && checkKeyModifierFull(VK_SHIFT)))
@@ -841,18 +840,15 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 		KBDLLHOOKSTRUCT* kbdStruct = (KBDLLHOOKSTRUCT*)lParam;
 		int vkCode = kbdStruct->vkCode;
 		listener.flagRejectHook = false;
-
 		if (listener.keyNormalFull.size() > 0) {
 			listener.init();
 		}
-
-		if (wParam == WM_KEYDOWN) {
+		if ((wParam == WM_KEYDOWN) || (wParam == WM_SYSKEYDOWN)) {
 			variable.flagSendingKey = true;
 			variable.vkCodeCurrent = vkCode;
 			if (taskAI.flagIsSending) {
 				taskAI.interrupted = true;
 			}
-
 			listener.updateKeyPress(vkCode);
 			(
 				listener.checkFunction(vkCode)
