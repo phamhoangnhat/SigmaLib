@@ -39,7 +39,7 @@ public:
     void changeInputMethod();
     void changeConfigUi(QString nameMode);
     void changeGeneralConfig(QString nameMode);
-    void fixStringDisplayCliboard(int numBackspaceStart, std::wstring stringAdd);
+    void fixStringDisplayCliboard(int numBackspaceStart, std::wstring stringAdd, int timeDelay = 20);
     void fixStringDisplay(int numBackspaceStart, std::wstring stringAdd);
     void addInput(int vkCode, std::vector<INPUT>& inputs);
     void addInput(wchar_t character, std::vector<INPUT>& inputs);

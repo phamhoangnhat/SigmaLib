@@ -133,7 +133,6 @@ void Clipboard::sendUnicodeText(const wstring& text, int timeDelay) {
 		if (flagShiftRightPress) {
 			listener.releaseKey(VK_RSHIFT);
 		}
-
 		INPUT inputs[4] = { 0 };
 		inputs[0].type = INPUT_KEYBOARD;
 		inputs[0].ki.wVk = VK_CONTROL;

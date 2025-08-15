@@ -15,6 +15,7 @@
 #include <thread>
 #include <QTimer>
 #include <qsettings>
+#include <ChangeCase.h>
 
 HHOOK Listener::keyboardHook = NULL;
 HHOOK Listener::mouseHook = NULL;
@@ -99,6 +100,10 @@ bool Listener::addChar(int vkCode)
 {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
+	ChangeCase& changeCase = ChangeCase::getInstance();
+
+	changeCase.textOrigin.clear();
+
 	if ((variable.setVirtualKeyCodeValid.find(vkCode) != variable.setVirtualKeyCodeValid.end())
 		//&& ((keyNormalFull.size() == 1) && checkKeyNormal(vkCode))
 		&& ((keyModifierFull.size() == 0) || ((keyModifierFull.size() == 1) && checkKeyModifierFull(VK_SHIFT)))
@@ -736,6 +741,12 @@ void Listener::updateMouseRelease(WPARAM wParam)
 
 void Listener::checkKeyMouse(WPARAM wParam)
 {
+	TypeWord& typeWord = TypeWord::getInstance();
+	Variable& variable = Variable::getInstance();
+	ChangeCase& changeCase = ChangeCase::getInstance();
+
+	changeCase.textOrigin.clear();
+
 	if ((wParam == WM_MOUSEMOVE)
 		|| (wParam == WM_LBUTTONDOWN)
 		|| (wParam == WM_LBUTTONUP)
@@ -751,9 +762,6 @@ void Listener::checkKeyMouse(WPARAM wParam)
 		|| (wParam == WM_XBUTTONUP)
 		|| (wParam == WM_XBUTTONDBLCLK))
 	{
-		TypeWord& typeWord = TypeWord::getInstance();
-		Variable& variable = Variable::getInstance();
-		
 		flagCheckSpell = false;
 		updateMousePress(wParam);
 		updateMouseRelease(wParam);

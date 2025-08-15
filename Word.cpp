@@ -652,6 +652,10 @@ bool Word::checkPosTone() {
 }
 
 void Word::removeChar() {
+	Variable& variable = Variable::getInstance();
+
+	removeDataAutoChangeLang();
+
 	if ((listCharDisplayCurrent.size() == 1) && (numChangeCase != -1)) {
 		numChangeCase = -1;
 	}
@@ -700,7 +704,6 @@ void Word::removeChar() {
 	calStepChangeDisplay();
 
 	if (listCharDisplayNew.empty()) {
-		Variable& variable = Variable::getInstance();
 		numSwitchLang = 0;
 		flagAddCharSpace = true;
 		flagAddCharInvalid = false;

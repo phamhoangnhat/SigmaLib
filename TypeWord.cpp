@@ -7,6 +7,7 @@
 #include "TaskAI.h"
 #include "SnippetEditor.h"
 #include "Util.h"
+#include "ChangeCase.h"
 #include <iostream>
 #include <windows.h>
 #include <cwctype>
@@ -300,12 +301,12 @@ void TypeWord::changeCase()
 {
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
-	listener.flagRejectHook = true;
+	ChangeCase& changeCase = ChangeCase::getInstance();
 
+	listener.flagRejectHook = true;
 	if (posWord >= 0) {
 		Word& word = listWord[posWord];
 		word.changeCase();
-
 		int numBackspaceStart = word.numBackspace;
 		std::wstring stringAdd = word.stringAdd;
 
@@ -316,6 +317,9 @@ void TypeWord::changeCase()
 			fixStringDisplay(numBackspaceStart, stringAdd);
 		}
 	}
+	//else {
+	//	changeCase.run();
+	//}
 }
 
 void TypeWord::changeCharSet()
@@ -490,13 +494,26 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 	showChangeConfig(nameMode);
 }
 
-void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stringAdd)
+void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stringAdd, int timeDelay)
 {
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
+	Listener& listener = Listener::getInstance();
 
 	if ((numBackspaceStart == 0) && (stringAdd.size() == 0)) {
 		return;
+	}
+
+	clipboard.setClipboardText(stringAdd);
+	std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
+
+	bool flagShiftLeftPress = ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0);
+	bool flagShiftRightPress = ((GetAsyncKeyState(VK_RSHIFT) & 0x8000) != 0);
+	if (flagShiftLeftPress) {
+		listener.releaseKey(VK_LSHIFT);
+	}
+	if (flagShiftRightPress) {
+		listener.releaseKey(VK_RSHIFT);
 	}
 
 	std::vector<INPUT> inputs;
@@ -512,9 +529,38 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 		}
 	}
 
+	INPUT input;
+	ZeroMemory(&input, sizeof(INPUT));
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = VK_CONTROL;
+	input.ki.dwFlags = 0;
+	inputs.push_back(input);
+
+	ZeroMemory(&input, sizeof(INPUT));
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = 'V';
+	input.ki.dwFlags = 0;
+	inputs.push_back(input);
+
+	ZeroMemory(&input, sizeof(INPUT));
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = 'V';
+	input.ki.dwFlags = KEYEVENTF_KEYUP;
+	inputs.push_back(input);
+
+	ZeroMemory(&input, sizeof(INPUT));
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = VK_CONTROL;
+	input.ki.dwFlags = KEYEVENTF_KEYUP;
+	inputs.push_back(input);
 	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
-	inputs.clear();
-	clipboard.sendUnicodeText(stringAdd, 20);
+
+	if (flagShiftLeftPress) {
+		listener.pressKey(VK_LSHIFT);
+	}
+	if (flagShiftRightPress) {
+		listener.pressKey(VK_RSHIFT);
+	}
 
 	if (stringSnippet != L"") {
 		reset();
@@ -543,9 +589,13 @@ void TypeWord::fixStringDisplay(int numBackspaceStart, std::wstring stringAdd)
 	}
 
 	for (wchar_t character : stringAdd) {
-		addInput(character, inputs);
+		if (character == L'\n') {
+			addInput(VK_RETURN, inputs);
+		}
+		else {
+			addInput(character, inputs);
+		}
 	}
-
 	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 
 	if (stringSnippet != L"") {
@@ -789,7 +839,7 @@ void TypeWord::calStringSnippet()
 			stringKeyTemp = stringTotal.substr(length - count);
 
 			stringKey = toLowerCase(stringKeyTemp);
-			if (stringKey.size() > 2) {
+			if (stringKey.size() >= 2) {
 				if (std::iswupper(stringKeyTemp[1])) {
 					stringKey[1] = stringKeyTemp[1];
 				}
@@ -810,8 +860,8 @@ void TypeWord::calStringSnippet()
 	}
 
 	if ((stringSnippet == L"") && !stringTotal.empty()) {
-		wchar_t charSpace = stringTotal.back();
-		if (variable.setCharSpaceSnippet.count(charSpace)) {
+		wchar_t charSpace2 = stringTotal.back();
+		if (variable.setCharSpaceSnippet.count(charSpace2)) {
 			stringTotal = stringTotal.substr(0, length - 1);
 			length = static_cast<int>(stringTotal.size());
 			for (auto it = snippetEditor->setCountWords.rbegin(); it != snippetEditor->setCountWords.rend(); ++it) {
@@ -821,14 +871,17 @@ void TypeWord::calStringSnippet()
 					stringKeyTemp = stringTotal.substr(length - count);
 				}
 				else if (length > count) {
-					stringKeyTemp = stringTotal.substr(length - count);
+					wchar_t charSpace1 = stringTotal[length - count - 1];
+					if (variable.setCharSpaceSnippet.count(charSpace1)) {
+						stringKeyTemp = stringTotal.substr(length - count);
+					}
 				}
 				else {
 					continue;
 				}
 
 				stringKey = toLowerCase(stringKeyTemp);
-				if (stringKey.size() > 2) {
+				if (stringKey.size() >= 2) {
 					if (std::iswupper(stringKeyTemp[1])) {
 						stringKey[1] = stringKeyTemp[1];
 					}
@@ -839,7 +892,7 @@ void TypeWord::calStringSnippet()
 
 				if (snippetEditor->mapSnippetWords.count(stringKey)) {
 					stringSnippet = snippetEditor->mapSnippetWords[stringKey];
-					stringSnippet += charSpace;
+					stringSnippet += charSpace2;
 					numKeySnippet = static_cast<int>(stringKey.size()) + 1;
 					continue;
 				}

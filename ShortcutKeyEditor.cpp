@@ -16,6 +16,10 @@
 #include <QSet>
 
 
+namespace {
+    const QString kNoneToken = QStringLiteral("NONE");
+}
+
 QPointer<ShortcutKeyEditor> ShortcutKeyEditor::m_instance = nullptr;
 
 ShortcutKeyEditor* ShortcutKeyEditor::getInstance() {
@@ -350,7 +354,7 @@ void ShortcutKeyEditor::saveChanges() {
         const QString& key = listShortcutKey[i];
         QString shortcutKey = dataShortcutKey.value(key, QString());
         if (shortcutKey.isEmpty()) {
-            settings.remove(key);
+            settings.setValue(key, kNoneToken);
         }
         else {
             settings.setValue(key, shortcutKey);
@@ -372,12 +376,22 @@ void ShortcutKeyEditor::loadFromSettings() {
     QLineEdit* shortcutEdit;
     for (const QString& key : listShortcutKey) {
         shortcutEdit = shortcutEdits[i];
-        QString shortcutKeyDefault = dataShortcutKeyDefault.value(key, QString());
-        QString shortcutKey = settings.value(key, shortcutKeyDefault).toString().toUpper();
-        bool isValid = validateShortcut(shortcutKey, dataShortcutKey);
 
-        if (!isValid) {
-            shortcutKey = QString();
+        QString shortcutKey;
+        if (!settings.contains(key)) {
+            shortcutKey = dataShortcutKeyDefault.value(key, QString());
+        }
+        else {
+            const QString shortcutKeyTemp = settings.value(key).toString();
+            if (shortcutKeyTemp == kNoneToken) {
+                shortcutKey.clear();
+            }
+            else {
+                shortcutKey = shortcutKeyTemp.toUpper();
+                if (!validateShortcut(shortcutKey, dataShortcutKey)) {
+                    shortcutKey.clear();
+                }
+            }
         }
 
         if (shortcutKey.isEmpty()) {

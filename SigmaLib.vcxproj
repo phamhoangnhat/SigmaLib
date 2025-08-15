@@ -104,6 +104,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChangeCase.cpp" />
     <ClCompile Include="CharsetRegistryWatcher.cpp" />
     <ClCompile Include="GeneralConfig.cpp" />
     <ClCompile Include="KeyAPIManage.cpp" />
@@ -129,6 +130,7 @@
     <QtMoc Include="MessageApiKeyBox.h" />
     <QtMoc Include="CharsetRegistryWatcher.h" />
     <QtMoc Include="LangRegistryWatcher.h" />
+    <ClInclude Include="ChangeCase.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="ShortcutKeyEditor.h" />
     <ClInclude Include="SigmaLib.h" />
