@@ -13,6 +13,7 @@
 #include <cwctype>
 #include <QDebug>
 #include <QSettings>
+#include <QChar>
 
 TypeWord& TypeWord::getInstance() {
 	static TypeWord instance;
@@ -302,9 +303,9 @@ void TypeWord::changeCase()
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	ChangeCase& changeCase = ChangeCase::getInstance();
-
 	listener.flagRejectHook = true;
-	if (posWord >= 0) {
+	
+	if ((listWord.size() > 0) && (listWord[0].listCharDisplayCurrent.size() > 0)){
 		Word& word = listWord[posWord];
 		word.changeCase();
 		int numBackspaceStart = word.numBackspace;

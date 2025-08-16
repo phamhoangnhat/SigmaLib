@@ -778,6 +778,9 @@ void Listener::checkKeyMouse(WPARAM wParam)
 			if (variable.modeUseDynamic) {
 				typeWord.reset(true);
 			}
+			else {
+				typeWord.reset();
+			}
 			TaskAI::getInstance().interrupted = true;
 		}
 
