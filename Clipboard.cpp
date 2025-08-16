@@ -1,12 +1,15 @@
 ﻿#include "Clipboard.h"
 #include "Variable.h"
 #include "Listener.h"
+#include <TaskAI.h>
 
 #include <thread>
 #include <chrono>
 #include <iostream>
 #include <cstring>
 #include <QDebug>
+#include <ChangeCase.h>
+
 
 using namespace std;
 
@@ -107,7 +110,6 @@ void Clipboard::setBaseClipboard()
 {
 	if (!flagBaseClipboard && flagClipboardText) {
 		//qDebug() << "Set base clipboard start: " << QString::fromStdWString(baseClipboard);
-
 		flagUpdateBaseClipboard = false;
 		setClipboardText(baseClipboard);
 		flagBaseClipboard = true;
@@ -221,18 +223,19 @@ void Clipboard::stop() {
 LRESULT CALLBACK Clipboard::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	if (message == WM_CLIPBOARDUPDATE) {
 		Clipboard& clipboard = Clipboard::getInstance();
+		TaskAI& taskAI = TaskAI::getInstance();
+		ChangeCase& changeCase = ChangeCase::getInstance();
+
 		if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
 			clipboard.flagClipboardText = true;
-			if (clipboard.flagUpdateBaseClipboard) {
+			if (clipboard.flagUpdateBaseClipboard && !taskAI.flagIsSending && !changeCase.flagIsProcessing) {
 				clipboard.flagBaseClipboard = false;
 				clipboard.getBaseClipboard();
-				//qDebug() << "Update base clipboard";
 			}
 		}
 		else {
 			clipboard.flagClipboardText = false;
 		}
-
 		clipboard.flagUpdateBaseClipboard = true;
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);

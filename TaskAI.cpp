@@ -8,6 +8,7 @@
 #include "MessageApiKeyBox.h"
 #include "KeyAPIManage.h"
 #include "TypeWord.h"
+#include <Util.h>
 
 #include <QApplication>
 #include <QNetworkReply>
@@ -21,7 +22,6 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
-#include <Util.h>
 
 TaskAI* instance = nullptr;
 
@@ -75,7 +75,7 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 		if (input.isEmpty()) {
 			variable.flagSendingKey = true;
 			clipboard.simulateCopy();
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			input = QString::fromStdWString(clipboard.getClipboardText()).trimmed();
 		}
 		flagInWindow = false;
@@ -84,10 +84,10 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 	if (input.isEmpty()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
+		typeWord.reset(true);
 		flagOpenWindow = false;
 		flagIsSending = false;
 		variable.flagSendingKey = false;
-		typeWord.reset(true);
 		return;
 	}
 
@@ -151,14 +151,12 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 			}
 			popup1->setMessage("Bạn đã hủy tác vụ!");
 			popup1->showWindow();
-
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			clipboard.setBaseClipboard();
-			flagOpenWindow = false;
-			flagIsSending = false;
-			variable.flagSendingKey = false;
 			typeWord.reset(true);
-
+			flagOpenWindow = false;
+			variable.flagSendingKey = false;
+			flagIsSending = false;
 			reply->abort();
 			reply->deleteLater();
 			return;
@@ -251,13 +249,12 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 			}
 			popup2->showWindow();
 		}
-
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
+		typeWord.reset(true);
 		flagOpenWindow = false;
 		flagIsSending = false;
 		variable.flagSendingKey = false;
-		typeWord.reset(true);
 		reply->deleteLater();
 		}
 	);

@@ -1,13 +1,14 @@
 #include "ChangeCase.h"
 #include <Variable.h>
 #include <Clipboard.h>
+#include <TypeWord.h>
+#include <Listener.h>
 
 #include <QDebug>
 
 #include <chrono>
 #include <thread>
-#include <TypeWord.h>
-#include <Listener.h>
+
 
 ChangeCase& ChangeCase::getInstance()
 {
@@ -22,6 +23,10 @@ void ChangeCase::run()
     TypeWord& typeWord = TypeWord::getInstance();
     Listener& listener = Listener::getInstance();
 
+    if (variable.modeClipboard) {
+        listener.numHotkey = -1;
+    }
+
     if(flagIsProcessing) {
         return;
 	}
@@ -29,34 +34,62 @@ void ChangeCase::run()
     flagIsProcessing = true;
     variable.flagSendingKey = true;
 
-    if (textOrigin.isEmpty()) {
-        numChangeCase = 0;
+    int numBackspaceStart = textOrigin.size();
+    if (textOrigin.isEmpty() || variable.modeClipboard) {
+        numBackspaceStart = 0;
+
         clipboard.simulateCopy();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        textOrigin = QString::fromStdWString(clipboard.getClipboardText());
-        textOrigin.replace("\r", "");
-        if (!textOrigin.isEmpty()) {
-            convertCase();
-            std::vector<INPUT> inputs;
-            typeWord.addInput(VK_RIGHT, inputs);
-            SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
+        QString textTemp = QString::fromStdWString(clipboard.getClipboardText());
+        textTemp.replace("\r", "");
+        if (!textTemp.isEmpty()) {
+            if (textTemp != textOrigin) {
+                textOrigin = textTemp;
+                numChangeCase = 0;
+                convertCase();
+            }
+        }
+        else {
+            textOrigin.clear();
         }
     }
 
     if (!textOrigin.isEmpty()) {
-        int numBackspaceStart = textOrigin.size();
-
         if (numChangeCase == 0) {
-            textOrigin = textTitleCase;
+            if (textOrigin != textUpperCase) {
+                textOrigin = textUpperCase;
+            }
+            else {
+                numChangeCase = 1;
+            }
         }
+
         if (numChangeCase == 1) {
-            textOrigin = textUpperCase;
+            if (textOrigin != textLowerCase) {
+                textOrigin = textLowerCase;
+            }
+            else {
+                numChangeCase = 2;
+            }
         }
+
         if (numChangeCase == 2) {
-            textOrigin = textLowerCase;
+            if (textOrigin != textTitleCase) {
+                textOrigin = textTitleCase;
+            }
+            else {
+                numChangeCase = 3;
+            }
         }
+
         if (numChangeCase == 3) {
-            textOrigin = textSentenceCase;
+            if (textOrigin != textSentenceCase) {
+                textOrigin = textSentenceCase;
+            }
+            else {
+                numChangeCase = 0;
+                textOrigin = textUpperCase;
+            }
         }
 
         if (variable.modeClipboard) {
@@ -67,12 +100,8 @@ void ChangeCase::run()
         }
         numChangeCase = (numChangeCase + 1) % 4;
 	}
-
-    //typeWord.listWord.clear();
-    //typeWord.listWord.push_back(Word());
-    //typeWord.posWord = 0;
-    //typeWord.flagTypeWord = false;
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    clipboard.setBaseClipboard();
 	flagIsProcessing = false;
     variable.flagSendingKey = false;
 }

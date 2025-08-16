@@ -100,9 +100,6 @@ bool Listener::addChar(int vkCode)
 {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
-	ChangeCase& changeCase = ChangeCase::getInstance();
-
-	changeCase.textOrigin.clear();
 
 	if ((variable.setVirtualKeyCodeValid.find(vkCode) != variable.setVirtualKeyCodeValid.end())
 		//&& ((keyNormalFull.size() == 1) && checkKeyNormal(vkCode))
@@ -336,6 +333,7 @@ bool Listener::checkFunction(int vkCode)
 {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
+	ChangeCase& changeCase = ChangeCase::getInstance();
 	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
 	TaskAI& taskAI = TaskAI::getInstance();
 
@@ -378,7 +376,6 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeCharSet();
-
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
@@ -395,9 +392,14 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Chuyển đổi dạng chữ viết hoa thường") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeCase();
-		numHotkey = vkCode;
+		if (numHotkey != -1) {
+			numHotkey = vkCode;
+		}
 		flagRejectHook = true;
 		return true;
+	}
+	if (!variable.modeClipboard) {
+		changeCase.textOrigin.clear();
 	}
 
 	if ((nameAction == "Gọi bảng cấu hình ứng dụng") && (numHotkey == 0))
@@ -745,8 +747,6 @@ void Listener::checkKeyMouse(WPARAM wParam)
 	Variable& variable = Variable::getInstance();
 	ChangeCase& changeCase = ChangeCase::getInstance();
 
-	changeCase.textOrigin.clear();
-
 	if ((wParam == WM_MOUSEMOVE)
 		|| (wParam == WM_LBUTTONDOWN)
 		|| (wParam == WM_LBUTTONUP)
@@ -767,12 +767,17 @@ void Listener::checkKeyMouse(WPARAM wParam)
 		updateMouseRelease(wParam);
 
 		if (wParam != WM_MOUSEMOVE) {
+			if (!variable.modeClipboard) {
+				changeCase.textOrigin.clear();
+			}
 			numHotkey = -1;
 		}
 
-		if ((wParam != WM_MOUSEMOVE) || (variable.modeUseDynamic && mouseMovedEnough(wParam)))
+		if ((wParam != WM_MOUSEMOVE) || mouseMovedEnough(wParam))
 		{
-			typeWord.reset(true);
+			if (variable.modeUseDynamic) {
+				typeWord.reset(true);
+			}
 			TaskAI::getInstance().interrupted = true;
 		}
 
@@ -848,6 +853,7 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 		KBDLLHOOKSTRUCT* kbdStruct = (KBDLLHOOKSTRUCT*)lParam;
 		int vkCode = kbdStruct->vkCode;
 		listener.flagRejectHook = false;
+
 		if (listener.keyNormalFull.size() > 0) {
 			listener.init();
 		}

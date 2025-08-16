@@ -317,9 +317,9 @@ void TypeWord::changeCase()
 			fixStringDisplay(numBackspaceStart, stringAdd);
 		}
 	}
-	//else {
-	//	changeCase.run();
-	//}
+	else {
+		changeCase.run();
+	}
 }
 
 void TypeWord::changeCharSet()
@@ -503,19 +503,17 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 	if ((numBackspaceStart == 0) && (stringAdd.size() == 0)) {
 		return;
 	}
-
 	clipboard.setClipboardText(stringAdd);
 	std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
-
 	bool flagShiftLeftPress = ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0);
 	bool flagShiftRightPress = ((GetAsyncKeyState(VK_RSHIFT) & 0x8000) != 0);
+
 	if (flagShiftLeftPress) {
 		listener.releaseKey(VK_LSHIFT);
 	}
 	if (flagShiftRightPress) {
 		listener.releaseKey(VK_RSHIFT);
 	}
-
 	std::vector<INPUT> inputs;
 	if (variable.modeFixAutoSuggest) {
 		addInput(L'·', inputs);
@@ -554,15 +552,14 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 	input.ki.dwFlags = KEYEVENTF_KEYUP;
 	inputs.push_back(input);
 	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
-
 	if (flagShiftLeftPress) {
 		listener.pressKey(VK_LSHIFT);
 	}
 	if (flagShiftRightPress) {
 		listener.pressKey(VK_RSHIFT);
 	}
-
 	if (stringSnippet != L"") {
+		std::this_thread::sleep_for(std::chrono::milliseconds(timeDelay));
 		reset();
 	}
 }
@@ -932,6 +929,7 @@ void TypeWord::reset(bool flagCheckChangeLangEng)
 	}
 	if (!listWord.empty()) {
 		listWord.back().addDataAutoChangeLang();
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
 	}
 

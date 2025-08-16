@@ -12,7 +12,7 @@ public:
     QString textUpperCase;
     QString textTitleCase;
     QString textSentenceCase;
-    int numChangeCase;
+    int numChangeCase = 0;
 	bool flagIsProcessing;
 
     static ChangeCase& getInstance();
