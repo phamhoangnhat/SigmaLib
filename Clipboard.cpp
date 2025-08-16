@@ -110,6 +110,7 @@ void Clipboard::setBaseClipboard()
 {
 	if (!flagBaseClipboard && flagClipboardText) {
 		//qDebug() << "Set base clipboard start: " << QString::fromStdWString(baseClipboard);
+
 		flagUpdateBaseClipboard = false;
 		setClipboardText(baseClipboard);
 		flagBaseClipboard = true;
@@ -229,6 +230,7 @@ LRESULT CALLBACK Clipboard::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
 			clipboard.flagClipboardText = true;
 			if (clipboard.flagUpdateBaseClipboard && !taskAI.flagIsSending && !changeCase.flagIsProcessing) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
 				clipboard.flagBaseClipboard = false;
 				clipboard.getBaseClipboard();
 			}

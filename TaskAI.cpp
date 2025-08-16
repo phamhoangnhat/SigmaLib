@@ -75,7 +75,7 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 		if (input.isEmpty()) {
 			variable.flagSendingKey = true;
 			clipboard.simulateCopy();
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			input = QString::fromStdWString(clipboard.getClipboardText()).trimmed();
 		}
 		flagInWindow = false;
@@ -191,7 +191,6 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 					result = QString::fromStdWString(stringTemp);
 				}
 			}
-
 			if (!interrupted) {
 				TaskAIResult* taskAIResult = TaskAIResult::getInstance();
 				if (flagInWindow) {
@@ -251,7 +250,7 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
-		typeWord.reset(true);
+		typeWord.listWord.clear();
 		flagOpenWindow = false;
 		flagIsSending = false;
 		variable.flagSendingKey = false;
