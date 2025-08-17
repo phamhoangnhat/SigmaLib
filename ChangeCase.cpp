@@ -100,7 +100,6 @@ void ChangeCase::run()
         }
         numChangeCase = (numChangeCase + 1) % 4;
 	}
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     clipboard.setBaseClipboard();
 	flagIsProcessing = false;
     variable.flagSendingKey = false;

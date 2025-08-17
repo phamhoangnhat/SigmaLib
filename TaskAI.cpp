@@ -82,7 +82,6 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 	}
 
 	if (input.isEmpty()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
 		typeWord.reset(true);
 		flagOpenWindow = false;
@@ -151,7 +150,6 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 			}
 			popup1->setMessage("Bạn đã hủy tác vụ!");
 			popup1->showWindow();
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			clipboard.setBaseClipboard();
 			typeWord.reset(true);
 			flagOpenWindow = false;
@@ -248,7 +246,6 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 			}
 			popup2->showWindow();
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
 		typeWord.listWord.clear();
 		flagOpenWindow = false;

@@ -930,7 +930,6 @@ void TypeWord::reset(bool flagCheckChangeLangEng)
 	}
 	if (!listWord.empty()) {
 		listWord.back().addDataAutoChangeLang();
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		clipboard.setBaseClipboard();
 	}
 

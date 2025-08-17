@@ -111,6 +111,7 @@ void Clipboard::setBaseClipboard()
 	if (!flagBaseClipboard && flagClipboardText) {
 		//qDebug() << "Set base clipboard start: " << QString::fromStdWString(baseClipboard);
 
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		flagUpdateBaseClipboard = false;
 		setClipboardText(baseClipboard);
 		flagBaseClipboard = true;
