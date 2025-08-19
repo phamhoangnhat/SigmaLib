@@ -64,7 +64,7 @@ void Variable::update()
 	dataRemoveCharMiddle1 = createDataRemoveCharMiddle1();
 	dataCheckPosTone = createDataCheckPosTone();
 	dataAddNewWord = createDataAddNewWord();
-	dataAddCharSpace = createDataCharSpace();
+	dataAddCharSpace = createDataAddCharSpace();
 	dataCheckModeRestore = createDataCheckModeRestore();
 	dataChangeCaseLower = createDataChangeCaseLower();
 	dataChangeCaseUpper = createDataChangeCaseUpper();
@@ -1191,7 +1191,7 @@ std::unordered_set<wchar_t> Variable::createDataAddNewWord()
 	return dataAddNewWord;
 }
 
-std::unordered_set<wchar_t> Variable::createDataCharSpace()
+std::unordered_set<wchar_t> Variable::createDataAddCharSpace()
 {
 	std::unordered_set<wchar_t> dataAddCharSpace;
 

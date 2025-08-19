@@ -158,7 +158,7 @@ private:
     std::unordered_set<std::wstring> createDataRemoveCharMiddle1();
     std::map<std::wstring, std::vector<std::wstring>> createDataCheckPosTone();
     std::unordered_set<wchar_t> createDataAddNewWord();
-    std::unordered_set<wchar_t> createDataCharSpace();
+    std::unordered_set<wchar_t> createDataAddCharSpace();
     std::unordered_set<wchar_t> createDataCheckModeRestore();
     std::map<std::wstring, std::wstring> createDataChangeCaseLower();
     std::map<std::wstring, std::wstring> createDataChangeCaseUpper();

@@ -127,6 +127,7 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 					result = addCharInvalid(character);
 				}
 				else {
+					flagAddCharSpace = true;
 					typeWord.addWord(typeWord.posWord + 1);
 					Word& newWord = typeWord.listWord[typeWord.posWord];
 					if (numChangeCase == 3) {

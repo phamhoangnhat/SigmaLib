@@ -145,6 +145,7 @@ void TypeWord::removeChar()
 	}
 
 	Word& word = listWord[posWord];
+
 	word.removeChar();
 
 	int numBackspaceStart = word.numBackspace;
