@@ -27,7 +27,7 @@ public:
     int numHotkey = -1;
 
     POINT lastMousePoint;
-    const int minMouseMoveDistance = 50;
+    const int minMouseMoveDistanceSquared = 1600;
 
     static Listener& getInstance();
 

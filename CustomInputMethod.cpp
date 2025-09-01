@@ -149,10 +149,19 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
     layout->setSpacing(12);
     layout->setContentsMargins(16, 16, 16, 16);
 
-    const std::vector<QString> labelListLeft = {
-       "Xóa xấu", "Sắc", "Huyền", "Hỏi", "Ngã", "Nặng"
-    };
-    const std::vector<QString> labelListRight = {
+    std::vector<QString> labelListLeft;
+    if (variable.modeRemoveDiacTone) {
+        labelListLeft = {
+            "Xóa dấu", "Sắc", "Huyền", "Hỏi", "Ngã", "Nặng"
+        };
+    }
+    else {
+        labelListLeft = {
+            "Ngang", "Sắc", "Huyền", "Hỏi", "Ngã", "Nặng"
+        };
+    }
+
+    std::vector<QString> labelListRight = {
         "a → ă", "a → â", "e → ê", "o → ô", "o → ơ", "u → ư", "d → đ"
     };
 

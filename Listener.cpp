@@ -746,6 +746,7 @@ void Listener::checkKeyMouse(WPARAM wParam)
 	TypeWord& typeWord = TypeWord::getInstance();
 	Variable& variable = Variable::getInstance();
 	ChangeCase& changeCase = ChangeCase::getInstance();
+	TaskAI& taskAI = TaskAI::getInstance();
 
 	if ((wParam == WM_MOUSEMOVE)
 		|| (wParam == WM_LBUTTONDOWN)
@@ -762,26 +763,30 @@ void Listener::checkKeyMouse(WPARAM wParam)
 		|| (wParam == WM_XBUTTONUP)
 		|| (wParam == WM_XBUTTONDBLCLK))
 	{
-		flagCheckSpell = false;
 		updateMousePress(wParam);
 		updateMouseRelease(wParam);
 
 		if (wParam != WM_MOUSEMOVE) {
+			flagCheckSpell = false;
 			if (!variable.modeClipboard) {
 				changeCase.textOrigin.clear();
 			}
 			numHotkey = -1;
-		}
+			taskAI.interrupted = true;
 
-		if ((wParam != WM_MOUSEMOVE) || mouseMovedEnough(wParam))
-		{
 			if (variable.modeUseDynamic) {
 				typeWord.reset(true);
 			}
 			else {
 				typeWord.reset();
 			}
-			TaskAI::getInstance().interrupted = true;
+		}
+
+		if (mouseMovedEnough(wParam))
+		{
+			if (variable.modeUseDynamic) {
+				typeWord.reset(true);
+			}
 		}
 
 		variable.loadSettingsWindow();
@@ -808,7 +813,7 @@ bool Listener::mouseMovedEnough(WPARAM wParam)
 	int deltaY = currentMousePoint.y - lastMousePoint.y;
 	int distanceSquared = deltaX * deltaX + deltaY * deltaY;
 
-	if (distanceSquared >= minMouseMoveDistance * minMouseMoveDistance) {
+	if (distanceSquared >= minMouseMoveDistanceSquared) {
 		lastMousePoint = currentMousePoint;
 		return true;
 	}
@@ -863,9 +868,7 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 		if ((wParam == WM_KEYDOWN) || (wParam == WM_SYSKEYDOWN)) {
 			variable.flagSendingKey = true;
 			variable.vkCodeCurrent = vkCode;
-			if (taskAI.flagIsSending) {
-				taskAI.interrupted = true;
-			}
+			taskAI.interrupted = true;
 			listener.updateKeyPress(vkCode);
 			(
 				listener.checkFunction(vkCode)

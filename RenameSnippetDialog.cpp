@@ -184,8 +184,6 @@ void RenameSnippetDialog::onAcceptClicked() {
         return;
     }
 
-
-
     if ((newNameUpper != oldNameUpper) && snippetEditor->listNameSnippetUpper.contains(newNameUpper)) {
         if (!popup) {
             popup = new CustomMessageBox("Lỗi", this);

@@ -540,6 +540,7 @@ void SnippetEditor::onRenameSnippetButtonClicked()
 
 			QList<QPair<QString, QString>> snippetTable = dataSnippetTable[oldName];
 			dataSnippetTable.remove(oldName);
+			listNameSnippetUpper.remove(oldName.toUpper());
 			dataSnippetTable[newName] = snippetTable;
 			listNameSnippetUpper.insert(newName.toUpper());
 			renameDialog.clear();
