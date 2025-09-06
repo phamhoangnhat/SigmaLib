@@ -226,8 +226,16 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 
 							if (numBack > 0) {
 								std::vector<INPUT> inputs;
-								for (int i = 0; i < numBack; i++) {
-									typeWord.addInput(VK_BACK, inputs);
+								if (variable.modeFixAutoSuggest) {
+									typeWord.addInput(L'·', inputs);
+									for (int i = 0; i <= numBack; i++) {
+										typeWord.addInput(VK_BACK, inputs);
+									}
+								}
+								else {
+									for (int i = 0; i < numBack; i++) {
+										typeWord.addInput(VK_BACK, inputs);
+									}
 								}
 								SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 
