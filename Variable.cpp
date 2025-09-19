@@ -97,7 +97,8 @@ void Variable::loadGeneralConfig()
 	modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
 
 	listAppUseClipboard = {
-		//"acad" 
+		//SAP
+		"saplogon", "saplgpad", "saplogonpad",
 	};
 
 	listAppFixAutoSuggest = {
@@ -1303,6 +1304,7 @@ bool Variable::loadSettingsWindow()
 		nameSnippetString = settings.value("nameSnippetString", NAMESNIPPETSTRING).toString();
 		nameSnippetWords = settings.value("nameSnippetWords", NAMESNIPPETWORDS).toString();
 		modeUseDynamic = settings.value("modeUseDynamic", MODEUSEDYNAMIC).toBool();
+		modeTypeSimple = settings.value("modeTypeSimple", MODETYPESIMPLE).toBool();
 		modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 		modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
 		modeCheckCase = settings.value("modeCheckCase", MODECHECKCASE).toBool();
@@ -1337,16 +1339,28 @@ void Variable::addKeyInputMethod(const QString& stringRaw, int indexChar, std::v
 {
 	Variable& variable = Variable::getInstance();
 	QSet<QChar> stringSeen;
-	int start = (indexChar == 0) ? 1 : 0;
-	int end = (indexChar == 0) ? inputMethodBase.size() : 1;
+	std::vector<int> listIndexSeen;
 
-	for (int i = start; i < end; ++i) {
+	if (indexChar == 0) {
+		listIndexSeen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+	}
+	if ((indexChar >= 1) && (indexChar <= 5)) {
+		listIndexSeen = { 0, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+	}
+	if ((indexChar >= 7) && (indexChar <= 12)) {
+		listIndexSeen = { 0, 1, 2, 3, 4, 5, 6, 13, 14 };
+	}
+	if (indexChar == 14) {
+		listIndexSeen = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+	}
+
+	for (int i : listIndexSeen) {
 		const QString inputString = QString::fromStdWString(inputMethodBase[i]);
 		for (QChar character : inputString)
 			stringSeen.insert(character);
 	}
 
-	const QString stringTemp = variable.mapInputMethodBase[L"Tích hợp"][indexChar] +  stringRaw.toUpper();
+	const QString stringTemp = mapInputMethodBase[L"Tích hợp"][indexChar] +  stringRaw.toUpper();
 	QString stringResult;
 	for (QChar character : stringTemp) {
 		if (dataValidateKeyToneDiac.contains(character) && !stringSeen.contains(character)) {
@@ -1354,6 +1368,7 @@ void Variable::addKeyInputMethod(const QString& stringRaw, int indexChar, std::v
 			stringSeen.insert(character);
 		}
 	}
+
 	if (stringResult.size() >= 5) {
 		stringResult = stringResult.left(5);
 	}

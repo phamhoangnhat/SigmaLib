@@ -66,7 +66,7 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 	"02. KIỂM TRA CHÍNH TẢ TIẾNG ANH",
 	"03. DỊCH SANG TIẾNG VIỆT",
 	"04. DỊCH SANG TIẾNG ANH",
-	"05. CHUYỂN MÃ UNICODE"
+	"05. CHUYỂN MÃ"
 		});
 
 	dataTaskAI.remove("01. KIỂM TRA CHÍNH TẢ TIẾNG VIỆT");
@@ -108,8 +108,9 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 	);
 
 	dataTaskAI.remove("05. CHUYỂN MÃ UNICODE");
-	dataTaskAI["05. CHUYỂN MÃ UNICODE"] = qMakePair(
-		"05. Chuyển mã Unicode",
+	dataTaskAI.remove("05. CHUYỂN MÃ");
+	dataTaskAI["05. CHUYỂN MÃ"] = qMakePair(
+		"05. Chuyển mã",
 		"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
 		"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
 		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Không sửa lỗi chính tả hoặc ngữ pháp."

@@ -398,7 +398,8 @@ void TypeWord::changeConfigUi(QString nameMode)
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	ConfigUi& configUi = ConfigUi::getInstance();
-	if (configUi.isVisible() || (variable.nameCurrentWindow == "Sigma")) {
+
+	if (configUi.isVisible()) {
 		return;
 	}
 
@@ -408,6 +409,11 @@ void TypeWord::changeConfigUi(QString nameMode)
 	if (nameMode == "modeUseDynamic") {
 		variable.modeUseDynamic = !variable.modeUseDynamic;
 		valueMode = variable.modeUseDynamic;
+	}
+
+	if (nameMode == "modeTypeSimple") {
+		variable.modeTypeSimple = !variable.modeTypeSimple;
+		valueMode = variable.modeTypeSimple;
 	}
 
 	if (nameMode == "modeClipboard") {
@@ -440,7 +446,6 @@ void TypeWord::changeConfigUi(QString nameMode)
 	settings.setValue(nameMode, valueMode);
 	settings.endGroup();
 	variable.update();
-
 	showChangeConfig(nameMode);
 }
 
@@ -730,6 +735,11 @@ void TypeWord::showChangeConfig(QString nameMode)
 	if (nameMode == "modeUseDynamic") {
 		valueMode = variable.modeUseDynamic;
 		displayText = "Sử dụng chế độ tiếng Việt chủ động";
+	}
+
+	if (nameMode == "modeTypeSimple") {
+		valueMode = variable.modeTypeSimple;
+		displayText = "Sử dụng kiểu gõ giản lược";
 	}
 
 	if (nameMode == "modeClipboard") {

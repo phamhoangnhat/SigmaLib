@@ -29,6 +29,7 @@ public:
     QComboBox* comboNameSnippetString = nullptr;
     QComboBox* comboNameSnippetWords = nullptr;
     QCheckBox* checkBoxUseDynamic = nullptr;
+    QCheckBox* checkBoxTypeSimple = nullptr;
     QCheckBox* checkBoxClipboard = nullptr;
     QCheckBox* checkBoxFixAutoSuggest = nullptr;
     QCheckBox* checkBoxCheckCase = nullptr;
@@ -41,6 +42,7 @@ public:
     QLabel* labelShortcutNameSnippetString;
     QLabel* labelShortcutNameSnippetWords;
     QLabel* labelShortcutUseDynamic;
+    QLabel* labelShortcutTypeSimple;
     QLabel* labelShortcutClipboard;
     QLabel* labelShortcutFixAutoSuggest;
     QLabel* labelShortcutCheckCase;

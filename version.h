@@ -5,8 +5,8 @@
 #define APP_COMPANY        "Phạm Hoàng Nhật"
 
 #define APP_VERSION_MAJOR  2
-#define APP_VERSION_MINOR  0
-#define APP_VERSION_PATCH  9
+#define APP_VERSION_MINOR  1
+#define APP_VERSION_PATCH  2
 
 // Tạo chuỗi version: "1.0.0"
 #define STRINGIFY2(x) #x

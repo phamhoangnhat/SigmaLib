@@ -302,6 +302,7 @@ ConfigUi::ConfigUi(QWidget* parent)
 		};
 
 	addCheckboxRow(checkBoxUseDynamic, labelShortcutUseDynamic, "Sử dụng chế độ tiếng Việt chủ động");
+	addCheckboxRow(checkBoxTypeSimple, labelShortcutTypeSimple, "Sử dụng kiểu gõ giản lược");
 	addCheckboxRow(checkBoxClipboard, labelShortcutClipboard, "Sử dụng clipboard khi gửi phím");
 	addCheckboxRow(checkBoxFixAutoSuggest, labelShortcutFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ");
 	addCheckboxRow(checkBoxCheckCase, labelShortcutCheckCase, "Tự động viết hoa thông minh");
@@ -330,6 +331,9 @@ ConfigUi::ConfigUi(QWidget* parent)
 
 	connect(checkBoxUseDynamic, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeUseDynamic", state == Qt::Checked ? "true" : "false");
+		});
+	connect(checkBoxTypeSimple, &QCheckBox::checkStateChanged, this, [this](int state) {
+		saveSettings(m_AppNameConfig, "modeTypeSimple", state == Qt::Checked ? "true" : "false");
 		});
 	connect(checkBoxClipboard, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeClipboard", state == Qt::Checked ? "true" : "false");
@@ -498,14 +502,17 @@ void ConfigUi::updateShortcutLabels() {
 
 	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
 	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
+	updateLabel(labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
+	updateLabel(labelShortcutNameSnippetString, "");
+	updateLabel(labelShortcutNameSnippetWords, "");
 	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ động");
+	updateLabel(labelShortcutTypeSimple, "Bật | tắt sử dụng kiểu gõ giản lược");
 	updateLabel(labelShortcutClipboard, "Bật | tắt sử dụng clipboard khi gửi phím");
 	updateLabel(labelShortcutFixAutoSuggest, "Bật | tắt tương thích với ứng dụng có gợi ý từ");
 	updateLabel(labelShortcutCheckCase, "Bật | tắt tự động viết hoa thông minh");
 	updateLabel(labelShortcutTeenCode, "Bật | tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
 	updateLabel(labelShortcutUseLeftRight, "Bật | tắt dùng phím ← → để điều hướng từng từ");
 }
-
 
 void ConfigUi::closeEvent(QCloseEvent* event) {
 	doHide();
@@ -611,7 +618,6 @@ void ConfigUi::loadSettings() {
 	for (const QString& item : listNameSnippetTemp) {
 		comboNameSnippetWords->addItem(item);
 	}
-	m_isLoading = false;
 
 	bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
@@ -625,6 +631,7 @@ void ConfigUi::loadSettings() {
 	variable.nameSnippetString = settings.value("nameSnippetString", variable.NAMESNIPPETSTRING).toString();
 	variable.nameSnippetWords = settings.value("nameSnippetWords", variable.NAMESNIPPETWORDS).toString();
 	bool modeUseDynamic = settings.value("modeUseDynamic", variable.MODEUSEDYNAMIC).toBool();
+	bool modeTypeSimple = settings.value("modeTypeSimple", variable.MODETYPESIMPLE).toBool();
 	bool modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 	bool modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
 	bool modeCheckCase = settings.value("modeCheckCase", variable.MODECHECKCASE).toBool();
@@ -666,6 +673,7 @@ void ConfigUi::loadSettings() {
 	if (indexSnippetWords != -1) comboNameSnippetWords->setCurrentIndex(indexSnippetWords);
 
 	checkBoxUseDynamic->setChecked(modeUseDynamic);
+	checkBoxTypeSimple->setChecked(modeTypeSimple);
 	checkBoxClipboard->setChecked(modeClipboard);
 	checkBoxFixAutoSuggest->setChecked(modeFixAutoSuggest);
 	checkBoxCheckCase->setChecked(modeCheckCase);
@@ -675,7 +683,6 @@ void ConfigUi::loadSettings() {
 	bool mode;
 	QCheckBox* checkBox;
 	QString stringWarning;
-
 
 	mode = modeUseDynamic;
 	checkBox = checkBoxUseDynamic;
@@ -714,6 +721,8 @@ void ConfigUi::loadSettings() {
 		}
 	}
 	updateCheckBoxStyle(checkBox, stringWarning);
+
+	m_isLoading = false;
 }
 
 void ConfigUi::updateCheckBoxStyle(QCheckBox* checkBox, QString stringWarning)

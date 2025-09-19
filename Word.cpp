@@ -221,7 +221,7 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 		return true;
 	}
 
-	if (variable.dataAddCharMiddle2.find(character) != variable.dataAddCharMiddle2.end()) {
+	if (!variable.modeTypeSimple && (variable.dataAddCharMiddle2.find(character) != variable.dataAddCharMiddle2.end())) {
 		wchar_t stateDiacTemp = variable.dataAddCharMiddle2[character].first;
 		wchar_t charTemp = variable.dataAddCharMiddle2[character].second;
 

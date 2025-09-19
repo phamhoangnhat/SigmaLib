@@ -12,6 +12,7 @@ class KeyAPIManage : public QDialog {
     Q_OBJECT
 
 public:
+
 	QStringList listKeyAPIDefault = {
         "AIzaSyBTVUIada5EfK0lYKLgMSN4JRRvPi7oLKE",
         "AIzaSyCg1YlirGbKMB3gp28WhmKyGSPhjmuZuNw",

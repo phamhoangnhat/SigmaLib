@@ -17,7 +17,7 @@ public:
     const bool MODEAUTOUPDATE = true;
     const bool MODEADMIN = false;
     const bool MODEAUTOSTART = true;
-    const bool MODERESTORE = true;
+    const bool MODERESTORE = false;
     const bool MODEAUTOCHANGELANG = false;
     const bool MODEREMOVEDIACTONE = false;
     const bool MODELOOPDIACTONE = false;
@@ -27,6 +27,7 @@ public:
     const QString NAMETASKAI = "01. Kiểm tra chính tả tiếng Việt";
     const QString NAMESNIPPETSTRING = "Không sử dụng";
     const QString NAMESNIPPETWORDS = "Không sử dụng";
+    const bool MODETYPESIMPLE = false;
     const bool MODEUSEDYNAMIC = false;
     const bool MODECHECKCASE = false;
     const bool MODETEENCODE = false;
@@ -55,6 +56,7 @@ public:
     QString nameSnippetString;
     QString nameSnippetWords;
     bool modeUseDynamic;
+    bool modeTypeSimple;
     bool modeClipboard;
     bool modeFixAutoSuggest;
     bool modeCheckCase;

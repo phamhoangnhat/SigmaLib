@@ -130,6 +130,7 @@ void TrayIcon::updateMenuShortcutText() {
 	updateAction(actionSnippetEditor, "Trình quản lý gõ tắt", "Gọi bảng trình quản lý gõ tắt");
 	updateAction(actionResetConfigUi, "Xóa thiết lập đã lưu", "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng");
 	updateAction(actionFeedback, "Đóng góp ý kiến", "Gọi bảng đóng góp ý kiến");
+	updateAction(actionSigmaGroup, "Tham gia cộng đồng", "Tham gia cộng đồng");
 	updateAction(actionHelp, "Hướng dẫn sử dụng", "Gọi bảng hướng dẫn sử dụng");
 	updateAction(actionQuit, "Đóng ứng dụng Sigma", "Đóng ứng dụng Sigma");
 }

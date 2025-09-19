@@ -373,22 +373,6 @@ bool Listener::checkFunction(int vkCode)
 
 	QString nameAction = shortcutKeyEditor->getAction(vkCode);
 
-	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeCharSet();
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Chuyển đổi kiểu gõ") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeInputMethod();
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
 	if ((nameAction == "Chuyển đổi dạng chữ viết hoa thường") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeCase();
@@ -489,6 +473,16 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
+	if ((nameAction == "Tham gia cộng đồng") && (numHotkey == 0))
+	{
+		TrayIcon& trayIcon = TrayIcon::getInstance();
+		trayIcon.onSigmaGroup();
+		typeWord.reset(true);
+		numHotkey = -1;
+		flagRejectHook = true;
+		return true;
+	}
+
 	if ((nameAction == "Gọi bảng hướng dẫn sử dụng") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
@@ -505,6 +499,14 @@ bool Listener::checkFunction(int vkCode)
 		trayIcon.onQuit();
 		typeWord.reset(true);
 		numHotkey = -1;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeCharSet();
+		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
 	}
@@ -527,6 +529,14 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Bật | tắt sử dụng chế độ tiếng Việt chủ động") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeUseDynamic");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Bật | tắt sử dụng kiểu gõ giản lược") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeConfigUi("modeTypeSimple");
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
@@ -567,6 +577,14 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Bật | tắt dùng phím ← → để điều hướng từng từ") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeUseLeftRight");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi kiểu gõ") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeInputMethod();
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;
