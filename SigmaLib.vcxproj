@@ -104,12 +104,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AccountManager.cpp" />
     <ClCompile Include="ChangeCase.cpp" />
     <ClCompile Include="CharsetRegistryWatcher.cpp" />
     <ClCompile Include="GeneralConfig.cpp" />
     <ClCompile Include="KeyAPIManage.cpp" />
     <ClCompile Include="LangRegistryWatcher.cpp" />
     <ClCompile Include="MessageApiKeyBox.cpp" />
+    <ClCompile Include="RenameAccountDialog.cpp" />
     <ClCompile Include="RenameSnippetDialog.cpp" />
     <ClCompile Include="ShortcutKeyEditor.cpp" />
     <ClCompile Include="TaskAI.cpp" />
@@ -130,7 +132,9 @@
     <QtMoc Include="MessageApiKeyBox.h" />
     <QtMoc Include="CharsetRegistryWatcher.h" />
     <QtMoc Include="LangRegistryWatcher.h" />
+    <QtMoc Include="AccountManager.h" />
     <ClInclude Include="ChangeCase.h" />
+    <QtMoc Include="RenameAccountDialog.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="ShortcutKeyEditor.h" />
     <ClInclude Include="SigmaLib.h" />
@@ -180,6 +184,7 @@
     <Image Include="iconFeedback.png" />
     <Image Include="iconGeneralConfig.png" />
     <Image Include="iconHelp.png" />
+    <Image Include="iconManagerAccount.png" />
     <Image Include="iconQuit.png" />
     <Image Include="iconRenameItem.png" />
     <Image Include="iconReset.png" />

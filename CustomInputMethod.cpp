@@ -1,5 +1,7 @@
 ﻿#include "CustomInputMethod.h"
 #include "Variable.h"
+#include "AccountManager.h"
+
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -24,7 +26,6 @@ void CustomInputMethod::showWindow() {
     CustomInputMethod* ui = getInstance();
     if (!ui->isVisible()) {
         ui->loadFromSettings();
-
         ui->setWindowOpacity(0.0);
         ui->show();
         ui->raise();
@@ -278,6 +279,8 @@ void CustomInputMethod::changeInput(int index) {
 
 void CustomInputMethod::saveChanges() {
     Variable& variable = Variable::getInstance();
+    AccountManager* accountManager = AccountManager::getInstance();
+
     QStringList result;
     result.resize(15);
 
@@ -286,9 +289,10 @@ void CustomInputMethod::saveChanges() {
         result[indexListChar[i]] = text;
     }
 
-    QSettings settings(variable.appName, "InputMethodCustom");
+    QSettings settings(APP_NAME, "AccountManager");
+    settings.beginGroup(accountManager->currentAccount + "/InputMethodCustom");
     settings.setValue("data", result);
-    
+    settings.endGroup();
     variable.inputMethodBase = inputMethodTemp;
     variable.update();
     hideWindow();
@@ -296,10 +300,12 @@ void CustomInputMethod::saveChanges() {
 
 void CustomInputMethod::loadFromSettings() {
     Variable& variable = Variable::getInstance();
+    AccountManager* accountManager = AccountManager::getInstance();
     flagUpdatingInput = true;
 
     inputMethodTemp = variable.mapInputMethodBase[L"Tích hợp"];
-    QSettings settings(variable.appName, "InputMethodCustom");
+    QSettings settings(APP_NAME, "AccountManager");
+    settings.beginGroup(accountManager->currentAccount + "/InputMethodCustom");
     if (settings.contains("data")) {
         QStringList stored = settings.value("data").toStringList();
         for (int i = 0; i < std::min(15, static_cast<int>(stored.size())); ++i) {
@@ -310,7 +316,7 @@ void CustomInputMethod::loadFromSettings() {
             variable.addKeyInputMethod(stringRaw, i, inputMethodTemp);
         }
     }
-
+    settings.endGroup();
     for (int index = 0; index < inputFields.size(); ++index) {
         int indexChar = indexListChar[index];
         QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);

@@ -22,7 +22,7 @@ public slots:
     void onConfigTaskAI();
     void onShortcutKeyEditor();
     void onConfigSnippetEditor();
-    void onResetConfigUi();
+    void onAccountManager();
     void onFeedback();
     void onSigmaGroup();
     void onHelp();
@@ -52,7 +52,7 @@ private:
     QAction* actionConfigTaskAI = nullptr;
     QAction* actionShortcutKeyEditor = nullptr;
     QAction* actionSnippetEditor = nullptr;
-    QAction* actionResetConfigUi = nullptr;
+    QAction* actionAccountManager = nullptr;
     QAction* actionFeedback = nullptr;
     QAction* actionSigmaGroup = nullptr;
     QAction* actionHelp = nullptr;

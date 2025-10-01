@@ -17,5 +17,6 @@
         <file>iconDeleteItem.png</file>
         <file>iconRenameItem.png</file>
         <file>iconSigmaGroup.png</file>
+        <file>iconManagerAccount.png</file>
     </qresource>
 </RCC>

@@ -1,5 +1,7 @@
 #include "LangRegistryWatcher.h"
 #include "Variable.h"
+#include "AccountManager.h"
+
 #include <QSettings>
 #include <QDebug>
 #include <windows.h>
@@ -66,6 +68,7 @@ void LangRegistryWatcher::handleRegistryChange() {
     }
 
     Variable& variable = Variable::getInstance();
+    AccountManager* accountManager = AccountManager::getInstance();
     bool flagLangVietGlobal;
 
     QMap<QString, bool> mapLang = {
@@ -80,9 +83,10 @@ void LangRegistryWatcher::handleRegistryChange() {
     }
     else {
         bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(variable.nameCurrentWindow.toLower()) ? true : false;
-        QSettings settings(variable.appName, "ConfigUi");
-        settings.beginGroup(variable.nameCurrentWindow);
+        QSettings settings(APP_NAME, "AccountManager");
+        settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + variable.nameCurrentWindow);
         flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
+        settings.endGroup();
     }
 
     variable.flagLangVietGlobal = flagLangVietGlobal;

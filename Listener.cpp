@@ -453,10 +453,10 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng") && (numHotkey == 0))
+	if ((nameAction == "Gọi bảng trình quản lý người dùng") && (numHotkey == 0))
 	{
 		TrayIcon& trayIcon = TrayIcon::getInstance();
-		trayIcon.onResetConfigUi();
+		trayIcon.onAccountManager();
 		typeWord.reset(true);
 		numHotkey = -1;
 		flagRejectHook = true;

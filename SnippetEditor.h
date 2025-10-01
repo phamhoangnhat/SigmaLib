@@ -33,6 +33,7 @@ public:
 
     static SnippetEditor* getInstance();
     void loadSnippetForApp(QString nameSnippetString, QString nameSnippetWords);
+    void loadSnippetFromRegistry();
     static void showWindow();
     static void hideWindow();
     static void closeWindow();
@@ -44,7 +45,6 @@ protected:
 private:
     explicit SnippetEditor(QWidget* parent = nullptr);
     ~SnippetEditor();
-    void loadSnippetFromFile();
     void updateTotal();
     void loadNameSnippetCombo();
     void onNameSnippetComboChanged();

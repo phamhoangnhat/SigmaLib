@@ -1,5 +1,7 @@
 #include "CharsetRegistryWatcher.h"
 #include "Variable.h"
+#include "AccountManager.h"
+
 #include <QSettings>
 #include <QDebug>
 #include <windows.h>
@@ -66,6 +68,7 @@ void CharsetRegistryWatcher::handleRegistryChange() {
     }
 
     Variable& variable = Variable::getInstance();
+    AccountManager* accountManager = AccountManager::getInstance();
     QString characterSet;
 
     QMap<QString, QString> mapCharset = {
@@ -79,9 +82,10 @@ void CharsetRegistryWatcher::handleRegistryChange() {
         characterSet = mapCharset[value];
     }
     else {
-        QSettings settings(variable.appName, "ConfigUi");
-        settings.beginGroup(variable.nameCurrentWindow);
+        QSettings settings(APP_NAME, "AccountManager");
+        settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + variable.nameCurrentWindow);
         characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString();
+        settings.endGroup();
     }
     variable.characterSet = characterSet.toStdWString();
     variable.update();

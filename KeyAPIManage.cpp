@@ -196,7 +196,7 @@ void KeyAPIManage::loadTable()
 	Variable& variable = Variable::getInstance();
 
 	QSet<QString> setKeyAPITemp;
-	QSettings settings(variable.appName, "KeyAPIManage");
+	QSettings settings(APP_NAME, "KeyAPIManage");
 	QStringList listKeyAPITemp = settings.value("listKeyAPIUser").toStringList();
 
 	listKeyAPIUser.clear();
@@ -289,7 +289,7 @@ void KeyAPIManage::onsaveButtonClicked()
 		}
 	}
 
-	QSettings settings(variable.appName, "KeyAPIManage");
+	QSettings settings(APP_NAME, "KeyAPIManage");
 	settings.setValue("listKeyAPIUser", listKeyAPIUser);
 
 	if (listKeyAPIUser.size() > 0) {

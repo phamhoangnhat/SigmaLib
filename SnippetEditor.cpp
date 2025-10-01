@@ -1,9 +1,9 @@
 ﻿#include "SnippetEditor.h"
 #include "Variable.h"
 #include "Util.h"
+#include "AccountManager.h"
 
 #include <cstdlib>
-
 #include <QHeaderView>
 #include <QIcon>
 #include <QDebug>
@@ -13,6 +13,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QChar>
+#include <QFileInfo>
+#include <QDir>
 
 QPointer<SnippetEditor> SnippetEditor::m_instance = nullptr;
 
@@ -26,7 +28,7 @@ SnippetEditor* SnippetEditor::getInstance() {
 void SnippetEditor::showWindow() {
 	SnippetEditor* ui = getInstance();
 	if (!ui->isVisible()) {
-		ui->loadSnippetFromFile();
+		ui->loadSnippetFromRegistry();
 		ui->loadNameSnippetCombo();
 		ui->loadTable();
 
@@ -318,92 +320,139 @@ SnippetEditor::SnippetEditor(QWidget* parent)
 	connect(saveBtn, &QPushButton::clicked, this, &SnippetEditor::onsaveButtonClicked);
 	connect(cancelBtn, &QPushButton::clicked, this, &SnippetEditor::onCancelButtonClicked);
 
-	loadSnippetFromFile();
+	loadSnippetFromRegistry();
 }
 
 SnippetEditor::~SnippetEditor() {}
 
-void SnippetEditor::loadSnippetFromFile() {
+void SnippetEditor::loadSnippetFromRegistry() {
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	std::map<std::wstring, std::wstring> snippetTemp;
 	std::map<QString, std::map<std::wstring, std::wstring>> dataSnippetTemp;
 	QString nameSnippetTemp;
 	QString nameSnippetUpperTemp;
 	listNameSnippetUpper.clear();
 
-	QFile file(getExeDirectory() + "/Snippet.ini");
-	if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		QTextStream in(&file);
+	snippetTemp.clear();
+	nameSnippetTemp.clear();
+	nameSnippetUpperTemp.clear();
+	const QString filePath = QDir(QString::fromStdWString(getExeDirectory())).filePath("Snippet.ini");
+	if (QFileInfo::exists(filePath)) {
+		QFile file(filePath);
+		if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			QTextStream in(&file);
 
-		while (!in.atEnd()) {
-			QString line = in.readLine().trimmed();
-			if (line.isEmpty() || !line.contains('='))
-				continue;
+			while (!in.atEnd()) {
+				QString line = in.readLine().trimmed();
+				if (line.isEmpty() || !line.contains('='))
+					continue;
 
-			if (line.startsWith("=")) {
-				QString stringTemp = line.mid(1).trimmed();
-				if (!stringTemp.isEmpty()) {
-					if (!nameSnippetTemp.isEmpty() &&
-						(nameSnippetUpperTemp != "Không sử dụng") &&
-						!listNameSnippetUpper.contains(nameSnippetUpperTemp) &&
-						!snippetTemp.empty())
-					{
-						dataSnippetTemp[nameSnippetTemp] = snippetTemp;
-						listNameSnippetUpper.insert(nameSnippetUpperTemp);
+				if (line.startsWith("=")) {
+					QString stringTemp = line.mid(1).trimmed();
+					if (!stringTemp.isEmpty()) {
+						if (!nameSnippetTemp.isEmpty() &&
+							(nameSnippetUpperTemp != "KHÔNG SỬ DỤNG") &&
+							!listNameSnippetUpper.contains(nameSnippetUpperTemp) &&
+							!snippetTemp.empty())
+						{
+							dataSnippetTemp[nameSnippetTemp] = snippetTemp;
+							listNameSnippetUpper.insert(nameSnippetUpperTemp);
+						}
 					}
+					snippetTemp.clear();
+					nameSnippetTemp = stringTemp;
+					nameSnippetUpperTemp = nameSnippetTemp.toUpper();
+					continue;
 				}
-				snippetTemp.clear();
-				nameSnippetTemp = stringTemp;
-				nameSnippetUpperTemp = nameSnippetTemp.toUpper();
-				continue;
+
+				QStringList parts = line.split('=', Qt::KeepEmptyParts);
+				if (parts.size() < 2) {
+					continue;
+				}
+
+				QString key = parts[0].trimmed().toLower();
+				QString val = parts.mid(1).join("=").trimmed();
+
+				if ((key.length() > 1) &&
+					!key.contains(' ') &&
+					(snippetTemp.find(key.toStdWString()) == snippetTemp.end()) &&
+					!val.isEmpty())
+				{
+					snippetTemp[key.toStdWString()] = val.toStdWString();
+					continue;
+				}
 			}
-
-			QStringList parts = line.split('=', Qt::KeepEmptyParts);
-			if (parts.size() < 2) {
-				continue;
-			}
-
-			QString key = parts[0].trimmed().toLower();
-			QString val = parts.mid(1).join("=").trimmed();
-
-			if ((key.length() > 1) &&
-				!key.contains(' ') &&
-				(snippetTemp.find(key.toStdWString()) == snippetTemp.end()) &&
-				!val.isEmpty())
+			if (!nameSnippetTemp.isEmpty() &&
+				(nameSnippetUpperTemp != "KHÔNG SỬ DỤNG") &&
+				!listNameSnippetUpper.contains(nameSnippetUpperTemp) &&
+				!snippetTemp.empty())
 			{
-				snippetTemp[key.toStdWString()] = val.toStdWString();
-				continue;
+				dataSnippetTemp[nameSnippetTemp] = snippetTemp;
+				listNameSnippetUpper.insert(nameSnippetUpperTemp);
+			}
+			file.close();
+		}
+		QFile::remove(filePath);
+	}
+
+	snippetTemp.clear();
+	nameSnippetTemp.clear();
+	nameSnippetUpperTemp.clear();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Snippet");
+	QStringList groups = settings.childGroups();
+	settings.endGroup();
+
+	for (const QString& nameSnippetTemp : groups) {
+		nameSnippetUpperTemp = nameSnippetTemp.toUpper();
+		if (nameSnippetTemp.isEmpty() || (nameSnippetUpperTemp == "KHÔNG SỬ DỤNG") || listNameSnippetUpper.contains(nameSnippetUpperTemp)) continue;
+
+		settings.beginGroup(accountManager->currentAccount + "/Snippet/" + nameSnippetTemp);
+		QStringList keys = settings.childKeys();
+
+		snippetTemp.clear();
+		for (const QString& keyTemp : keys) {
+			QString key = keyTemp.trimmed().toLower();
+			if (key.isEmpty() || key.contains(' ') || key.length() <= 1) continue;
+
+			QString value = settings.value(keyTemp).toString().trimmed();
+			if (value.isEmpty()) continue;
+
+			auto wkey = key.toStdWString();
+			if (snippetTemp.find(wkey) == snippetTemp.end()) {
+				snippetTemp[wkey] = value.toStdWString();
 			}
 		}
-		file.close();
+		settings.endGroup();
+
+		if (!snippetTemp.empty()) {
+			dataSnippetTemp[nameSnippetTemp] = snippetTemp;
+			listNameSnippetUpper.insert(nameSnippetUpperTemp);
+		}
 	}
 
-	if (!nameSnippetTemp.isEmpty() &&
-		(nameSnippetUpperTemp != "Không sử dụng") &&
-		!listNameSnippetUpper.contains(nameSnippetUpperTemp) &&
-		!snippetTemp.empty())
-	{
-		dataSnippetTemp[nameSnippetTemp] = snippetTemp;
-		listNameSnippetUpper.insert(nameSnippetUpperTemp);
-	}
-
-	if (nameSnippetTemp.isEmpty()) {
+	if (dataSnippetTemp.empty()) {
 		snippetTemp.clear();
+		QString nameSnippetTemp;
+		
 		nameSnippetTemp = "Danh sách gõ tắt 01";
 		nameSnippetUpperTemp = nameSnippetTemp.toUpper();
+		snippetTemp.clear();
 		snippetTemp[L"_phi"] = L"Φ";
 		snippetTemp[L"_pi"] = L"π";
 		snippetTemp[L"_sig"] = L"∑";
 		dataSnippetTemp[nameSnippetTemp] = snippetTemp;
-		listNameSnippetUpper.insert(nameSnippetUpperTemp);
+		listNameSnippetUpper.insert(nameSnippetTemp.toUpper());
 
-		snippetTemp.clear();
 		nameSnippetTemp = "Danh sách gõ tắt 02";
 		nameSnippetUpperTemp = nameSnippetTemp.toUpper();
+		snippetTemp.clear();
 		snippetTemp[L"chxh"] = L"Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam";
 		snippetTemp[L"dltd"] = L"Độc lập - Tự Do - Hạnh Phúc";
 		snippetTemp[L"tphcm"] = L"thành phố Hồ Chí minh";
 		dataSnippetTemp[nameSnippetTemp] = snippetTemp;
-		listNameSnippetUpper.insert(nameSnippetUpperTemp);
+		listNameSnippetUpper.insert(nameSnippetTemp.toUpper());
 	}
 	dataSnippet = std::move(dataSnippetTemp);
 
@@ -420,8 +469,20 @@ void SnippetEditor::loadSnippetFromFile() {
 		dataSnippetTable[nameSnippetTemp] = snippetTable;
 	}
 	updateTotal();
-
 	nameSnippet = dataSnippet.begin()->first;
+
+	settings.beginGroup(accountManager->currentAccount + "/Snippet");
+	settings.remove("");
+	settings.endGroup();
+	for (const auto& [nameSnippetTemp, snippetMap] : dataSnippet) {
+		settings.beginGroup(accountManager->currentAccount + "/Snippet/" + nameSnippetTemp);
+		for (const auto& [keyW, valueW] : snippetMap) {
+			settings.setValue(QString::fromStdWString(keyW),
+				QString::fromStdWString(valueW));
+		}
+		settings.endGroup();
+	}
+	settings.sync();
 }
 
 void SnippetEditor::updateTotal()
@@ -666,6 +727,8 @@ void SnippetEditor::onTableChanged(QTableWidgetItem* item) {
 
 void SnippetEditor::onsaveButtonClicked()
 {
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	std::map<std::wstring, std::wstring> snippetTemp;
 	std::map<QString, std::map<std::wstring, std::wstring>> dataSnippetTemp;
 	QString nameSnippetUpperTemp;
@@ -676,7 +739,7 @@ void SnippetEditor::onsaveButtonClicked()
 		nameSnippetUpperTemp = nameSnippetTemp.toUpper();
 		snippetTemp.clear();
 		for (const auto& pair : snippetTable) {
-			QString key = pair.first.trimmed().toLower();
+			QString key = pair.first.trimmed().toLower().remove(' ');
 			QString val = pair.second.trimmed();
 			if ((key.length() > 1) &&
 				!key.contains(' ') &&
@@ -687,7 +750,7 @@ void SnippetEditor::onsaveButtonClicked()
 			}
 		}
 		if (!nameSnippetTemp.isEmpty() &&
-			(nameSnippetUpperTemp != "Không sử dụng") &&
+			(nameSnippetUpperTemp != "KHÔNG SỬ DỤNG") &&
 			!listNameSnippetUpper.contains(nameSnippetUpperTemp) &&
 			!snippetTemp.empty())
 		{
@@ -697,18 +760,20 @@ void SnippetEditor::onsaveButtonClicked()
 	}
 	dataSnippet = std::move(dataSnippetTemp);
 
-	QFile file(getExeDirectory() + "/Snippet.ini");
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-		return;
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Snippet");
+	settings.remove("");
+	settings.endGroup();
 
-	QTextStream out(&file);
-	for (const auto& [nameSnippetTemp, snippetTemp] : dataSnippet) {
-		out << "=" << nameSnippetTemp << "\n";
-		for (const auto& [keyW, valueW] : snippetTemp) {
-			out << QString::fromStdWString(keyW) << "=" << QString::fromStdWString(valueW) << "\n";
+	for (const auto& [nameSnippetTemp, snippetMap] : dataSnippet) {
+		settings.beginGroup(accountManager->currentAccount + "/Snippet/" + nameSnippetTemp);
+		for (const auto& [keyW, valueW] : snippetMap) {
+			settings.setValue(QString::fromStdWString(keyW),
+				QString::fromStdWString(valueW));
 		}
+		settings.endGroup();
 	}
-	file.close();
+	settings.sync();
 
 	updateTotal();
 	hideWindow();

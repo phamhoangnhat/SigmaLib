@@ -1,5 +1,7 @@
 ﻿#include "ShortcutKeyEditor.h"
 #include "Variable.h"
+#include "AccountManager.h"
+
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -116,7 +118,7 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Gọi bảng trình chỉnh sửa tác vụ AI",
         "Gọi bảng trình quản lý phím tắt",
         "Gọi bảng trình quản lý gõ tắt",
-        "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng",
+        "Gọi bảng trình quản lý người dùng",
         "Tham gia cộng đồng",
         "Gọi bảng đóng góp ý kiến",
         "Gọi bảng hướng dẫn sử dụng",
@@ -138,7 +140,6 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
     };
 
     dataShortcutKeyDefault = {
-        {"Chuyển đổi bộ mã", "M"},
         {"Chuyển đổi dạng chữ viết hoa thường", "H"},
         {"Gọi bảng cấu hình ứng dụng", "U"},
         {"Gọi bảng cấu hình chung", "C"},
@@ -348,10 +349,13 @@ void ShortcutKeyEditor::changeShortcutKey(int index) {
 
 void ShortcutKeyEditor::saveChanges() {
     Variable& variable = Variable::getInstance();
+    AccountManager* accountManager = AccountManager::getInstance();
+
     dataShortcutKeyReverse.clear();
     dataShortcutKey = dataShortcutKeyCurrent;
 
-    QSettings settings(variable.appName, "ShortcutKeys");
+    QSettings settings(APP_NAME, "AccountManager");
+    settings.beginGroup(accountManager->currentAccount + "/ShortcutKeys");
     for (int i = 0; i < listShortcutKey.size(); ++i) {
         const QString& key = listShortcutKey[i];
         QString shortcutKey = dataShortcutKey.value(key, QString());
@@ -363,14 +367,17 @@ void ShortcutKeyEditor::saveChanges() {
             dataShortcutKeyReverse[shortcutKey] = key;
         }
     }
-
+    settings.endGroup();
+    settings.sync();
     hideWindow();
 }
 
 void ShortcutKeyEditor::loadFromSettings() {
-    Variable& variable = Variable::getInstance();
     flagUpdating = true;
-    QSettings settings(variable.appName, "ShortcutKeys");
+
+    AccountManager* accountManager = AccountManager::getInstance();
+    QSettings settings(APP_NAME, "AccountManager");
+    settings.beginGroup(accountManager->currentAccount + "/ShortcutKeys");
 
     dataShortcutKey.clear();
     dataShortcutKeyReverse.clear();
@@ -408,7 +415,7 @@ void ShortcutKeyEditor::loadFromSettings() {
 
         ++i;
     }
-
+    settings.endGroup();
     dataShortcutKeyCurrent = dataShortcutKey;
     flagUpdating = false;
 }

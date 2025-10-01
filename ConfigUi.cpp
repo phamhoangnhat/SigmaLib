@@ -5,8 +5,9 @@
 #include "TaskAIEditor.h"
 #include "TypeWord.h"
 #include "TaskAIDatabase.h"
-#include <SnippetEditor.h>
+#include "SnippetEditor.h"
 #include "ShortcutKeyEditor.h"
+#include "AccountManager.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -465,9 +466,9 @@ void ConfigUi::doClose() {
 
 void ConfigUi::onResetButtonClicked()
 {
-	Variable& variable = Variable::getInstance();
-	QSettings settings(variable.appName, "ConfigUi");
-	settings.beginGroup(m_AppNameConfig);
+	AccountManager* accountManager = AccountManager::getInstance();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + m_AppNameConfig);
 	settings.remove("");
 	settings.endGroup();
 	loadSettings();
@@ -475,14 +476,11 @@ void ConfigUi::onResetButtonClicked()
 
 void ConfigUi::onResetAllButtonClicked()
 {
-	Variable& variable = Variable::getInstance();
-	QSettings settings(variable.appName, "ConfigUi");
-	QStringList groups = settings.childGroups();
-	for (const QString& group : groups) {
-		settings.beginGroup(group);
-		settings.remove("");
-		settings.endGroup();
-	}
+	AccountManager* accountManager = AccountManager::getInstance();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi");
+	settings.remove("");
+	settings.endGroup();
 	loadSettings();
 }
 
@@ -530,10 +528,11 @@ void ConfigUi::saveSettings(QString appNameConfig, QString nameValue, QString va
 	if (m_isLoading) {
 		return;
 	}
-
 	Variable& variable = Variable::getInstance();
-	QSettings settings(variable.appName, "ConfigUi");
-	settings.beginGroup(appNameConfig);
+	AccountManager* accountManager = AccountManager::getInstance();
+
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + appNameConfig);
 	settings.setValue(nameValue, value);
 	settings.endGroup();
 
@@ -585,6 +584,7 @@ void ConfigUi::loadSettings() {
 	Variable& variable = Variable::getInstance();
 	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 	SnippetEditor* snippetEditor = SnippetEditor::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
 
 	m_isLoading = true;
 
@@ -623,8 +623,8 @@ void ConfigUi::loadSettings() {
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
 
-	QSettings settings(variable.appName, "ConfigUi");
-	settings.beginGroup(m_AppNameConfig);
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + m_AppNameConfig);
 	bool flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 	std::wstring characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString().toStdWString();
 	variable.nameTaskAI = settings.value("nameTaskAI", variable.NAMETASKAI).toString();

@@ -18,6 +18,7 @@ public:
     static void showWindow();
     static void hideWindow();
     static void closeWindow();
+    void loadWindow();
 
     QComboBox* comboInputMethod = nullptr;
     QCheckBox* checkBoxAutoStart;
@@ -38,7 +39,6 @@ private:
     explicit GeneralConfig(QWidget* parent = nullptr);
     ~GeneralConfig();
 
-    void loadWindow();
     void fadeIn();
     void fadeOut();
 

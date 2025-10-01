@@ -24,6 +24,7 @@ public:
     static void closeWindow();
     QString getShortcutKey(const QString& key);
     QString getAction(const int& vkCode);
+    void loadFromSettings();
 
 protected:
     void closeEvent(QCloseEvent* event) override;;
@@ -31,7 +32,6 @@ protected:
 
     void changeShortcutKey(int index);
     void saveChanges();
-    void loadFromSettings();
     void loadDefault();
     bool validateShortcut(const QString& shortcutKey, const QMap<QString, QString>& dataShortcutKeyTemp);
 

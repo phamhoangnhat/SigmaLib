@@ -115,6 +115,12 @@
     <ClCompile Include="ChangeCase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AccountManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenameAccountDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clipboard.h">
@@ -209,6 +215,12 @@
     <QtMoc Include="LangRegistryWatcher.h">
       <Filter>Resource Files\Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="RenameAccountDialog.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AccountManager.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SigmaLib.rc">
@@ -262,6 +274,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="iconSigmaGroup.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="iconManagerAccount.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

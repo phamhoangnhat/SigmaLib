@@ -118,26 +118,26 @@ void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace)
 	KeyAPIManage* keyAPIManage = KeyAPIManage::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
-	QStringList listKeyAPI = keyAPIManage->listKeyAPI;
+	const QString modelName = QStringLiteral("gemini-2.5-flash-lite");
+	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(modelName));
 
+	QStringList listKeyAPI = keyAPIManage->listKeyAPI;
 	int randomIndex = QRandomGenerator::global()->bounded(listKeyAPI.size());
 	QString randomKey = listKeyAPI.at(randomIndex);
-	QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%1").arg(randomKey));
 	QNetworkRequest request(url);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=utf-8");
+	request.setRawHeader("Accept", "application/json");
+	request.setRawHeader("x-goog-api-key", randomKey.toUtf8());
 
 	QJsonObject part;
 	part["text"] = prompt;
-
 	QJsonObject content;
 	content["parts"] = QJsonArray{ part };
-
 	QJsonObject body;
 	body["contents"] = QJsonArray{ content };
-
 	QByteArray data = QJsonDocument(body).toJson();
-	QNetworkReply* reply = networkManager.post(request, data);
 
+	QNetworkReply* reply = networkManager.post(request, data);
 	QObject::connect(reply, &QNetworkReply::finished, [=]() {
 		TypeWord& typeWord = TypeWord::getInstance();
 		Variable& variable = Variable::getInstance();

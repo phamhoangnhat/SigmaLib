@@ -1,8 +1,9 @@
 ﻿#include "GeneralConfig.h"
 #include "Variable.h"
-#include <Util.h>
-#include <ShortcutKeyEditor.h>
-#include <SigmaLib.h>
+#include "Util.h"
+#include "ShortcutKeyEditor.h"
+#include "SigmaLib.h"
+#include "AccountManager.h"
 
 #include <QPropertyAnimation>
 #include <QPushButton>
@@ -13,6 +14,7 @@
 #include <QComboBox>
 #include <QProcess>
 #include <QThread>
+
 
 QPointer<GeneralConfig> GeneralConfig::m_instance = nullptr;
 
@@ -470,6 +472,7 @@ void GeneralConfig::updateShortcutLabels() {
 
 void GeneralConfig::onSaveButtonClicked() {
 	Variable& variable = Variable::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
 
 	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeAutoStart = checkBoxAutoStart->isChecked();
@@ -491,7 +494,8 @@ void GeneralConfig::onSaveButtonClicked() {
 	variable.modeInsertChar = checkBoxInsertChar->isChecked();
 	variable.modeLoopDiacTone = checkBoxLoopDiacTone->isChecked();
 
-	QSettings settings(variable.appName, "Config");
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Config");
 	settings.setValue("inputMethod", QString::fromStdWString(variable.inputMethod));
 	settings.setValue("modeAutoStart", variable.modeAutoStart);
 	settings.setValue("modeAdmin", variable.modeAdmin);
@@ -502,6 +506,7 @@ void GeneralConfig::onSaveButtonClicked() {
 	settings.setValue("modeRemoveDiacTone", variable.modeRemoveDiacTone);
 	settings.setValue("modeLoopDiacTone", variable.modeLoopDiacTone);
 	settings.setValue("modeInsertChar", variable.modeInsertChar);
+	settings.endGroup();
 	variable.update();
 
 	if (variable.modeAdmin && !isRunningAsAdmin()) {

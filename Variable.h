@@ -33,9 +33,7 @@ public:
     const bool MODETEENCODE = false;
     const bool MODEUSELEFTRIGHT = false;
 
-    QString appName = APP_NAME;
-    QString version = APP_VERSION_STRING;
-    QString appNameFull = appName + " " + version;
+    QString appNameFull = QStringLiteral(APP_NAME) + QStringLiteral(" ") + QStringLiteral(APP_VERSION_STRING);
     QString nameCurrentWindow = "";
     QString namePreviousWindow = "";
     double verSigmaExe;

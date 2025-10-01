@@ -2,6 +2,7 @@
 
 #include "TaskAIDatabase.h"
 #include "Variable.h"
+#include "AccountManager.h"
 
 #include <QSettings>
 #include <algorithm>
@@ -17,10 +18,11 @@ TaskAIDatabase::TaskAIDatabase() {
 
 void TaskAIDatabase::loadDataTaskAI()
 {
-	Variable& variable = Variable::getInstance();
-	QSettings settings(variable.appName, "TaskAIDatabase");
+	AccountManager* accountManager = AccountManager::getInstance();
+	dataTaskAI.clear();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/TaskAIDatabase");
 	const QStringList allKeys = settings.allKeys();
-
 	QSet<QString> seenKeys;
 	for (const QString& rawName : allKeys) {
 		QString trimmed = rawName.trimmed();
@@ -36,6 +38,7 @@ void TaskAIDatabase::loadDataTaskAI()
 		seenKeys.insert(upperName);
 		dataTaskAI[upperName] = qMakePair(trimmed, content);
 	}
+	settings.endGroup();
 
 	addDataTaskAIDefault(dataTaskAI);
 	listNameTaskAI = createListNameTaskAI(dataTaskAI);
@@ -48,6 +51,7 @@ void TaskAIDatabase::loadDataTaskAI()
 		"Các từ ngữ nước ngoài không cần dịch, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai.\n"
 		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
+	saveDataTaskAI();
 }
 
 void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI)
@@ -75,8 +79,7 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
 		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
 		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
-		"Các từ nước ngoài thì không dịch sang tiếng Việt, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai."
-		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
+		"Các từ nước ngoài thì không dịch sang tiếng Việt, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 
 	dataTaskAI.remove("02. KIỂM TRA CHÍNH TẢ TIẾNG ANH");
@@ -113,15 +116,15 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"05. Chuyển mã",
 		"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
 		"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
-		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Không sửa lỗi chính tả hoặc ngữ pháp."
-		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
+		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Không sửa lỗi chính tả hoặc ngữ pháp. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 }
 
 void TaskAIDatabase::saveDataTaskAI() {
-	Variable& variable = Variable::getInstance();
-	QSettings settings(variable.appName, "TaskAIDatabase");
-	settings.clear();
+	AccountManager* accountManager = AccountManager::getInstance();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/TaskAIDatabase");
+	settings.remove("");
 
 	for (const auto& pair : dataTaskAI.values()) {
 		const QString& originalName = pair.first;
@@ -129,6 +132,7 @@ void TaskAIDatabase::saveDataTaskAI() {
 		settings.setValue(originalName, content);
 	}
 	listNameTaskAI = createListNameTaskAI(dataTaskAI);
+	settings.endGroup();
 }
 
 bool TaskAIDatabase::isValidTaskContent(const QString& content) {

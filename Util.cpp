@@ -1,4 +1,5 @@
-﻿#include "Util.h"
+﻿
+#include "Util.h"
 #include "Variable.h"
 
 #include <cwctype>
@@ -160,7 +161,7 @@ bool setAutoStartApp(bool enable) {
     HKEY hKey;
     const wchar_t* runKeyPath = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-    QString appName = Variable::getInstance().appName;
+    QString appName = APP_NAME;
     const wchar_t* appNameW = (const wchar_t*)appName.utf16();
 
     QString appPath = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
@@ -357,4 +358,3 @@ std::wstring convertCharset(const std::wstring& string, std::map<std::wstring, s
     }
     return stringResult;
 }
-

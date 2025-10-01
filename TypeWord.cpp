@@ -8,6 +8,8 @@
 #include "SnippetEditor.h"
 #include "Util.h"
 #include "ChangeCase.h"
+#include "AccountManager.h"
+
 #include <iostream>
 #include <windows.h>
 #include <cwctype>
@@ -369,6 +371,8 @@ void TypeWord::changeInputMethod()
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	GeneralConfig* generalConfig = GeneralConfig::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	if (generalConfig->isVisible()) {
 		return;
 	}
@@ -388,8 +392,10 @@ void TypeWord::changeInputMethod()
 	}
 
 	variable.update();
-	QSettings settings(variable.appName, "Config");
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Config");
 	settings.setValue("inputMethod", QString::fromStdWString(variable.inputMethod));
+	settings.endGroup();
 	showInputMethod();
 }
 
@@ -398,6 +404,7 @@ void TypeWord::changeConfigUi(QString nameMode)
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	ConfigUi& configUi = ConfigUi::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
 
 	if (configUi.isVisible()) {
 		return;
@@ -441,8 +448,8 @@ void TypeWord::changeConfigUi(QString nameMode)
 		valueMode = variable.modeUseLeftRight;
 	}
 
-	QSettings settings(variable.appName, "ConfigUi");
-	settings.beginGroup(variable.nameCurrentWindow);
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + variable.nameCurrentWindow);
 	settings.setValue(nameMode, valueMode);
 	settings.endGroup();
 	variable.update();
@@ -454,6 +461,8 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	GeneralConfig* generalConfig = GeneralConfig::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	if (generalConfig->isVisible()) {
 		return;
 	}
@@ -494,8 +503,10 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 		valueMode = variable.modeInsertChar;
 	}
 
-	QSettings settings(variable.appName, "Config");
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Config");
 	settings.setValue(nameMode, valueMode);
+	settings.endGroup();
 	variable.update();
 
 	showChangeConfig(nameMode);

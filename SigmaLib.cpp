@@ -15,9 +15,10 @@
 #include "Feedback.h"
 #include "SnippetEditor.h"
 #include "ShortcutKeyEditor.h"
-#include <KeyAPIManage.h>
-#include <CharsetRegistryWatcher.h>
-#include <LangRegistryWatcher.h>
+#include "KeyAPIManage.h"
+#include "CharsetRegistryWatcher.h"
+#include "LangRegistryWatcher.h"
+#include "AccountManager.h"
 
 #include <QApplication>
 #include <QTimer>
@@ -82,6 +83,7 @@ void SigmaLib::run()
     disableStickyKeysPopup();
     disableTextSuggestionsSetting();
 
+    AccountManager::getInstance();
     Variable::getInstance().init();
     ConfigUi::getInstance();
     NoticeUi::updateWindow(true);
@@ -96,6 +98,7 @@ void SigmaLib::stop() {
     if (!isRunning) return;
     isRunning = false;
 
+    AccountManager::closeWindow();
     GeneralConfig::closeWindow();
     ConfigUi::closeWindow();
     NoticeUi::closeWindow();

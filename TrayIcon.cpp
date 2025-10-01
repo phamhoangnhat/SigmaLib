@@ -9,6 +9,7 @@
 #include "SnippetEditor.h"
 #include "Feedback.h"
 #include "GeneralConfig.h"
+#include "AccountManager.h"
 
 #include <QMenu>
 #include <QAction>
@@ -39,7 +40,7 @@ TrayIcon::TrayIcon(QObject* parent)
 	actionConfigTaskAI = addActionToMenu("Trình chỉnh sửa tác vụ AI", ":/iconTaskAI.png", this, SLOT(onConfigTaskAI()));
 	actionShortcutKeyEditor = addActionToMenu("Trình quản lý phím tắt", ":/iconShortcutKey.png", this, SLOT(onShortcutKeyEditor()));
 	actionSnippetEditor = addActionToMenu("Trình quản lý gõ tắt", ":/iconSnippetEdittor.png", this, SLOT(onConfigSnippetEditor()));
-	actionResetConfigUi = addActionToMenu("Xóa thiết lập đã lưu", ":/iconReset.png", this, SLOT(onResetConfigUi()));
+	actionAccountManager = addActionToMenu("Trình quản lý người dùng", ":/iconManagerAccount.png", this, SLOT(onAccountManager()));
 	actionFeedback = addActionToMenu("Đóng góp ý kiến", ":/iconFeedback.png", this, SLOT(onFeedback()));
 	actionSigmaGroup = addActionToMenu("Tham gia cộng đồng", ":/iconSigmaGroup.png", this, SLOT(onSigmaGroup()));
 	actionHelp = addActionToMenu("Hướng dẫn sử dụng", ":/iconHelp.png", this, SLOT(onHelp()));
@@ -128,7 +129,7 @@ void TrayIcon::updateMenuShortcutText() {
 	updateAction(actionConfigTaskAI, "Trình chỉnh sửa tác vụ AI", "Gọi bảng trình chỉnh sửa tác vụ AI");
 	updateAction(actionShortcutKeyEditor, "Trình quản lý phím tắt", "Gọi bảng trình quản lý phím tắt");
 	updateAction(actionSnippetEditor, "Trình quản lý gõ tắt", "Gọi bảng trình quản lý gõ tắt");
-	updateAction(actionResetConfigUi, "Xóa thiết lập đã lưu", "Gọi bảng xóa các tiết lập đã lưu cho từng ứng dụng");
+	updateAction(actionAccountManager, "Trình quản lý người dùng", "Gọi bảng trình quản lý người dùng");
 	updateAction(actionFeedback, "Đóng góp ý kiến", "Gọi bảng đóng góp ý kiến");
 	updateAction(actionSigmaGroup, "Tham gia cộng đồng", "Tham gia cộng đồng");
 	updateAction(actionHelp, "Hướng dẫn sử dụng", "Gọi bảng hướng dẫn sử dụng");
@@ -168,21 +169,9 @@ void TrayIcon::onConfigSnippetEditor()
 	SnippetEditor::showWindow();
 }
 
-void TrayIcon::onResetConfigUi()
+void TrayIcon::onAccountManager()
 {
-	if (!confirmResetConfigUi) {
-		confirmResetConfigUi = new CustomConfirmBox("Xác nhận", "Bạn có chắc muốn xóa thiết lập của Sigma đã lưu cho từng cửa sổ ứng dụng?", nullptr);
-	}
-	confirmResetConfigUi->showWindow();
-	if (confirmResetConfigUi) {
-		Variable& variable = Variable::getInstance();
-
-		int confirm = confirmResetConfigUi->confirm;
-		if (confirm == 1) {
-			QSettings settings(variable.appName, "ConfigUi");
-			settings.clear();
-		}
-	}
+	AccountManager::showWindow();
 }
 
 void TrayIcon::onFeedback() {

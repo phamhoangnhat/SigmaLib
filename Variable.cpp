@@ -6,10 +6,11 @@
 #include "Listener.h"
 #include "NoticeUi.h"
 #include "ConfigUi.h"
-#include <TaskAI.h>
+#include "TaskAI.h"
 #include "TaskAIDatabase.h"
-#include <SnippetEditor.h>
+#include "SnippetEditor.h"
 #include "Typeword.h"
+#include "AccountManager.h"
 
 #include <algorithm>
 #include <iostream>
@@ -72,11 +73,15 @@ void Variable::update()
 
 void Variable::loadGeneralConfig()
 {
-	QSettings settings(appName, "Config");
-	settings.setValue("appNameFull", appNameFull);
-	verSigmaExe = settings.value("verSigmaExe", 0.0).toDouble();
+	AccountManager* accountManager = AccountManager::getInstance();
+
+	QSettings settingsConfig(APP_NAME, "Config");
+	settingsConfig.setValue("appNameFull", appNameFull);
+	verSigmaExe = settingsConfig.value("verSigmaExe", 0.0).toDouble();
 
 	namePreviousWindow = "";
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/Config");
 	inputMethod = settings.value("inputMethod", QString::fromStdWString(INPUTMETHOD)).toString().toStdWString();
 	if (mapInputMethodBase.find(inputMethod) == mapInputMethodBase.end()) {
 		inputMethod = INPUTMETHOD;
@@ -95,6 +100,7 @@ void Variable::loadGeneralConfig()
 	modeRemoveDiacTone = settings.value("modeRemoveDiacTone", MODEREMOVEDIACTONE).toBool();
 	modeLoopDiacTone = settings.value("modeLoopDiacTone", MODELOOPDIACTONE).toBool();
 	modeInsertChar = settings.value("modeInsertChar", MODEINSERTCHAR).toBool();
+	settings.endGroup();
 
 	listAppUseClipboard = {
 		//SAP
@@ -856,8 +862,11 @@ void Variable::initDataValidateKeyToneDiac()
 
 void Variable::loadDataAutoChangeLang(QString& nameApp)
 {
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	dataAutoChangeLang.clear();
-	QSettings settings(appName, "DataAutoChangeLang");
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/DataAutoChangeLang");
 	if (settings.contains(nameApp)) {
 		QStringList stored = settings.value(nameApp).toStringList();
 		for (const QString& item : stored) {
@@ -867,9 +876,11 @@ void Variable::loadDataAutoChangeLang(QString& nameApp)
 			}
 		}
 	}
+	settings.endGroup();
 }
 
 std::vector<std::wstring> Variable::createInputMethodBase() {
+	AccountManager* accountManager = AccountManager::getInstance();
 	std::vector<std::wstring> inputMethodBase;
 
 	if (mapInputMethodBase.find(inputMethod) == mapInputMethodBase.end()) {
@@ -878,7 +889,8 @@ std::vector<std::wstring> Variable::createInputMethodBase() {
 
 	inputMethodBase = mapInputMethodBase[inputMethod];
 	if (inputMethod == L"Tích hợp") {
-		QSettings settings(appName, "InputMethodCustom");
+		QSettings settings(APP_NAME, "AccountManager");
+		settings.beginGroup(accountManager->currentAccount + "/InputMethodCustom");
 		if (settings.contains("data")) {
 			QStringList stored = settings.value("data").toStringList();
 
@@ -890,6 +902,7 @@ std::vector<std::wstring> Variable::createInputMethodBase() {
 				addKeyInputMethod(stringRaw, i, inputMethodBase);
 			}
 		}
+		settings.endGroup();
 	}
 	return inputMethodBase;
 }
@@ -1271,7 +1284,7 @@ std::map<std::wstring, std::wstring> Variable::createDataChangeCaseUpper()
 
 void Variable::saveDataAutoChangeLang(QString& nameApp)
 {
-	QSettings settings(appName, "DataAutoChangeLang");
+	AccountManager* accountManager = AccountManager::getInstance();
 
 	QStringList list;
 	for (const std::wstring& item : dataAutoChangeLang) {
@@ -1279,7 +1292,10 @@ void Variable::saveDataAutoChangeLang(QString& nameApp)
 		list.append(lower);
 	}
 
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/DataAutoChangeLang");
 	settings.setValue(nameApp, list);
+	settings.endGroup();
 }
 
 bool Variable::loadSettingsWindow()
@@ -1289,6 +1305,7 @@ bool Variable::loadSettingsWindow()
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 		SnippetEditor* snippetEditor = SnippetEditor::getInstance();
 		TypeWord& typeWord = TypeWord::getInstance();
+		AccountManager* accountManager = AccountManager::getInstance();
 
 		typeWord.numChangeCase = 0;
 
@@ -1296,8 +1313,8 @@ bool Variable::loadSettingsWindow()
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
 
-		QSettings settings(appName, "ConfigUi");
-		settings.beginGroup(nameCurrentWindow);
+		QSettings settings(APP_NAME, "AccountManager");
+		settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + nameCurrentWindow);
 		flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
 		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
