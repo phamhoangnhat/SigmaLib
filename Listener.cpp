@@ -784,7 +784,7 @@ void Listener::checkKeyMouse(WPARAM wParam)
 		updateMousePress(wParam);
 		updateMouseRelease(wParam);
 
-		if (wParam != WM_MOUSEMOVE) {
+		if ((wParam != WM_MOUSEMOVE) && (wParam != WM_MOUSEWHEEL)) {
 			flagCheckSpell = false;
 			if (!variable.modeClipboard) {
 				changeCase.textOrigin.clear();

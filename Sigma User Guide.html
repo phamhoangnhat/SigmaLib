@@ -318,7 +318,7 @@
 		</div>
 		<button class="menu-toggle">☰</button>
 		<div class="container">
-			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.1.3</h1>
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.1.4</h1>
 			<div class="section">
 				<h2 id="sum-intro">1. Giới thiệu</h2>
 				<p>
@@ -1273,7 +1273,7 @@
 					<li>Kiểm tra chính tả tiếng Anh</li>
 					<li>Dịch sang tiếng Việt</li>
 					<li>Dịch sang tiếng Anh</li>
-					<li>Chuyển mã Unicode</li>
+					<li>Chuyển mã phông chữ</li>
 				</ol>
 
 				<h3>Ứng dụng thực tế</h3>
@@ -1285,12 +1285,75 @@
 
 				<h3>Tùy chỉnh tác vụ AI</h3>
 				<ul>
-					<li>Nhấp phải vào biểu tượng <strong>Sigma</strong> ở khay hệ thống.</li>
+					<li>Nhấp phải vào biểu tượng <code>Sigma</code> ở khay hệ thống.</li>
 					<li>Chọn mục <code>Trình chỉnh sửa tác vụ AI</code>.</li>
 					<li>
-						Có thể thêm các tác vụ như: <code>Tóm tắt nội dung dài</code>, <code>Viết lại đoạn văn</code>,
+						Có thể thêm các tác vụ như:
+						<code>Tóm tắt nội dung dài</code>,
+						<code>Viết lại đoạn văn</code>,
 						<code>Chuyển thành văn nói hài hước</code>…
 					</li>
+					<li>
+						Mỗi tác vụ AI đều cho phép bạn lựa chọn model AI riêng.
+						<ul>
+							<li>Với các tác vụ <code>đơn giản</code> (ví dụ: viết lại câu ngắn, gợi ý ý tưởng nhanh),
+								nên chọn model <code>Flash</code> hoặc các model tốc độ cao. Ưu điểm là phản hồi gần như
+								tức thì.</li>
+							<li>Với các tác vụ <code>phức tạp</code> hoặc yêu cầu <code>độ chính xác cao</code> (ví dụ:
+								phân tích nội dung dài, viết văn bản chuẩn mực), nên chọn model <code>Pro</code>. Đổi
+								lại, thời gian xử lý sẽ lâu hơn.</li>
+						</ul>
+					</li>
+					<h3>Các model Gemini</h3>
+					<table>
+						<thead>
+							<tr>
+								<th>Tên</th>
+								<th>Mô tả</th>
+								<th>Phù hợp cho</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Gemini 2.0 Flash</td>
+								<td>Nhanh chất lượng khá</td>
+								<td>Tác vụ ngắn, trả lời tức thì</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.0 Flash Lite</td>
+								<td>Siêu nhanh, chi phí thấp, nhẹ</td>
+								<td>Gõ tắt, xử lý văn bản đơn giản</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.5 Flash</td>
+								<td>Cân bằng tốc độ & chất lượng</td>
+								<td>Tóm tắt, Q&A nhanh, dàn ý</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.5 Flash Lite</td>
+								<td>Nhanh, nhẹ hơn Flash</td>
+								<td>Xử lý ngắn gọn, lọc thông tin</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.5 Flash Lite Preview (09/2025)</td>
+								<td>Bản thử nghiệm, rất nhanh</td>
+								<td>Thử nghiệm tính năng mới</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.5 Flash Preview (09/2025)</td>
+								<td>Bản thử nghiệm, cân bằng tốt</td>
+								<td>Thử nghiệm tác vụ dài nhanh</td>
+							</tr>
+							<tr>
+								<td>Gemini 2.5 Pro</td>
+								<td>Độ chính xác cao, lý luận tốt</td>
+								<td>Phân tích phức tạp, viết chuẩn</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<p><em>Lưu ý:</em> <code>Flash/Lite</code> ưu tiên tốc độ, <code>Pro</code> ưu tiên chất lượng. Các model <code>Preview</code>
+						chỉ để thử nghiệm, có thể thay đổi.</p>
 				</ul>
 				<p><strong>Lưu ý:</strong> Các tác vụ mặc định không thể chỉnh sửa hoặc xóa.</p>
 

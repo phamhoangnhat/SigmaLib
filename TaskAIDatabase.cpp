@@ -19,6 +19,7 @@ TaskAIDatabase::TaskAIDatabase() {
 void TaskAIDatabase::loadDataTaskAI()
 {
 	AccountManager* accountManager = AccountManager::getInstance();
+
 	dataTaskAI.clear();
 	QSettings settings(APP_NAME, "AccountManager");
 	settings.beginGroup(accountManager->currentAccount + "/TaskAIDatabase");
@@ -48,10 +49,52 @@ void TaskAIDatabase::loadDataTaskAI()
 		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
 		"Tự động nhận diện ngôn ngữ của văn bản và sửa theo ngôn ngữ đó.\n"
 		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
-		"Các từ ngữ nước ngoài không cần dịch, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai.\n"
+		"Các thuật ngữ tiếng Anh không cần dịch, chỉ sửa chính tả các thuật ngữ đó nếu sai.\n"
 		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
+
+	loadModel();
 	saveDataTaskAI();
+}
+
+void TaskAIDatabase::loadModel()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+	dataNameModel = {
+		{"Gemini 2.0 Flash", "gemini-2.0-flash"},
+		{"Gemini 2.0 Flash Lite", "gemini-2.0-flash-lite"},
+		{"Gemini 2.5 Flash", "gemini-2.5-flash"},
+		{"Gemini 2.5 Flash Lite", "gemini-2.5-flash-lite"},
+		{"Gemini 2.5 Flash Lite Preview (09/2025)", "gemini-2.5-flash-lite-preview-09-2025" },
+		{"Gemini 2.5 Flash Preview (09/2025)", "gemini-2.5-flash-preview-09-2025"},
+		{"Gemini 2.5 Pro", "gemini-2.5-pro"},
+	};
+	listNameModel = dataNameModel.keys();
+	numModelDefault = 3;
+
+	dataModelAI.clear();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ModelAIDatabase");
+	const QStringList allKeys = settings.allKeys();
+	for (const QString& rawName : allKeys) {
+		QString trimmed = rawName.trimmed();
+		QString upperName = trimmed.toUpper();
+		QString nameModel = settings.value(rawName).toString();
+
+		if (!dataTaskAI.contains(upperName) || !listNameModel.contains(nameModel)) {
+			settings.remove(rawName);
+			continue;
+		}
+		dataModelAI[dataTaskAI[upperName].first] = nameModel;
+	}
+	settings.endGroup();
+
+	for (const auto& pair : dataTaskAI.values()) {
+		const QString& nameTaskAI = pair.first;
+		if (!dataModelAI.contains(nameTaskAI)) {
+			dataModelAI[nameTaskAI] = listNameModel[numModelDefault];
+		}
+	}
 }
 
 void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI)
@@ -70,7 +113,7 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 	"02. KIỂM TRA CHÍNH TẢ TIẾNG ANH",
 	"03. DỊCH SANG TIẾNG VIỆT",
 	"04. DỊCH SANG TIẾNG ANH",
-	"05. CHUYỂN MÃ"
+	"05. CHUYỂN MÃ PHÔNG CHỮ"
 		});
 
 	dataTaskAI.remove("01. KIỂM TRA CHÍNH TẢ TIẾNG VIỆT");
@@ -79,7 +122,8 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
 		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
 		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
-		"Các từ nước ngoài thì không dịch sang tiếng Việt, chỉ sửa chính tả theo ngôn ngữ gốc nếu sai. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
+		"Các thuật ngữ tiếng Anh không dịch sang tiếng Việt, chỉ sửa chính tả các thuật ngữ nếu sai. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc.\n"
+		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc"
 	);
 
 	dataTaskAI.remove("02. KIỂM TRA CHÍNH TẢ TIẾNG ANH");
@@ -96,8 +140,7 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"03. Dịch sang tiếng Việt",
 		"Dịch đoạn sau sang tiếng Việt:\n{text}\n"
 		"Chỉ trả về bản dịch, không thêm giải thích hay chú thích nào.\n"
-		"Giữ nguyên các thuật ngữ chuyên ngành, viết tắt, tên riêng hoặc cụm từ tiếng Anh không thông dụng. "
-		"Chỉ sửa chính tả các thuật ngữ này nếu chúng sai chính tả.\n"
+		"Giữ nguyên các thuật ngữ chuyên ngành tiếng Anh. Chỉ sửa chính tả các thuật ngữ này nếu chúng sai chính tả.\n"
 		"Giữ nguyên định dạng, viết hoa và cấu trúc của văn bản gốc nếu có."
 	);
 
@@ -106,17 +149,17 @@ void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>
 		"04. Dịch sang tiếng Anh",
 		"Translate the following text into English:\n{text}\n"
 		"Return only the translated result. Do not add comments or explanations.\n"
-		"Preserve the original formatting and capitalization.\n"
-		"Do not translate technical terms, proper names, or acronyms unless their English equivalents are well known."
+		"Preserve the original formatting and capitalization."
 	);
 
 	dataTaskAI.remove("05. CHUYỂN MÃ UNICODE");
 	dataTaskAI.remove("05. CHUYỂN MÃ");
-	dataTaskAI["05. CHUYỂN MÃ"] = qMakePair(
-		"05. Chuyển mã",
+	dataTaskAI.remove("05. CHUYỂN MÃ PHÔNG CHỮ");
+	dataTaskAI["05. CHUYỂN MÃ PHÔNG CHỮ"] = qMakePair(
+		"05. Chuyển mã phông chữ",
 		"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
 		"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
-		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Không sửa lỗi chính tả hoặc ngữ pháp. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
+		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 }
 
@@ -132,6 +175,22 @@ void TaskAIDatabase::saveDataTaskAI() {
 		settings.setValue(originalName, content);
 	}
 	listNameTaskAI = createListNameTaskAI(dataTaskAI);
+	settings.endGroup();
+
+	saveModel();
+}
+
+void TaskAIDatabase::saveModel()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ModelAIDatabase");
+	settings.remove("");
+
+	for (const auto& nameTaskAI : dataModelAI.keys()) {
+		const QString& model = dataModelAI[nameTaskAI];
+		settings.setValue(nameTaskAI, model);
+	}
 	settings.endGroup();
 }
 

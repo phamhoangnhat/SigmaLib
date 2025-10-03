@@ -30,6 +30,7 @@ void TaskAIEditor::showWindow() {
 	TaskAIEditor* ui = getInstance();
 	if (!ui->isVisible()) {
 		ui->dataTaskAITemp = taskAIDatabase.dataTaskAI;
+		ui->dataModelAITemp = taskAIDatabase.dataModelAI;
 		ui->listNameTaskAITemp = taskAIDatabase.listNameTaskAI;
 		ui->fadeIn();
 		ui->show();
@@ -262,6 +263,7 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
     )");
 	
 	taskCombo = new QComboBox();
+	modelCombo = new QComboBox();
 	addTaskBtn = new QPushButton("");
 	removeTaskBtn = new QPushButton("");
 	renameTaskBtn = new QPushButton("");
@@ -274,12 +276,15 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	cancelBtn = new QPushButton("Hủy");
 	keyAPIBtn = new QPushButton("Khóa API Gemini");
 
-	QHBoxLayout* topLayout = new QHBoxLayout();
-	topLayout->addWidget(taskCombo, 1);
-	topLayout->addWidget(renameTaskBtn);
-	topLayout->addWidget(addTaskBtn);
-	topLayout->addWidget(removeTaskBtn);
-	topLayout->addWidget(labelShortcut);
+	QHBoxLayout* firstLayout = new QHBoxLayout();
+	firstLayout->addWidget(taskCombo, 1);
+	firstLayout->addWidget(renameTaskBtn);
+	firstLayout->addWidget(addTaskBtn);
+	firstLayout->addWidget(removeTaskBtn);
+
+	QHBoxLayout* secondLayout = new QHBoxLayout();
+	secondLayout->addWidget(modelCombo, 1);
+	secondLayout->addWidget(labelShortcut);
 
 	QHBoxLayout* btnLayout = new QHBoxLayout();
 	btnLayout->addWidget(saveBtn);
@@ -288,7 +293,8 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	btnLayout->addWidget(keyAPIBtn);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addLayout(topLayout);
+	layout->addLayout(firstLayout);
+	layout->addLayout(secondLayout);
 	layout->addWidget(taskEditor);
 	layout->addLayout(btnLayout);
 
@@ -297,9 +303,16 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	removeTaskBtn->setIcon(QIcon(":/iconDeleteItem.png"));
 
 	labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-	labelShortcut->setFixedWidth(80);
+	const int buttonsWidth =
+		addTaskBtn->sizeHint().width() +
+		renameTaskBtn->sizeHint().width() +
+		removeTaskBtn->sizeHint().width();
+
+	const int gaps = firstLayout->spacing() * 2;
+	labelShortcut->setFixedWidth(buttonsWidth + gaps);
 
 	connect(taskCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onTaskComboChanged);
+	connect(modelCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onModelComboChanged);
 	connect(renameTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRenameTaskClicked);
 	connect(addTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onAddTaskClicked);
 	connect(removeTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRemoveTaskClicked);
@@ -323,6 +336,7 @@ void TaskAIEditor::loadWindow(const QString& _nameTaskAI) {
 	listNameTaskAITemp = taskAIDatabase.createListNameTaskAI(dataTaskAITemp);
 	if (listNameTaskAITemp.isEmpty()) {
 		taskCombo->clear();
+		modelCombo->clear();
 		taskEditor->clear();
 		isDefault = true;
 	}
@@ -332,15 +346,20 @@ void TaskAIEditor::loadWindow(const QString& _nameTaskAI) {
 			taskCombo->addItem(name);
 		}
 
+		modelCombo->clear();
+		for (const QString& model : taskAIDatabase.listNameModel) {
+			modelCombo->addItem(model);
+		}
+
 		if (_nameTaskAI.isEmpty()) {
 			taskCombo->setCurrentIndex(0);
 		}
 		else {
 			key = _nameTaskAI.toUpper();
 			if (dataTaskAITemp.contains(key)) {
-				int index = taskCombo->findText(_nameTaskAI);
-				if (index != -1) {
-					taskCombo->setCurrentIndex(index);
+				int indexTask = taskCombo->findText(_nameTaskAI);
+				if (indexTask != -1) {
+					taskCombo->setCurrentIndex(indexTask);
 				}
 				else {
 					taskCombo->setCurrentIndex(0);
@@ -355,9 +374,18 @@ void TaskAIEditor::loadWindow(const QString& _nameTaskAI) {
 		taskEditor->setPlainText(dataTaskAITemp[key].second);
 		isDefault = taskAIDatabase.listNameDefaultTaskAI.contains(key);
 
-		int index = listNameTaskAITemp.indexOf(nameTaskAI) + 1;
-		if ((index >= 1) && (index <= 12)) {
-			labelShortcut->setText("Shift → F" + QString::number(index));
+		QString model = dataModelAITemp[nameTaskAI];
+		int indexModel = taskAIDatabase.listNameModel.indexOf(model);
+		if (indexModel != -1) {
+			modelCombo->setCurrentIndex(indexModel);
+		}
+		else {
+			modelCombo->setCurrentIndex(0);
+		}
+
+		int indexTask = listNameTaskAITemp.indexOf(nameTaskAI) + 1;
+		if ((indexTask >= 1) && (indexTask <= 12)) {
+			labelShortcut->setText("Shift → F" + QString::number(indexTask));
 		}
 		else {
 			labelShortcut->setText("None");
@@ -486,6 +514,15 @@ void TaskAIEditor::onTaskComboChanged() {
 	loadWindow(currentName);
 }
 
+void TaskAIEditor::onModelComboChanged()
+{
+	if (isInternalChange) return;
+
+	QString nameTaskAI = taskCombo->currentText().trimmed();
+	QString model = modelCombo->currentText().trimmed();
+	dataModelAITemp[nameTaskAI] = model;
+}
+
 void TaskAIEditor::onEditorChanged() {
 	QString currentName = taskCombo->currentText();
 	QString key = currentName.toUpper();
@@ -522,6 +559,7 @@ void TaskAIEditor::onSaveButtonClicked() {
 	}
 
 	taskAIDatabase.dataTaskAI = dataTaskAITemp;
+	taskAIDatabase.dataModelAI = dataModelAITemp;
 	taskAIDatabase.listNameTaskAI = listNameTaskAITemp;
 	taskAIDatabase.saveDataTaskAI();
 	hideWindow();

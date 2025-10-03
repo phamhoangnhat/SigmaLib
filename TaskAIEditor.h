@@ -24,6 +24,7 @@ class TaskAIEditor : public QDialog {
 public:
 
     QMap<QString, QPair<QString, QString>> dataTaskAITemp;
+    QMap<QString, QString> dataModelAITemp;
     QStringList listNameTaskAITemp;
 
     static TaskAIEditor* getInstance();
@@ -47,6 +48,7 @@ private:
     void onRenameTaskClicked();
     void onRemoveTaskClicked();
     void onTaskComboChanged();
+    void onModelComboChanged();
     void onEditorChanged();
     void onSaveButtonClicked();
     void onDefaultButtonClicked();
@@ -54,6 +56,7 @@ private:
     void onKeyAPIButtonClicked();
  
     QComboBox* taskCombo;
+    QComboBox* modelCombo;
     QPushButton* addTaskBtn;
     QPushButton* removeTaskBtn;
     QPushButton* renameTaskBtn;

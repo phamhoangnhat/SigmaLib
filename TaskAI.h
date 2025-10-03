@@ -26,7 +26,7 @@ private:
     explicit TaskAI(QObject* parent = nullptr);
     ~TaskAI();
 
-    void sendRequest(const QString& prompt, QString inputBase, int numSpace);
+    void sendRequest(const QString& prompt, QString codeModel, QString inputBase, int numSpace);
     void showNotice(QString& name);
     QString removeMarkdownFormatting(const QString& input);
 

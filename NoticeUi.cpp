@@ -170,7 +170,7 @@ void NoticeUi::moveToActiveWindow() {
 	qreal scale = screen->devicePixelRatio();
 
 	int vx = visibleRect.left + ((visibleRect.right - visibleRect.left) * 1 / 2);
-	int vy = visibleRect.top + ((visibleRect.bottom - visibleRect.top) * 1 / 2);
+	int vy = visibleRect.top + ((visibleRect.bottom - visibleRect.top) * 2 / 3);
 
 
 	QPoint logicalPos(int(vx / scale), int(vy / scale));

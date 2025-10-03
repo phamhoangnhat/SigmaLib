@@ -9,6 +9,7 @@
 #include "KeyAPIManage.h"
 #include "TypeWord.h"
 #include <Util.h>
+#include <TaskAIDatabase.h>
 
 #include <QApplication>
 #include <QNetworkReply>
@@ -22,6 +23,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+
 
 TaskAI* instance = nullptr;
 
@@ -42,6 +44,7 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
+	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 
 	if (popup1) {
 		popup1->hide();
@@ -54,6 +57,16 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 
 	QString nameTaskAI = dataAI.first;
 	QString promptTaskAI = dataAI.second;
+	QString nameModel;
+	QString codeModel;
+	if (taskAIDatabase.dataModelAI.contains(nameTaskAI)) {
+		nameModel = taskAIDatabase.dataModelAI[nameTaskAI];
+	}
+	else {
+		nameModel = taskAIDatabase.listNameModel[taskAIDatabase.numModelDefault];
+	}
+	codeModel = taskAIDatabase.dataNameModel[nameModel];
+
 	QString input;
 	QString stringTemp = inputBase.trimmed();
 	int numSpace = 0;
@@ -93,7 +106,7 @@ void TaskAI::run(QPair<QString, QString> dataAI, QString inputBase, bool flagSho
 	QString prompt = promptTaskAI;
 	prompt.replace("{text}", input);
 
-	sendRequest(prompt, inputBase, numSpace);
+	sendRequest(prompt, codeModel, inputBase, numSpace);
 	if (flagShowNotice) {
 		showNotice(nameTaskAI);
 	}
@@ -114,12 +127,11 @@ void TaskAI::closeWindow() {
 	}
 }
 
-void TaskAI::sendRequest(const QString& prompt, QString inputBase, int numSpace) {
+void TaskAI::sendRequest(const QString& prompt, QString codeModel, QString inputBase, int numSpace) {
 	KeyAPIManage* keyAPIManage = KeyAPIManage::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
-	const QString modelName = QStringLiteral("gemini-2.5-flash-lite");
-	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(modelName));
+	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(codeModel));
 
 	QStringList listKeyAPI = keyAPIManage->listKeyAPI;
 	int randomIndex = QRandomGenerator::global()->bounded(listKeyAPI.size());
