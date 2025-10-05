@@ -341,15 +341,12 @@ bool Listener::checkFunction(int vkCode)
 	{
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 
-		int index = vkCode - 0x70;
+		int index = vkCode - 0x6F;
 		QString keyTaskAI;
 		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
 
-		if (index >= 0 && index < taskAIDatabase.dataTaskAI.size()) {
-			auto it = taskAIDatabase.dataTaskAI.constBegin();
-			std::advance(it, index);
-			keyTaskAI = it.key();
-		}
+		const QString shortcut = "Shift → F" + QString::number(index);
+		keyTaskAI = taskAIDatabase.dataShortcutAICheck[shortcut].toUpper();
 		
 		if (keyTaskAI.isEmpty()) {
 			numHotkey = -1;
@@ -516,10 +513,21 @@ bool Listener::checkFunction(int vkCode)
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 		QString keyTaskAI = variable.nameTaskAI.toUpper();
 		QString stringBase = QString::fromStdWString(typeWord.createStringDisplayAll());
+
+		if (!taskAIDatabase.dataTaskAI.contains(keyTaskAI)) {
+			if (taskAIDatabase.listNameTaskAI.isEmpty()) {
+				keyTaskAI.clear();
+			}
+			else {
+				keyTaskAI = taskAIDatabase.listNameTaskAI[0].toUpper();
+			}
+		}
+
 		if (keyTaskAI.isEmpty()) {
 			numHotkey = -1;
 			return false;
 		}
+
 		taskAI.run(taskAIDatabase.dataTaskAI[keyTaskAI], stringBase, true);
 		numHotkey = -1;
 		flagRejectHook = true;

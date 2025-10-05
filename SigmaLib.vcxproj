@@ -114,6 +114,7 @@
     <ClCompile Include="RenameAccountDialog.cpp" />
     <ClCompile Include="RenameSnippetDialog.cpp" />
     <ClCompile Include="ShortcutKeyEditor.cpp" />
+    <ClCompile Include="TabRightDelegate.cpp" />
     <ClCompile Include="TaskAI.cpp" />
     <ClCompile Include="TaskAIDatabase.cpp" />
     <ClCompile Include="TaskAIEditor.cpp" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Clipboard.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="TabRightDelegate.h" />
     <ClInclude Include="TaskAIDatabase.h" />
     <QtMoc Include="SnippetEditor.h" />
     <QtMoc Include="TaskAIResult.h" />

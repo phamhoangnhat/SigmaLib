@@ -318,7 +318,7 @@
 		</div>
 		<button class="menu-toggle">☰</button>
 		<div class="container">
-			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.1.4</h1>
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.1.5</h1>
 			<div class="section">
 				<h2 id="sum-intro">1. Giới thiệu</h2>
 				<p>
@@ -1267,15 +1267,6 @@
 					mà không cần rời tay khỏi bàn phím.
 				</p>
 
-				<h4>Các tác vụ mặc định:</h4>
-				<ol>
-					<li>Kiểm tra chính tả tiếng Việt</li>
-					<li>Kiểm tra chính tả tiếng Anh</li>
-					<li>Dịch sang tiếng Việt</li>
-					<li>Dịch sang tiếng Anh</li>
-					<li>Chuyển mã phông chữ</li>
-				</ol>
-
 				<h3>Ứng dụng thực tế</h3>
 				<ul>
 					<li>Viết email, báo cáo, nội dung nhanh và chuyên nghiệp.</li>
@@ -1285,95 +1276,87 @@
 
 				<h3>Tùy chỉnh tác vụ AI</h3>
 				<ul>
-					<li>Nhấp phải vào biểu tượng <code>Sigma</code> ở khay hệ thống.</li>
-					<li>Chọn mục <code>Trình chỉnh sửa tác vụ AI</code>.</li>
-					<li>
-						Có thể thêm các tác vụ như:
-						<code>Tóm tắt nội dung dài</code>,
-						<code>Viết lại đoạn văn</code>,
-						<code>Chuyển thành văn nói hài hước</code>…
+					<li>Nhấp chuột phải vào biểu tượng <code>Sigma</code> ở khay hệ thống (góc dưới bên phải màn hình).
 					</li>
-					<li>
-						Mỗi tác vụ AI đều cho phép bạn lựa chọn model AI riêng.
-						<ul>
-							<li>Với các tác vụ <code>đơn giản</code> (ví dụ: viết lại câu ngắn, gợi ý ý tưởng nhanh),
-								nên chọn model <code>Flash</code> hoặc các model tốc độ cao. Ưu điểm là phản hồi gần như
-								tức thì.</li>
-							<li>Với các tác vụ <code>phức tạp</code> hoặc yêu cầu <code>độ chính xác cao</code> (ví dụ:
-								phân tích nội dung dài, viết văn bản chuẩn mực), nên chọn model <code>Pro</code>. Đổi
-								lại, thời gian xử lý sẽ lâu hơn.</li>
-						</ul>
-					</li>
-					<h3>Các model Gemini</h3>
-					<table>
-						<thead>
-							<tr>
-								<th>Tên</th>
-								<th>Mô tả</th>
-								<th>Phù hợp cho</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Gemini 2.0 Flash</td>
-								<td>Nhanh chất lượng khá</td>
-								<td>Tác vụ ngắn, trả lời tức thì</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.0 Flash Lite</td>
-								<td>Siêu nhanh, chi phí thấp, nhẹ</td>
-								<td>Gõ tắt, xử lý văn bản đơn giản</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.5 Flash</td>
-								<td>Cân bằng tốc độ & chất lượng</td>
-								<td>Tóm tắt, Q&A nhanh, dàn ý</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.5 Flash Lite</td>
-								<td>Nhanh, nhẹ hơn Flash</td>
-								<td>Xử lý ngắn gọn, lọc thông tin</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.5 Flash Lite Preview (09/2025)</td>
-								<td>Bản thử nghiệm, rất nhanh</td>
-								<td>Thử nghiệm tính năng mới</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.5 Flash Preview (09/2025)</td>
-								<td>Bản thử nghiệm, cân bằng tốt</td>
-								<td>Thử nghiệm tác vụ dài nhanh</td>
-							</tr>
-							<tr>
-								<td>Gemini 2.5 Pro</td>
-								<td>Độ chính xác cao, lý luận tốt</td>
-								<td>Phân tích phức tạp, viết chuẩn</td>
-							</tr>
-						</tbody>
-					</table>
-
-					<p><em>Lưu ý:</em> <code>Flash/Lite</code> ưu tiên tốc độ, <code>Pro</code> ưu tiên chất lượng. Các model <code>Preview</code>
-						chỉ để thử nghiệm, có thể thay đổi.</p>
+					<li>Chọn mục <code>Trình chỉnh sửa tác vụ AI</code> để mở cửa sổ quản lý các tác vụ.</li>
+					<li>Trong cửa sổ này, bạn có thể <b>thêm</b> tác vụ mới bằng cách đặt tên và nội dung lệnh (prompt)
+						có chứa biến <code>{text}</code> — đoạn nội dung sẽ được AI xử lý.</li>
+					<li>Có thể <b>sửa</b> nội dung hoặc <b>xóa</b> các tác vụ AI đã tạo trước đó để phù hợp với nhu cầu
+						cá nhân.</li>
+					<li>Mỗi tác vụ có thể được gán một <b>phím tắt riêng</b> giúp kích hoạt nhanh mà không cần mở giao
+						diện. Các phím tắt được hỗ trợ là từ <code>Shift → F1</code> đến <code>Shift → F12</code>.</li>
+					<li>Bạn cũng có thể chọn <b>mô hình AI</b> mong muốn để thực hiện từng tác vụ, ví dụ
+						<code>Gemini 2.5 Flash</code> hoặc <code>Gemini 2.5 Pro</code>, tùy theo tốc độ và độ chính xác
+						cần thiết.</li>
+					<li>Ngoài ra, tại đây bạn cũng có thể <b>thêm khóa Gemini API</b> cá nhân, giúp Sigma gọi trực tiếp
+						mô hình AI của bạn để tạo, dịch, hoặc chỉnh sửa văn bản nhanh chóng.</li>
 				</ul>
-				<p><strong>Lưu ý:</strong> Các tác vụ mặc định không thể chỉnh sửa hoặc xóa.</p>
+
+				<h3>Các model Gemini</h3>
+				<li>
+					Mỗi tác vụ AI đều cho phép bạn lựa chọn model AI riêng.
+					<ul>
+						<li>Với các tác vụ <code>đơn giản</code> (ví dụ: viết lại câu ngắn, gợi ý ý tưởng nhanh),
+							nên chọn model <code>Flash</code> hoặc các model tốc độ cao. Ưu điểm là phản hồi gần như
+							tức thì.</li>
+						<li>Với các tác vụ <code>phức tạp</code> hoặc yêu cầu <code>độ chính xác cao</code> (ví dụ:
+							phân tích nội dung dài, viết văn bản chuẩn mực), nên chọn model <code>Pro</code>. Đổi
+							lại, thời gian xử lý sẽ lâu hơn.</li>
+					</ul>
+				</li>
+				<p><em>Lưu ý:</em> <code>Flash/Lite</code> ưu tiên tốc độ, <code>Pro</code> ưu tiên chất lượng. Các
+					model <code>Preview</code>
+					chỉ để thử nghiệm, có thể thay đổi.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Tên</th>
+							<th>Mô tả</th>
+							<th>Phù hợp cho</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Gemini 2.0 Flash</td>
+							<td>Nhanh chất lượng khá</td>
+							<td>Tác vụ ngắn, trả lời tức thì</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.0 Flash Lite</td>
+							<td>Siêu nhanh, chi phí thấp, nhẹ</td>
+							<td>Gõ tắt, xử lý văn bản đơn giản</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.5 Flash</td>
+							<td>Cân bằng tốc độ & chất lượng</td>
+							<td>Tóm tắt, Q&A nhanh, dàn ý</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.5 Flash Lite</td>
+							<td>Nhanh, nhẹ hơn Flash</td>
+							<td>Xử lý ngắn gọn, lọc thông tin</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.5 Flash Lite Preview (09/2025)</td>
+							<td>Bản thử nghiệm, rất nhanh</td>
+							<td>Thử nghiệm tính năng mới</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.5 Flash Preview (09/2025)</td>
+							<td>Bản thử nghiệm, cân bằng tốt</td>
+							<td>Thử nghiệm tác vụ dài nhanh</td>
+						</tr>
+						<tr>
+							<td>Gemini 2.5 Pro</td>
+							<td>Độ chính xác cao, lý luận tốt</td>
+							<td>Phân tích phức tạp, viết chuẩn</td>
+						</tr>
+					</tbody>
+				</table>
 
 				<h4>Gọi nhanh tác vụ AI chuyên biệt bằng phím tắt</h4>
-				<p>
-					Danh sách tên tác vụ AI được sắp xếp theo thứ tự chữ cái (alphabet). Các phím
-					<code>Shift → F1</code>
-					đến <code>Shift → F12</code> sẽ gọi lần lượt các tác vụ thứ 1 đến 12 trong danh sách.
-				</p>
-
-				<p>
-					Để dễ quản lý và ghi nhớ thứ tự, bạn nên đặt <strong>tiền tố số</strong> trước tên tác vụ (ví dụ:
-					<code>01. Kiểm tra chính tả tiếng Việt</code>, <code>02. Kiểm tra chính tả tiếng Anh</code>, …).
-					Việc này giúp:
-				</p>
-				<ul>
-					<li>Giữ thứ tự cố định trong danh sách.</li>
-					<li>Dễ liên kết với phím tắt tương ứng <code>Shift → F#</code>.</li>
-				</ul>
-
+				<p>Các phím tắt <code>Shift → F1</code> đến <code>Shift → F12</code> được dùng để gọi các tác vụ AI.</p>
+		
 				<p><strong>Cách sử dụng phím tắt:</strong></p>
 				<ul>
 					<li>Người dùng có thể <strong>dùng chuột quét chọn đoạn văn bản</strong> cần xử lý, sau đó nhấn
@@ -1410,42 +1393,6 @@
 						</strong> để bạn xem hoặc sao chép thủ công.
 					</li>
 				</ul>
-
-				<h4>Phím tắt gọi tác vụ AI</h4>
-				<table border="1" cellpadding="5" cellspacing="0">
-					<thead>
-						<tr>
-							<th>Phím</th>
-							<th>Tác dụng</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td><code>Shift → `</code></td>
-							<td>Thực hiện tác vụ AI mặc định của ứng dụng</td>
-						</tr>
-						<tr>
-							<td><code>Shift → F1</code></td>
-							<td>Thực hiện tác vụ AI thứ 1 trong danh sách</td>
-						</tr>
-						<tr>
-							<td><code>Shift → F2</code></td>
-							<td>Thực hiện tác vụ AI thứ 2 trong danh sách</td>
-						</tr>
-						<tr>
-							<td><code>Shift → F3</code></td>
-							<td>Thực hiện tác vụ AI thứ 3 trong danh sách</td>
-						</tr>
-						<tr>
-							<td>...</td>
-							<td>...</td>
-						</tr>
-						<tr>
-							<td><code>Shift → F12</code></td>
-							<td>Thực hiện tác vụ AI thứ 12 trong danh sách</td>
-						</tr>
-					</tbody>
-				</table>
 
 				<p>
 					<strong>
@@ -1490,52 +1437,8 @@
 							<td><code>Shift + Backspace</code></td>
 						</tr>
 						<tr>
-							<td>Thực hiện tác vụ AI thứ 1 trong danh sách</td>
-							<td><code>Shift → F1</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 2 trong danh sách</td>
-							<td><code>Shift → F2</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 3 trong danh sách</td>
-							<td><code>Shift → F3</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 4 trong danh sách</td>
-							<td><code>Shift → F4</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 5 trong danh sách</td>
-							<td><code>Shift → F5</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 6 trong danh sách</td>
-							<td><code>Shift → F6</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 7 trong danh sách</td>
-							<td><code>Shift → F7</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 8 trong danh sách</td>
-							<td><code>Shift → F8</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 9 trong danh sách</td>
-							<td><code>Shift → F9</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 10 trong danh sách</td>
-							<td><code>Shift → F10</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 11 trong danh sách</td>
-							<td><code>Shift → F11</code></td>
-						</tr>
-						<tr>
-							<td>Thực hiện tác vụ AI thứ 12 trong danh sách</td>
-							<td><code>Shift → F12</code></td>
+							<td>Thực hiện tác vụ AI</td>
+							<td><code>Shift → F1</code> đến <code>Shift → F12</code></td>
 						</tr>
 					</tbody>
 				</table>

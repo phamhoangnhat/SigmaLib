@@ -13,36 +13,6 @@ TaskAIDatabase& TaskAIDatabase::getInstance() {
 }
 
 TaskAIDatabase::TaskAIDatabase() {
-	loadDataTaskAI();
-}
-
-void TaskAIDatabase::loadDataTaskAI()
-{
-	AccountManager* accountManager = AccountManager::getInstance();
-
-	dataTaskAI.clear();
-	QSettings settings(APP_NAME, "AccountManager");
-	settings.beginGroup(accountManager->currentAccount + "/TaskAIDatabase");
-	const QStringList allKeys = settings.allKeys();
-	QSet<QString> seenKeys;
-	for (const QString& rawName : allKeys) {
-		QString trimmed = rawName.trimmed();
-		QString upperName = trimmed.toUpper();
-		QString content = settings.value(rawName).toString();
-
-		if (!isValidTaskName(trimmed, dataTaskAI, QString()) || !isValidTaskContent(content))
-			continue;
-
-		if (seenKeys.contains(upperName))
-			continue;
-
-		seenKeys.insert(upperName);
-		dataTaskAI[upperName] = qMakePair(trimmed, content);
-	}
-	settings.endGroup();
-
-	addDataTaskAIDefault(dataTaskAI);
-	listNameTaskAI = createListNameTaskAI(dataTaskAI);
 	dataCheckSpell = qMakePair(
 		"Kiểm tra chính tả",
 		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
@@ -53,14 +23,8 @@ void TaskAIDatabase::loadDataTaskAI()
 		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
 	);
 
-	loadModel();
-	saveDataTaskAI();
-}
-
-void TaskAIDatabase::loadModel()
-{
-	AccountManager* accountManager = AccountManager::getInstance();
-	dataNameModel = {
+	dataNameModel =
+	{
 		{"Gemini 2.0 Flash", "gemini-2.0-flash"},
 		{"Gemini 2.0 Flash Lite", "gemini-2.0-flash-lite"},
 		{"Gemini 2.5 Flash", "gemini-2.5-flash"},
@@ -72,20 +36,75 @@ void TaskAIDatabase::loadModel()
 	listNameModel = dataNameModel.keys();
 	numModelDefault = 3;
 
+	listShortcutAI.clear();
+	listShortcutAI.append("None");
+	for (int i = 1; i <= 12; ++i) {
+		const QString shortcut = "Shift → F" + QString::number(i);
+		listShortcutAI.append(shortcut);
+	}
+
+	loadDataTaskAI();
+	listNameTaskAI = createListNameTaskAI(dataShortcutAI, dataShortcutAICheck);
+}
+
+void TaskAIDatabase::loadDataTaskAI()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+	listNameDefaultTaskAI = QSet<QString>({});
+
+	dataTaskAI.clear();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/TaskAIDatabase");
+	const QStringList allKeys = settings.allKeys();
+	QSet<QString> seenKeys;
+	for (const QString& nameRaw : allKeys) {
+		QString nameTaskAI = nameRaw.trimmed();
+		QString nameUpper = nameTaskAI.toUpper();
+		QString prompt = settings.value(nameRaw).toString();
+
+		if (seenKeys.contains(nameUpper) ||
+			!isValidTaskName(nameTaskAI, dataTaskAI, QString()) ||
+			!isValidTaskContent(prompt))
+		{
+			settings.remove(nameRaw);
+			continue;
+		}
+
+		seenKeys.insert(nameUpper);
+		dataTaskAI[nameUpper] = qMakePair(nameTaskAI, prompt);
+	}
+	settings.endGroup();
+
+	if (dataTaskAI.isEmpty()) {
+		addDataTaskAIDefault(dataTaskAI, dataModelAI, dataShortcutAI, dataShortcutAICheck);
+	}
+
+	loadDataModel();
+	loadDataShortcut();
+	listNameTaskAI = createListNameTaskAI(dataShortcutAI, dataShortcutAICheck);
+	saveDataTaskAI();
+}
+
+void TaskAIDatabase::loadDataModel()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+
 	dataModelAI.clear();
 	QSettings settings(APP_NAME, "AccountManager");
 	settings.beginGroup(accountManager->currentAccount + "/ModelAIDatabase");
 	const QStringList allKeys = settings.allKeys();
-	for (const QString& rawName : allKeys) {
-		QString trimmed = rawName.trimmed();
-		QString upperName = trimmed.toUpper();
-		QString nameModel = settings.value(rawName).toString();
+	for (const QString& nameRaw : allKeys) {
+		QString nameTaskAI = nameRaw.trimmed();
+		QString nameUpper = nameTaskAI.toUpper();
+		QString nameModel = settings.value(nameRaw).toString();
 
-		if (!dataTaskAI.contains(upperName) || !listNameModel.contains(nameModel)) {
-			settings.remove(rawName);
+		if (!dataTaskAI.contains(nameUpper) || !listNameModel.contains(nameModel)) {
+			settings.remove(nameRaw);
 			continue;
 		}
-		dataModelAI[dataTaskAI[upperName].first] = nameModel;
+
+		nameTaskAI = dataTaskAI[nameUpper].first;
+		dataModelAI[nameTaskAI] = nameModel;
 	}
 	settings.endGroup();
 
@@ -97,70 +116,175 @@ void TaskAIDatabase::loadModel()
 	}
 }
 
-void TaskAIDatabase::addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI)
+void TaskAIDatabase::loadDataShortcut()
 {
-	if (dataTaskAI.isEmpty()) {
-		dataTaskAI["06. EMAIL LỊCH SỰ"] = qMakePair("06. Email lịch sự", "Viết lại đoạn sau thành một email với văn phong lịch sự, trang trọng : \n{text}\nChỉ trả về nội dung email, không thêm chú thích hoặc giải thích.");
-		dataTaskAI["07. VĂN PHONG RÕ RÀNG"] = qMakePair("07. Văn phong rõ ràng", "Viết lại đoạn sau rõ ràng, tự nhiên hơn:\n{text}\nChỉ trả về kết quả, không thêm lời giải thích.");
-		dataTaskAI["08. TRIỂN KHAI CHI TIẾT"] = qMakePair("08. Triển khai chi tiết", "Triển khai ý tưởng đoạn sau chi tiết hơn:\n{text}\nChỉ trả về phần nội dung đã triển khai, không thêm gì khác.");
-		dataTaskAI["09. HÓM HỈNH HÀI HƯỚC"] = qMakePair("09. Hóm hỉnh hài hước", "Chuyển đoạn sau theo phong cách hóm hỉnh, hài hước và thông minh, pha trò dí dỏm nhưng không mất đi tính lịch sự:\n{text}\nChỉ trả về nội dung đã chỉnh sửa, không thêm lời giải thích hay mô tả.");
-		dataTaskAI["10. VĂN PHONG GEN Z"] = qMakePair("10. Văn phong Gen Z", "Viết lại đoạn sau theo phong cách Gen Z: ngắn gọn, vui nhộn, thông minh, có thể pha chút meme, tiếng lóng, icon hoặc từ trending. Vẫn giữ ý chính, không lố lăng, không mất lịch sự, không hashtag:\n{text}\nChỉ trả về kết quả đã chuyển phong cách, không thêm giải thích hay chú thích.");
-		dataTaskAI["11. VIẾT THƠ"] = qMakePair("11. Viết thơ", "Chuyển đoạn nội dung văn bản sau thành đoạn thơ lãng mạn, ngôn từ bay bổng:\n{text}\nChỉ trả về bài thơ, không thêm chú thích hay lời giải thích, tiêu đề.");
+	AccountManager* accountManager = AccountManager::getInstance();
+
+	dataShortcutAICheck.clear();
+	for (int i = 1; i <= 12; i++) {
+		QString shortcut = listShortcutAI[i];
+		dataShortcutAICheck.insert(shortcut, QString());
 	}
 
-	listNameDefaultTaskAI = QSet<QString>({
-	"01. KIỂM TRA CHÍNH TẢ TIẾNG VIỆT",
-	"02. KIỂM TRA CHÍNH TẢ TIẾNG ANH",
-	"03. DỊCH SANG TIẾNG VIỆT",
-	"04. DỊCH SANG TIẾNG ANH",
-	"05. CHUYỂN MÃ PHÔNG CHỮ"
-		});
+	dataShortcutAI.clear();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ShortcutAIDatabase");
+	const QStringList allKeys = settings.allKeys();
+	for (const QString& nameRaw : allKeys) {
+		QString nameTaskAI = nameRaw.trimmed();
+		const QString nameUpper = nameTaskAI.toUpper();
+		const QString shortcut = settings.value(nameRaw).toString().trimmed();
 
-	dataTaskAI.remove("01. KIỂM TRA CHÍNH TẢ TIẾNG VIỆT");
-	dataTaskAI["01. KIỂM TRA CHÍNH TẢ TIẾNG VIỆT"] = qMakePair(
-		"01. Kiểm tra chính tả tiếng Việt",
-		"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
-		"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
-		"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
-		"Các thuật ngữ tiếng Anh không dịch sang tiếng Việt, chỉ sửa chính tả các thuật ngữ nếu sai. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc.\n"
-		"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc"
-	);
+		if (!dataTaskAI.contains(nameUpper)) {
+			settings.remove(nameRaw);
+			continue;
+		}
 
-	dataTaskAI.remove("02. KIỂM TRA CHÍNH TẢ TIẾNG ANH");
-	dataTaskAI["02. KIỂM TRA CHÍNH TẢ TIẾNG ANH"] = qMakePair(
-		"02. Kiểm tra chính tả tiếng Anh",
-		"Correct spelling and grammar in the following English passage:\n{text}\n"
-		"Return only the corrected version, without any explanations or annotations.\n"
-		"Preserve the original capitalization (UPPERCASE or Title Case) unless clearly incorrect.\n"
-		"If there are no errors, return the original passage exactly as is."
-	);
+		nameTaskAI = dataTaskAI.value(nameUpper).first;
 
-	dataTaskAI.remove("03. DỊCH SANG TIẾNG VIỆT");
-	dataTaskAI["03. DỊCH SANG TIẾNG VIỆT"] = qMakePair(
-		"03. Dịch sang tiếng Việt",
-		"Dịch đoạn sau sang tiếng Việt:\n{text}\n"
-		"Chỉ trả về bản dịch, không thêm giải thích hay chú thích nào.\n"
-		"Giữ nguyên các thuật ngữ chuyên ngành tiếng Anh. Chỉ sửa chính tả các thuật ngữ này nếu chúng sai chính tả.\n"
-		"Giữ nguyên định dạng, viết hoa và cấu trúc của văn bản gốc nếu có."
-	);
+		if (shortcut == "None") {
+			dataShortcutAI.insert(nameTaskAI, "None");
+			continue;
+		}
 
-	dataTaskAI.remove("04. DỊCH SANG TIẾNG ANH");
-	dataTaskAI["04. DỊCH SANG TIẾNG ANH"] = qMakePair(
-		"04. Dịch sang tiếng Anh",
-		"Translate the following text into English:\n{text}\n"
-		"Return only the translated result. Do not add comments or explanations.\n"
-		"Preserve the original formatting and capitalization."
-	);
+		if (!dataShortcutAICheck.contains(shortcut) ||
+			!dataShortcutAICheck.value(shortcut).isEmpty())
+		{
+			settings.remove(nameRaw);
+			continue;
+		}
 
-	dataTaskAI.remove("05. CHUYỂN MÃ UNICODE");
-	dataTaskAI.remove("05. CHUYỂN MÃ");
-	dataTaskAI.remove("05. CHUYỂN MÃ PHÔNG CHỮ");
-	dataTaskAI["05. CHUYỂN MÃ PHÔNG CHỮ"] = qMakePair(
-		"05. Chuyển mã phông chữ",
-		"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
-		"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
-		"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."
-	);
+		dataShortcutAI.insert(nameTaskAI, shortcut);
+		dataShortcutAICheck[shortcut] = nameTaskAI;
+	}
+	settings.endGroup();
+
+	for (const auto& pair : dataTaskAI.values()) {
+		const QString& nameTaskAI = pair.first;
+		if (dataShortcutAI.contains(nameTaskAI)) {
+			continue;
+		}
+
+		bool assigned = false;
+		for (int i = 1; i <= 12; i++) {
+			QString shortcut = listShortcutAI[i];
+			if (dataShortcutAICheck[shortcut].isEmpty()) {
+				dataShortcutAI.insert(nameTaskAI, shortcut);
+				dataShortcutAICheck[shortcut] = nameTaskAI;
+				assigned = true;
+				break;
+			}
+		}
+
+		if (!assigned) {
+			dataShortcutAI.insert(nameTaskAI, "None");
+		}
+	}
+}
+
+void TaskAIDatabase::addDataTaskAIDefault(
+	QMap<QString, QPair<QString, QString>>& dataTaskAI,
+	QMap<QString, QString>& dataModelAI,
+	QMap<QString, QString>& dataShortcutAI,
+	QMap<QString, QString>& dataShortcutAICheck)
+{
+	dataTaskAI.clear();
+	QStringList listNameTaskAI;
+
+	std::vector<QPair<QString, QString>> listDataRaw = {
+		qMakePair(
+			"Kiểm tra chính tả tiếng Việt",
+			"Sửa lỗi chính tả và ngữ pháp trong đoạn sau:\n{text}\n"
+			"Chỉ trả về kết quả đã sửa, không thêm chú thích.\n"
+			"Giữ nguyên cách viết hoa (UPPERCASE hoặc Capitalized) nếu không chắc chắn đó là lỗi.\n"
+			"Các thuật ngữ tiếng Anh không dịch sang tiếng Việt, chỉ sửa chính tả các thuật ngữ nếu sai. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc.\n"
+			"Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc"),
+
+		qMakePair(
+			"Kiểm tra chính tả tiếng Anh",
+			"Correct spelling and grammar in the following English passage:\n{text}\n"
+			"Return only the corrected version, without any explanations or annotations.\n"
+			"Preserve the original capitalization (UPPERCASE or Title Case) unless clearly incorrect.\n"
+			"If there are no errors, return the original passage exactly as is."),
+
+		qMakePair(
+			"Dịch sang tiếng Việt",
+			"Dịch đoạn sau sang tiếng Việt:\n{text}\n"
+			"Chỉ trả về bản dịch, không thêm giải thích hay chú thích nào.\n"
+			"Giữ nguyên các thuật ngữ chuyên ngành tiếng Anh. Chỉ sửa chính tả các thuật ngữ này nếu chúng sai chính tả.\n"
+			"Giữ nguyên định dạng, viết hoa và cấu trúc của văn bản gốc nếu có."),
+
+		qMakePair(
+			"Dịch sang tiếng Anh",
+			"Translate the following text into English:\n{text}\n"
+			"Return only the translated result. Do not add comments or explanations.\n"
+			"Preserve the original formatting and capitalization."),
+
+		qMakePair(
+			"Chuyển mã phông chữ",
+			"Chuyển đoạn văn bản sau sang mã Unicode chuẩn. Văn bản có thể chứa các mã tiếng Việt hỗn hợp như Unicode, TCVN3, VNI-Windows:\n{text}\n"
+			"Chỉ trả về đoạn văn đã chuyển sang Unicode, không thêm lời giải thích, không chú thích.\n"
+			"Giữ nguyên nội dung, định dạng, khoảng trắng và cách dòng gốc. Nếu không có lỗi nào, hãy trả về nguyên văn đoạn gốc."),
+
+		qMakePair(
+			"Email lịch sự",
+			"Viết lại đoạn sau thành một email với văn phong lịch sự, trang trọng : \n{text}\n"
+			"Chỉ trả về nội dung email, không thêm chú thích hoặc giải thích."),
+
+		qMakePair(
+			"Văn phong rõ ràng",
+			"Viết lại đoạn sau rõ ràng, tự nhiên hơn:\n{text}\n"
+			"Chỉ trả về kết quả, không thêm lời giải thích."),
+
+		qMakePair(
+			"Triển khai chi tiết",
+			"Triển khai ý tưởng đoạn sau chi tiết hơn:\n{text}\n"
+			"Chỉ trả về phần nội dung đã triển khai, không thêm gì khác."),
+
+		qMakePair(
+			"Trả lời câu hỏi",
+			"Hãy trả lời câu hỏi sau: \n{text}\n"
+			"Chỉ trả về câu trả lời, không thêm chú thích hoặc giải thích."),
+
+		qMakePair(
+			"Hóm hỉnh hài hước",
+			"Chuyển đoạn sau theo phong cách hóm hỉnh, hài hước và thông minh, pha trò dí dỏm nhưng không mất đi tính lịch sự:\n{text}\n"
+			"Chỉ trả về nội dung đã chỉnh sửa, không thêm lời giải thích hay mô tả."),
+
+		qMakePair(
+			"Văn phong Gen Z",
+			"Viết lại đoạn sau theo phong cách Gen Z: ngắn gọn, vui nhộn, thông minh, có thể pha chút meme, tiếng lóng, icon hoặc từ trending. Vẫn giữ ý chính, không lố lăng, không mất lịch sự, không hashtag:\n{text}\n"
+			"Chỉ trả về kết quả đã chuyển phong cách, không thêm giải thích hay chú thích."),
+
+		qMakePair(
+			"Viết thơ",
+			"Chuyển đoạn nội dung văn bản sau thành đoạn thơ lãng mạn, ngôn từ bay bổng:\n{text}\n"
+			"Chỉ trả về bài thơ, không thêm chú thích hay lời giải thích, tiêu đề."),
+	};
+
+	for (auto& dataRaw : listDataRaw) {
+		dataTaskAI[dataRaw.first.toUpper()] = dataRaw;
+		listNameTaskAI.append(dataRaw.first);
+	}
+
+	dataModelAI.clear();
+	for (auto& nameTaskAI : listNameTaskAI) {
+		dataModelAI[nameTaskAI] = listNameModel[numModelDefault];
+	}
+
+	dataShortcutAI.clear();
+	dataShortcutAICheck.clear();
+	for (int i = 1; i <= 12; i++) {
+		QString shortcut = listShortcutAI[i];
+		if (i <= listNameTaskAI.size()) {
+			QString nameTaskAI = listNameTaskAI[i - 1];
+			dataShortcutAI[nameTaskAI] = shortcut;
+			dataShortcutAICheck[shortcut] = nameTaskAI;
+		}
+		else {
+			break;
+		}
+	}
 }
 
 void TaskAIDatabase::saveDataTaskAI() {
@@ -170,17 +294,18 @@ void TaskAIDatabase::saveDataTaskAI() {
 	settings.remove("");
 
 	for (const auto& pair : dataTaskAI.values()) {
-		const QString& originalName = pair.first;
-		const QString& content = pair.second;
-		settings.setValue(originalName, content);
+		const QString& nameTaskAI = pair.first;
+		const QString& prompt = pair.second;
+		settings.setValue(nameTaskAI, prompt);
 	}
-	listNameTaskAI = createListNameTaskAI(dataTaskAI);
+	listNameTaskAI = createListNameTaskAI(dataShortcutAI, dataShortcutAICheck);
 	settings.endGroup();
 
-	saveModel();
+	saveDataModel();
+	saveDataShortcut();
 }
 
-void TaskAIDatabase::saveModel()
+void TaskAIDatabase::saveDataModel()
 {
 	AccountManager* accountManager = AccountManager::getInstance();
 	QSettings settings(APP_NAME, "AccountManager");
@@ -188,8 +313,22 @@ void TaskAIDatabase::saveModel()
 	settings.remove("");
 
 	for (const auto& nameTaskAI : dataModelAI.keys()) {
-		const QString& model = dataModelAI[nameTaskAI];
-		settings.setValue(nameTaskAI, model);
+		const QString& nameModel = dataModelAI[nameTaskAI];
+		settings.setValue(nameTaskAI, nameModel);
+	}
+	settings.endGroup();
+}
+
+void TaskAIDatabase::saveDataShortcut()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ShortcutAIDatabase");
+	settings.remove("");
+
+	for (const auto& nameTaskAI : dataShortcutAI.keys()) {
+		const QString& shortcut = dataShortcutAI[nameTaskAI];
+		settings.setValue(nameTaskAI, shortcut);
 	}
 	settings.endGroup();
 }
@@ -209,15 +348,22 @@ bool TaskAIDatabase::isValidTaskName(const QString& name, const QMap<QString, QP
 	return result;
 }
 
-QStringList TaskAIDatabase::createListNameTaskAI(QMap<QString, QPair<QString, QString>>& dataTaskAI) {
+QStringList TaskAIDatabase::createListNameTaskAI(QMap<QString, QString>& dataShortcutAI, QMap<QString, QString>& dataShortcutAICheck) {
 	QStringList listNameTaskAI;
-	for (const auto& pair : dataTaskAI.values()) {
-		listNameTaskAI << pair.first;
+
+	for (int i = 1; i <= 12; i++) {
+		QString shortcut = listShortcutAI[i];
+		if (!dataShortcutAICheck[shortcut].isEmpty()) {
+			QString nameTaskAI = dataShortcutAICheck[shortcut];
+			listNameTaskAI.append(nameTaskAI);
+		}
 	}
 
-	std::sort(listNameTaskAI.begin(), listNameTaskAI.end(), [](const QString& a, const QString& b) {
-		return a.toUpper() < b.toUpper();
-		});
+	for (const auto& nameTaskAI : dataShortcutAI.keys()) {
+		if (!listNameTaskAI.contains(nameTaskAI)) {
+			listNameTaskAI.append(nameTaskAI);
+		}
+	}
 
 	return listNameTaskAI;
 }

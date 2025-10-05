@@ -1312,12 +1312,13 @@ bool Variable::loadSettingsWindow()
 		bool modeLangVietGlobalDefault = listAppLangVietGlobal.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
+		QString nameTaskAIDefault = taskAIDatabase.listNameTaskAI.value(0, QString());
 
 		QSettings settings(APP_NAME, "AccountManager");
 		settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + nameCurrentWindow);
 		flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
-		nameTaskAI = settings.value("nameTaskAI", NAMETASKAI).toString();
+		nameTaskAI = settings.value("nameTaskAI", nameTaskAIDefault).toString();
 		nameSnippetString = settings.value("nameSnippetString", NAMESNIPPETSTRING).toString();
 		nameSnippetWords = settings.value("nameSnippetWords", NAMESNIPPETWORDS).toString();
 		modeUseDynamic = settings.value("modeUseDynamic", MODEUSEDYNAMIC).toBool();
@@ -1334,7 +1335,7 @@ bool Variable::loadSettingsWindow()
 		}
 
 		if (!taskAIDatabase.listNameTaskAI.contains(nameTaskAI)) {
-			nameTaskAI = NAMETASKAI;
+			nameTaskAI = nameTaskAIDefault;
 		}
 		snippetEditor->loadSnippetForApp(nameSnippetString, nameSnippetWords);
 		if (namePreviousWindow != "") {

@@ -25,6 +25,8 @@ public:
 
     QMap<QString, QPair<QString, QString>> dataTaskAITemp;
     QMap<QString, QString> dataModelAITemp;
+    QMap<QString, QString> dataShortcutAITemp;
+    QMap<QString, QString> dataShortcutAICheckTemp;
     QStringList listNameTaskAITemp;
 
     static TaskAIEditor* getInstance();
@@ -49,6 +51,7 @@ private:
     void onRemoveTaskClicked();
     void onTaskComboChanged();
     void onModelComboChanged();
+    void onShortcutComboChanged();
     void onEditorChanged();
     void onSaveButtonClicked();
     void onDefaultButtonClicked();
@@ -57,10 +60,10 @@ private:
  
     QComboBox* taskCombo;
     QComboBox* modelCombo;
+    QComboBox* shortcutCombo;
     QPushButton* addTaskBtn;
     QPushButton* removeTaskBtn;
     QPushButton* renameTaskBtn;
-    QLabel* labelShortcut;
     QTextEdit* taskEditor;
     QPushButton* saveBtn;
     QPushButton* defaultBtn;

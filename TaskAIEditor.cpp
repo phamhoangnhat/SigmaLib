@@ -4,6 +4,7 @@
 #include "CustomMessageBox.h"
 #include "TaskAIDatabase.h"
 #include "KeyAPIManage.h"
+#include "TabRightDelegate.h"
 
 #include <QApplication>
 #include <QJsonValue>
@@ -31,6 +32,8 @@ void TaskAIEditor::showWindow() {
 	if (!ui->isVisible()) {
 		ui->dataTaskAITemp = taskAIDatabase.dataTaskAI;
 		ui->dataModelAITemp = taskAIDatabase.dataModelAI;
+		ui->dataShortcutAITemp = taskAIDatabase.dataShortcutAI;
+		ui->dataShortcutAICheckTemp = taskAIDatabase.dataShortcutAICheck;
 		ui->listNameTaskAITemp = taskAIDatabase.listNameTaskAI;
 		ui->fadeIn();
 		ui->show();
@@ -267,7 +270,7 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	addTaskBtn = new QPushButton("");
 	removeTaskBtn = new QPushButton("");
 	renameTaskBtn = new QPushButton("");
-	labelShortcut = new QLabel("");
+	shortcutCombo = new QComboBox();
 	taskEditor = new QTextEdit();
 	taskEditor->setPlaceholderText("Nhập câu lệnh AI. Dùng {text} để thay thế nội dung văn bản người dùng quét chọn khi thực hiện các tác vụ AI.");
 
@@ -284,7 +287,7 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 
 	QHBoxLayout* secondLayout = new QHBoxLayout();
 	secondLayout->addWidget(modelCombo, 1);
-	secondLayout->addWidget(labelShortcut);
+	secondLayout->addWidget(shortcutCombo);
 
 	QHBoxLayout* btnLayout = new QHBoxLayout();
 	btnLayout->addWidget(saveBtn);
@@ -302,17 +305,18 @@ TaskAIEditor::TaskAIEditor(QWidget* parent)
 	renameTaskBtn->setIcon(QIcon(":/iconRenameItem.png"));
 	removeTaskBtn->setIcon(QIcon(":/iconDeleteItem.png"));
 
-	labelShortcut->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+	taskCombo->view()->setItemDelegate(new TabRightDelegate(taskCombo));
 	const int buttonsWidth =
 		addTaskBtn->sizeHint().width() +
 		renameTaskBtn->sizeHint().width() +
 		removeTaskBtn->sizeHint().width();
 
 	const int gaps = firstLayout->spacing() * 2;
-	labelShortcut->setFixedWidth(buttonsWidth + gaps);
+	shortcutCombo->setFixedWidth(buttonsWidth + gaps);
 
 	connect(taskCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onTaskComboChanged);
 	connect(modelCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onModelComboChanged);
+	connect(shortcutCombo, &QComboBox::currentTextChanged, this, &TaskAIEditor::onShortcutComboChanged);
 	connect(renameTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRenameTaskClicked);
 	connect(addTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onAddTaskClicked);
 	connect(removeTaskBtn, &QPushButton::clicked, this, &TaskAIEditor::onRemoveTaskClicked);
@@ -333,22 +337,34 @@ void TaskAIEditor::loadWindow(const QString& _nameTaskAI) {
 	QString key;
 	bool isDefault;
 
-	listNameTaskAITemp = taskAIDatabase.createListNameTaskAI(dataTaskAITemp);
+	listNameTaskAITemp = taskAIDatabase.createListNameTaskAI(dataShortcutAITemp, dataShortcutAICheckTemp);
 	if (listNameTaskAITemp.isEmpty()) {
 		taskCombo->clear();
 		modelCombo->clear();
+		shortcutCombo->clear();
 		taskEditor->clear();
 		isDefault = true;
 	}
 	else {
 		taskCombo->clear();
-		for (const QString& name : listNameTaskAITemp) {
-			taskCombo->addItem(name);
+		for (const QString& nameTaskAI : listNameTaskAITemp) {
+			taskCombo->addItem(nameTaskAI);
+			int row = taskCombo->count() - 1;
+			QString shortcut = dataShortcutAITemp[nameTaskAI];
+			if (shortcut == "None") {
+				shortcut = QString();
+			}
+			taskCombo->setItemData(row, shortcut, Qt::UserRole);
 		}
 
 		modelCombo->clear();
 		for (const QString& model : taskAIDatabase.listNameModel) {
 			modelCombo->addItem(model);
+		}
+
+		shortcutCombo->clear();
+		for (const QString& shortcut : taskAIDatabase.listShortcutAI) {
+			shortcutCombo->addItem(shortcut);
 		}
 
 		if (_nameTaskAI.isEmpty()) {
@@ -383,12 +399,13 @@ void TaskAIEditor::loadWindow(const QString& _nameTaskAI) {
 			modelCombo->setCurrentIndex(0);
 		}
 
-		int indexTask = listNameTaskAITemp.indexOf(nameTaskAI) + 1;
-		if ((indexTask >= 1) && (indexTask <= 12)) {
-			labelShortcut->setText("Shift → F" + QString::number(indexTask));
+		QString shortcut = dataShortcutAITemp[nameTaskAI];
+		int indexShortcut = taskAIDatabase.listShortcutAI.indexOf(shortcut);
+		if (indexShortcut != -1) {
+			shortcutCombo->setCurrentIndex(indexShortcut);
 		}
 		else {
-			labelShortcut->setText("None");
+			shortcutCombo->setCurrentIndex(0);
 		}
 	}
 
@@ -450,41 +467,72 @@ void TaskAIEditor::fadeOut() {
 }
 
 void TaskAIEditor::onAddTaskClicked() {
+	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+
 	QString baseName = "Tác vụ";
 	int index = 1;
-	QString newName;
-	QString upperName;
+	QString nameTaskAI;
+	QString key;
 
 	do {
-		newName = QString("%1 %2").arg(baseName).arg(index, 2, 10, QChar('0'));
-		upperName = newName.toUpper();
+		nameTaskAI = QString("%1 %2").arg(baseName).arg(index, 2, 10, QChar('0'));
+		key = nameTaskAI.toUpper();
 		++index;
-	} while (dataTaskAITemp.contains(upperName));
+	} while (dataTaskAITemp.contains(key));
 
-	QString currentContent = taskEditor->toPlainText();
-	dataTaskAITemp[upperName] = qMakePair(newName, currentContent);
-	loadWindow(newName);
+	QString prompt = taskEditor->toPlainText();
+	dataTaskAITemp[key] = qMakePair(nameTaskAI, prompt);
+
+	QString nameModel = modelCombo->currentText();
+	dataModelAITemp[nameTaskAI] = nameModel;
+
+	bool assigned = false;
+	for (int i = 1; i <= 12; i++) {
+		QString shortcut = taskAIDatabase.listShortcutAI[i];
+		if (dataShortcutAICheckTemp[shortcut].isEmpty()) {
+			dataShortcutAITemp.insert(nameTaskAI, shortcut);
+			dataShortcutAICheckTemp[shortcut] = nameTaskAI;
+			assigned = true;
+			break;
+		}
+	}
+	if (!assigned) {
+		dataShortcutAITemp.insert(nameTaskAI, "None");
+	}
+
+	loadWindow(nameTaskAI);
 }
 
 void TaskAIEditor::onRenameTaskClicked() {
-	QString oldName = taskCombo->currentText();
-	if (oldName.isEmpty()) return;
+	QString nameTaskAIOld = taskCombo->currentText();
+	if (nameTaskAIOld.isEmpty()) return;
 
 	if (!renameDialog) {
 		renameDialog = new RenameDialog(this);
 
 		connect(renameDialog, &QDialog::accepted, this, [this]() {
-			QString oldName = renameDialog->oldName;
-			QString newName = renameDialog->getNewName();
-			QString oldKey = oldName.toUpper();
-			QString newKey = newName.toUpper();
+			QString nameTaskAIOld = renameDialog->oldName;
+			QString nameTaskAINew = renameDialog->getNewName();
+			QString oldKey = nameTaskAIOld.toUpper();
+			QString newKey = nameTaskAINew.toUpper();
+			QString nameModel = dataModelAITemp[nameTaskAIOld];
+			QString shortcut = dataShortcutAITemp[nameTaskAIOld];
 
 			QPair<QString, QString> data = dataTaskAITemp[oldKey];
-			data.first = newName;
+			data.first = nameTaskAINew;
 			dataTaskAITemp.remove(oldKey);
 			dataTaskAITemp[newKey] = data;
 
-			loadWindow(newName);
+			dataModelAITemp.remove(nameTaskAIOld);
+			dataModelAITemp[nameTaskAINew] = nameModel;
+
+			dataShortcutAITemp.remove(nameTaskAIOld);
+			dataShortcutAITemp[nameTaskAINew] = shortcut;
+			if (shortcut != "None") {
+				dataShortcutAICheckTemp[shortcut] = nameTaskAINew;
+			}
+
+			loadWindow(nameTaskAINew);
 			renameDialog.clear();
 			});
 
@@ -493,16 +541,25 @@ void TaskAIEditor::onRenameTaskClicked() {
 			});
 	}
 
-	renameDialog->setOldName(oldName);
+	renameDialog->setOldName(nameTaskAIOld);
 	renameDialog->showWindow();
 }
 
 void TaskAIEditor::onRemoveTaskClicked() {
-	QString current = taskCombo->currentText();
-	QString key = current.toUpper();
+	QString nameTaskAI = taskCombo->currentText();
+	QString key = nameTaskAI.toUpper();
 
 	if (dataTaskAITemp.contains(key)) {
 		dataTaskAITemp.remove(key);
+
+		dataModelAITemp.remove(nameTaskAI);
+
+		QString shortcut = dataShortcutAITemp[nameTaskAI];
+		dataShortcutAITemp.remove(nameTaskAI);
+		if (dataShortcutAICheckTemp.contains(shortcut)) {
+			dataShortcutAICheckTemp[shortcut] = QString();
+		}
+
 		loadWindow();
 	}
 }
@@ -510,17 +567,39 @@ void TaskAIEditor::onRemoveTaskClicked() {
 void TaskAIEditor::onTaskComboChanged() {
 	if (isInternalChange) return;
 
-	QString currentName = taskCombo->currentText().trimmed();
-	loadWindow(currentName);
+	QString nameTaskAI = taskCombo->currentText();
+	loadWindow(nameTaskAI);
 }
 
 void TaskAIEditor::onModelComboChanged()
 {
 	if (isInternalChange) return;
 
-	QString nameTaskAI = taskCombo->currentText().trimmed();
-	QString model = modelCombo->currentText().trimmed();
-	dataModelAITemp[nameTaskAI] = model;
+	QString nameTaskAI = taskCombo->currentText();
+	QString nameModel = modelCombo->currentText();
+	dataModelAITemp[nameTaskAI] = nameModel;
+}
+
+void TaskAIEditor::onShortcutComboChanged()
+{
+	if (isInternalChange) return;
+
+	QString nameTaskAICurrent = taskCombo->currentText();
+	QString shortcutCurrent = dataShortcutAITemp[nameTaskAICurrent];
+	QString shortcutNew = shortcutCombo->currentText();
+	if (shortcutNew != "None") {
+		QString nameTaskAIChange = dataShortcutAICheckTemp[shortcutNew];
+		if (!nameTaskAIChange.isEmpty()) {
+			dataShortcutAITemp[nameTaskAIChange] = "None";
+		}
+		dataShortcutAICheckTemp[shortcutNew] = nameTaskAICurrent;
+	}
+	dataShortcutAITemp[nameTaskAICurrent] = shortcutNew;
+	if (shortcutCurrent != "None") {
+		dataShortcutAICheckTemp[shortcutCurrent] = QString();
+	}
+
+	loadWindow(nameTaskAICurrent);
 }
 
 void TaskAIEditor::onEditorChanged() {
@@ -561,15 +640,16 @@ void TaskAIEditor::onSaveButtonClicked() {
 	taskAIDatabase.dataTaskAI = dataTaskAITemp;
 	taskAIDatabase.dataModelAI = dataModelAITemp;
 	taskAIDatabase.listNameTaskAI = listNameTaskAITemp;
+	taskAIDatabase.dataShortcutAI = dataShortcutAITemp;
+	taskAIDatabase.dataShortcutAICheck = dataShortcutAICheckTemp;
 	taskAIDatabase.saveDataTaskAI();
 	hideWindow();
 }
 
 void TaskAIEditor::onDefaultButtonClicked() {
 	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
-
-	dataTaskAITemp.clear();
-	taskAIDatabase.addDataTaskAIDefault(dataTaskAITemp);
+	taskAIDatabase.addDataTaskAIDefault(dataTaskAITemp, dataModelAITemp, dataShortcutAITemp, dataShortcutAICheckTemp);
+	listNameTaskAITemp = taskAIDatabase.createListNameTaskAI(dataShortcutAITemp, dataShortcutAICheckTemp);
 	loadWindow();
 }
 

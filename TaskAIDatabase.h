@@ -15,20 +15,29 @@ public:
     QMap<QString, QPair<QString, QString>> dataTaskAI;
     QMap<QString, QString> dataModelAI;
     QMap<QString, QString> dataNameModel;
+    QMap<QString, QString> dataShortcutAI;
+    QMap<QString, QString> dataShortcutAICheck;
     QStringList listNameTaskAI;
     QSet<QString> listNameDefaultTaskAI;
     QPair<QString, QString> dataCheckSpell;
     QStringList listNameModel;
+    QStringList listShortcutAI;
     int numModelDefault;
 
     void loadDataTaskAI();
-    void loadModel();
-    void addDataTaskAIDefault(QMap<QString, QPair<QString, QString>>& dataTaskAI);
+    void loadDataModel();
+    void loadDataShortcut();
+    void addDataTaskAIDefault(
+        QMap<QString, QPair<QString, QString>>& dataTaskAI,
+        QMap<QString, QString>& dataModelAI,
+        QMap<QString, QString>& dataShortcutAI,
+        QMap<QString, QString>& dataShortcutAICheck);
     void saveDataTaskAI();
-    void saveModel();
+    void saveDataModel();
+    void saveDataShortcut();
     bool isValidTaskContent(const QString& content);
     bool isValidTaskName(const QString& name, const QMap<QString, QPair<QString, QString>>& dataTaskAI, const QString& current);
-    QStringList createListNameTaskAI(QMap<QString, QPair<QString, QString>>& dataTaskAI);
+    QStringList createListNameTaskAI(QMap<QString, QString>& dataShortcutAI, QMap<QString, QString>& dataShortcutAICheck);
 
 private:
     TaskAIDatabase();

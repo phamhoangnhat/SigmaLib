@@ -622,12 +622,13 @@ void ConfigUi::loadSettings() {
 	bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
+	QString nameTaskAIDefault = taskAIDatabase.listNameTaskAI.value(0, QString());
 
 	QSettings settings(APP_NAME, "AccountManager");
 	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + m_AppNameConfig);
 	bool flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
 	std::wstring characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString().toStdWString();
-	variable.nameTaskAI = settings.value("nameTaskAI", variable.NAMETASKAI).toString();
+	variable.nameTaskAI = settings.value("nameTaskAI", nameTaskAIDefault).toString();
 	variable.nameSnippetString = settings.value("nameSnippetString", variable.NAMESNIPPETSTRING).toString();
 	variable.nameSnippetWords = settings.value("nameSnippetWords", variable.NAMESNIPPETWORDS).toString();
 	bool modeUseDynamic = settings.value("modeUseDynamic", variable.MODEUSEDYNAMIC).toBool();
@@ -643,7 +644,7 @@ void ConfigUi::loadSettings() {
 		characterSet = variable.CHARACTERSET;
 	}
 	if (!taskAIDatabase.listNameTaskAI.contains(variable.nameTaskAI)) {
-		variable.nameTaskAI = variable.NAMETASKAI;
+		variable.nameTaskAI = nameTaskAIDefault;
 	}
 	if (!snippetEditor->listNameSnippet.contains(variable.nameSnippetString)) {
 		variable.nameSnippetString = variable.NAMESNIPPETSTRING;

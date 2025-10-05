@@ -24,7 +24,6 @@ public:
     const bool MODEINSERTCHAR = false;
 
     const std::wstring CHARACTERSET = L"Unicode";
-    const QString NAMETASKAI = "01. Kiểm tra chính tả tiếng Việt";
     const QString NAMESNIPPETSTRING = "Không sử dụng";
     const QString NAMESNIPPETWORDS = "Không sử dụng";
     const bool MODETYPESIMPLE = false;
