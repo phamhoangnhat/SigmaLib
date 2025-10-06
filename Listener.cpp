@@ -606,6 +606,22 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
+	if ((nameAction == "Bật | tắt chạy Sigma với quyền quản trị admin") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeGeneralConfig("modeAdmin");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Bật | tắt tự động cập nhật khi khởi động") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeGeneralConfig("modeAutoUpdate");
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
 	if ((nameAction == "Bật | tắt khôi phục từ gốc khi gõ sai chính tả") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeGeneralConfig("modeRestore");

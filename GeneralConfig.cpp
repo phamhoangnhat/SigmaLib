@@ -474,7 +474,6 @@ void GeneralConfig::onSaveButtonClicked() {
 	Variable& variable = Variable::getInstance();
 	AccountManager* accountManager = AccountManager::getInstance();
 
-	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeAutoStart = checkBoxAutoStart->isChecked();
 	if (variable.verSigmaExe > 0.0) {
 		if (isLoggingByAdmin()) {
@@ -488,6 +487,14 @@ void GeneralConfig::onSaveButtonClicked() {
 		variable.modeAdmin = variable.MODEADMIN;
 	}
 	//variable.modeAutoUpdate = checkBoxAutoUpdate->isChecked();
+
+	QSettings settingsConfig(APP_NAME, "Config");
+	settingsConfig.setValue("modeAutoStart", variable.modeAutoStart);
+	settingsConfig.setValue("modeAdmin", variable.modeAdmin);
+	createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
+	//settingsConfig.setValue("modeAutoUpdate", variable.modeAutoUpdate);
+
+	variable.inputMethod = comboInputMethod->currentText().toStdWString();
 	variable.modeRestore = checkBoxRestore->isChecked();
 	variable.modeAutoChangeLang = checkBoxAutoChangeLang->isChecked();
 	variable.modeRemoveDiacTone = checkBoxRemoveDiacTone->isChecked();
@@ -497,10 +504,6 @@ void GeneralConfig::onSaveButtonClicked() {
 	QSettings settings(APP_NAME, "AccountManager");
 	settings.beginGroup(accountManager->currentAccount + "/Config");
 	settings.setValue("inputMethod", QString::fromStdWString(variable.inputMethod));
-	settings.setValue("modeAutoStart", variable.modeAutoStart);
-	settings.setValue("modeAdmin", variable.modeAdmin);
-	createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
-	//settings.setValue("modeAutoUpdate", variable.modeAutoUpdate);
 	settings.setValue("modeRestore", variable.modeRestore);
 	settings.setValue("modeAutoChangeLang", variable.modeAutoChangeLang);
 	settings.setValue("modeRemoveDiacTone", variable.modeRemoveDiacTone);

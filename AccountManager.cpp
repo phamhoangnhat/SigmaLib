@@ -470,8 +470,7 @@ bool AccountManager::copyAccounts(const QString& accountSrc,
 	bool result = false;
 
 	QStringList listKeyConfig{
-		"inputMethod","modeAutoStart","modeAdmin","modeRestore",
-		"modeAutoChangeLang","modeRemoveDiacTone","modeLoopDiacTone","modeInsertChar"
+		"inputMethod", "modeRestore", "modeAutoChangeLang", "modeRemoveDiacTone", "modeLoopDiacTone", "modeInsertChar"
 	};
 
 	if (!accountSrc.isEmpty()) {

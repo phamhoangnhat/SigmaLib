@@ -476,6 +476,21 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 		}
 		variable.modeAutoStart = !variable.modeAutoStart;
 		createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
+		valueMode = variable.modeAutoStart;
+	}
+
+	if (nameMode == "modeAdmin") {
+		if (!isLoggingByAdmin()) {
+			variable.modeAdmin = false;
+		}
+		variable.modeAdmin = !variable.modeAdmin;
+		createAdminTaskInScheduler(variable.modeAutoStart, variable.modeAdmin);
+		valueMode = variable.modeAdmin;
+	}
+
+	if (nameMode == "modeAutoUpdate") {
+		variable.modeAutoUpdate = !variable.modeAutoUpdate;
+		valueMode = variable.modeAutoUpdate;
 	}
 
 	if (nameMode == "modeRestore") {
@@ -503,11 +518,20 @@ void TypeWord::changeGeneralConfig(QString nameMode)
 		valueMode = variable.modeInsertChar;
 	}
 
-	QSettings settings(APP_NAME, "AccountManager");
-	settings.beginGroup(accountManager->currentAccount + "/Config");
-	settings.setValue(nameMode, valueMode);
-	settings.endGroup();
-	variable.update();
+	if((nameMode == "modeAutoStart")
+		|| (nameMode == "modeAdmin")
+		|| (nameMode == "modeAutoUpdate"))
+	{
+		QSettings settingsConfig(APP_NAME, "Config");
+		settingsConfig.setValue(nameMode, valueMode);
+	}
+	else {
+		QSettings settings(APP_NAME, "AccountManager");
+		settings.beginGroup(accountManager->currentAccount + "/Config");
+		settings.setValue(nameMode, valueMode);
+		settings.endGroup();
+		variable.update();
+	}
 
 	showChangeConfig(nameMode);
 }

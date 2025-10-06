@@ -74,27 +74,28 @@ void Variable::update()
 void Variable::loadGeneralConfig()
 {
 	AccountManager* accountManager = AccountManager::getInstance();
+	namePreviousWindow = "";
 
 	QSettings settingsConfig(APP_NAME, "Config");
 	settingsConfig.setValue("appNameFull", appNameFull);
 	verSigmaExe = settingsConfig.value("verSigmaExe", 0.0).toDouble();
 
-	namePreviousWindow = "";
+	modeAutoStart = settingsConfig.value("modeAutoStart", MODEAUTOSTART).toBool();
+	if (isLoggingByAdmin()) {
+		modeAdmin = settingsConfig.value("modeAdmin", MODEADMIN).toBool();
+	}
+	else {
+		modeAdmin = false;
+	}
+	createAdminTaskInScheduler(modeAutoStart, modeAdmin);
+	modeAutoUpdate = settingsConfig.value("modeAutoUpdate", MODEAUTOUPDATE).toBool();
+
 	QSettings settings(APP_NAME, "AccountManager");
 	settings.beginGroup(accountManager->currentAccount + "/Config");
 	inputMethod = settings.value("inputMethod", QString::fromStdWString(INPUTMETHOD)).toString().toStdWString();
 	if (mapInputMethodBase.find(inputMethod) == mapInputMethodBase.end()) {
 		inputMethod = INPUTMETHOD;
 	}
-	modeAutoStart = settings.value("modeAutoStart", MODEAUTOSTART).toBool();
-	if (isLoggingByAdmin()) {
-		modeAdmin = settings.value("modeAdmin", MODEADMIN).toBool();
-	}
-	else {
-		modeAdmin = false;
-	}
-	createAdminTaskInScheduler(modeAutoStart, modeAdmin);
-	modeAutoUpdate = settings.value("modeAutoUpdate", MODEAUTOUPDATE).toBool();
 	modeRestore = settings.value("modeRestore", MODERESTORE).toBool();
 	modeAutoChangeLang = settings.value("modeAutoChangeLang", MODEAUTOCHANGELANG).toBool();
 	modeRemoveDiacTone = settings.value("modeRemoveDiacTone", MODEREMOVEDIACTONE).toBool();

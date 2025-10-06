@@ -132,6 +132,8 @@ ShortcutKeyEditor::ShortcutKeyEditor(QWidget* parent)
         "Bật | tắt cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"",
         "Bật | tắt dùng phím ← → để điều hướng từng từ",
         "Bật | tắt khởi động cùng Windows",
+        //"Bật | tắt chạy Sigma với quyền quản trị admin",
+        //"Bật | tắt tự động cập nhật khi khởi động",
         "Bật | tắt khôi phục từ gốc khi gõ sai chính tả",
         "Bật | tắt tự động chuyển từ tiếng Anh đã ghi nhớ",
         "Bật | tắt xóa toàn bộ dấu khi nhấn phím bỏ dấu",
