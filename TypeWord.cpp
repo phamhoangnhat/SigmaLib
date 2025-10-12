@@ -82,6 +82,7 @@ void TypeWord::addChar(wchar_t character)
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
 	if (listWord.empty()) {
+		variable.loadSettingsWindow();
 		listWord.push_back(Word());
 		posWord = 0;
 		flagTypeWord = false;

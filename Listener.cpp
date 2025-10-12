@@ -265,7 +265,8 @@ bool Listener::checkSpell(int vkCode)
 
 bool Listener::passSwitchWindow(int vkCode)
 {
-	if ((vkCode == VK_TAB)
+	if ((vkCode == VK_LMENU)
+		|| (vkCode == VK_RMENU)
 		|| (vkCode == VK_LWIN)
 		|| (vkCode == VK_RWIN))
 	{
@@ -273,7 +274,6 @@ bool Listener::passSwitchWindow(int vkCode)
 		TypeWord& typeWord = TypeWord::getInstance();
 		Variable& variable = Variable::getInstance();
 		typeWord.reset(true);
-		variable.loadSettingsWindow();
 		return true;
 	}
 	else {
@@ -918,7 +918,6 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 				|| listener.removeChar(vkCode)
 				|| listener.moveLeft(vkCode)
 				|| listener.moveRight(vkCode)
-				|| listener.passSwitchWindow(vkCode)
 				|| listener.passResetBuffer(vkCode)
 				|| listener.resetBuffer(vkCode));
 
@@ -926,13 +925,14 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 			variable.vkCodePrevious = vkCode;
 		}
 
-		if (wParam == WM_KEYUP) {
+		if (wParam == WM_KEYUP || (wParam == WM_SYSKEYDOWN)) {
 			variable.flagSendingKey = true;
 			(
 				listener.checkHotkey(vkCode)
 				|| listener.switchLangGlobal(vkCode)
 				|| listener.switchLang(vkCode)
 				|| listener.checkSpell(vkCode)
+				|| listener.passSwitchWindow(vkCode)
 			);
 
 			listener.updateKeyRelease(vkCode);
