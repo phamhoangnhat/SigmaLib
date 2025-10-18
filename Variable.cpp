@@ -11,6 +11,8 @@
 #include "SnippetEditor.h"
 #include "Typeword.h"
 #include "AccountManager.h"
+#include <LangRegistryWatcher.h>
+#include <CharsetRegistryWatcher.h>
 
 #include <algorithm>
 #include <iostream>
@@ -19,6 +21,7 @@
 
 #include <QString>
 #include <QSettings>
+
 
 Variable::Variable() {
 }
@@ -1307,9 +1310,10 @@ bool Variable::loadSettingsWindow()
 		SnippetEditor* snippetEditor = SnippetEditor::getInstance();
 		TypeWord& typeWord = TypeWord::getInstance();
 		AccountManager* accountManager = AccountManager::getInstance();
+		LangRegistryWatcher& langRegistryWatcher = LangRegistryWatcher::getInstance();
+		CharsetRegistryWatcher& charsetRegistryWatcher = CharsetRegistryWatcher::getInstance();
 
 		typeWord.numChangeCase = 0;
-
 		bool modeLangVietGlobalDefault = listAppLangVietGlobal.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
@@ -1317,8 +1321,21 @@ bool Variable::loadSettingsWindow()
 
 		QSettings settings(APP_NAME, "AccountManager");
 		settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + nameCurrentWindow);
-		flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
-		characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
+
+		if (langRegistryWatcher.dataLangWatcher.contains(nameCurrentWindow)) {
+			flagLangVietGlobal = langRegistryWatcher.dataLangWatcher[nameCurrentWindow];
+		}
+		else {
+			flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
+		}
+
+		if (charsetRegistryWatcher.dataCharsetWatcher.contains(nameCurrentWindow)) {
+			characterSet = charsetRegistryWatcher.dataCharsetWatcher[nameCurrentWindow].toStdWString();
+		}
+		else {
+			characterSet = settings.value("characterSet", QString::fromStdWString(CHARACTERSET)).toString().toStdWString();
+		}
+
 		nameTaskAI = settings.value("nameTaskAI", nameTaskAIDefault).toString();
 		nameSnippetString = settings.value("nameSnippetString", NAMESNIPPETSTRING).toString();
 		nameSnippetWords = settings.value("nameSnippetWords", NAMESNIPPETWORDS).toString();

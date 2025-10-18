@@ -7,6 +7,7 @@
 #include <windows.h>
 
 LangRegistryWatcher::LangRegistryWatcher() {}
+
 LangRegistryWatcher::~LangRegistryWatcher() {
     stopWatching();
     wait();
@@ -21,7 +22,6 @@ void LangRegistryWatcher::startWatching() {
     if (isRunning()) return;
 
     exitThread = false;
-    resetRegistryValue();
     start();
 }
 
@@ -31,18 +31,6 @@ void LangRegistryWatcher::stopWatching() {
 
 bool LangRegistryWatcher::isWatching() const {
     return isRunning();
-}
-
-void LangRegistryWatcher::resetRegistryValue() {
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoLang", QSettings::NativeFormat);
-    QString current = settings.value("Value", "").toString().trimmed();
-    if (!current.isEmpty()) {
-        flagInternalChange = true;
-        settings.setValue("Value", "");
-    }
-    else {
-        flagInternalChange = false;
-    }
 }
 
 void LangRegistryWatcher::run() {
@@ -80,6 +68,7 @@ void LangRegistryWatcher::handleRegistryChange() {
 
     if (mapLang.contains(value)) {
         flagLangVietGlobal = mapLang[value];
+		dataLangWatcher[variable.nameCurrentWindow] = flagLangVietGlobal;
     }
     else {
         bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(variable.nameCurrentWindow.toLower()) ? true : false;
@@ -87,8 +76,8 @@ void LangRegistryWatcher::handleRegistryChange() {
         settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + variable.nameCurrentWindow);
         flagLangVietGlobal = settings.value("flagLangVietGlobal", modeLangVietGlobalDefault).toBool();
         settings.endGroup();
+		dataLangWatcher.remove(variable.nameCurrentWindow);
     }
 
     variable.flagLangVietGlobal = flagLangVietGlobal;
-    resetRegistryValue();
 }

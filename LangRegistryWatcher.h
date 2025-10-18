@@ -1,11 +1,14 @@
 #pragma once
 #include <QThread>
+#include <QMap>
+#include <QString>
 
 class LangRegistryWatcher : public QThread {
     Q_OBJECT
 
 public:
     static LangRegistryWatcher& getInstance();
+    QMap<QString, bool> dataLangWatcher;
 
     void startWatching();
     void stopWatching();
@@ -24,5 +27,4 @@ private:
     bool flagInternalChange = false;
 
     void handleRegistryChange();
-    void resetRegistryValue();
 };

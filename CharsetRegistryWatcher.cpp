@@ -21,7 +21,6 @@ void CharsetRegistryWatcher::startWatching() {
     if (isRunning()) return;
 
     exitThread = false;
-    resetRegistryValue();
     start();
 }
 
@@ -31,18 +30,6 @@ void CharsetRegistryWatcher::stopWatching() {
 
 bool CharsetRegistryWatcher::isWatching() const {
     return isRunning();
-}
-
-void CharsetRegistryWatcher::resetRegistryValue() {
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Sigma\\AutoCharset", QSettings::NativeFormat);
-    QString current = settings.value("Value", "").toString();
-    if (!current.isEmpty()) {
-        flagInternalChange = true;
-        settings.setValue("Value", "");
-    }
-    else {
-        flagInternalChange = false;
-    }
 }
 
 void CharsetRegistryWatcher::run() {
@@ -80,14 +67,15 @@ void CharsetRegistryWatcher::handleRegistryChange() {
     QString value = settings.value("Value", "").toString().trimmed().toUpper();
     if (mapCharset.contains(value)) {
         characterSet = mapCharset[value];
+		dataCharsetWatcher[variable.nameCurrentWindow] = characterSet;
     }
     else {
         QSettings settings(APP_NAME, "AccountManager");
         settings.beginGroup(accountManager->currentAccount + "/ConfigUi/" + variable.nameCurrentWindow);
         characterSet = settings.value("characterSet", QString::fromStdWString(variable.CHARACTERSET)).toString();
         settings.endGroup();
+		dataCharsetWatcher.remove(variable.nameCurrentWindow);
     }
     variable.characterSet = characterSet.toStdWString();
     variable.update();
-    resetRegistryValue();
 }

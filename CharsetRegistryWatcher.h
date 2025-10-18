@@ -1,11 +1,14 @@
 #pragma once
 #include <QThread>
+#include <QMap>
+#include <QString>
 
 class CharsetRegistryWatcher : public QThread {
     Q_OBJECT
 
 public:
     static CharsetRegistryWatcher& getInstance();
+	QMap<QString, QString> dataCharsetWatcher;
 
     void startWatching();
     void stopWatching();
@@ -24,5 +27,4 @@ private:
     bool flagInternalChange = false;
 
     void handleRegistryChange();
-    void resetRegistryValue();
 };
