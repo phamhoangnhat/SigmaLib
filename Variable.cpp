@@ -999,6 +999,7 @@ std::map<wchar_t, std::pair<wchar_t, wchar_t>> Variable::createDataAddCharMiddle
 			}
 		}
 	}
+
 	return dataAddCharMiddle2;
 }
 
@@ -1253,6 +1254,16 @@ std::unordered_set<wchar_t> Variable::createDataCheckModeRestore()
 		dataCheckModeRestore.insert(tolower(charTemp));
 		dataCheckModeRestore.insert(towupper(charTemp));
 	}
+
+	for (auto& stringTemp : inputMethodBase)
+	{
+		for (auto& charTemp : stringTemp)
+		{
+			dataCheckModeRestore.insert(tolower(charTemp));
+			dataCheckModeRestore.insert(towupper(charTemp));
+		}
+	}
+	
 	return dataCheckModeRestore;
 }
 

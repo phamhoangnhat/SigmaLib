@@ -25,13 +25,13 @@ TaskAIDatabase::TaskAIDatabase() {
 
 	dataNameModel =
 	{
-		{"Gemini 2.0 Flash", "gemini-2.0-flash"},
-		{"Gemini 2.0 Flash Lite", "gemini-2.0-flash-lite"},
+		{"Gemini 3 Flash Preview", "gemini-3-flash-preview" },
+		//{"Gemini 3 Pro Preview", "gemini-3-pro-preview"},
 		{"Gemini 2.5 Flash", "gemini-2.5-flash"},
 		{"Gemini 2.5 Flash Lite", "gemini-2.5-flash-lite"},
-		{"Gemini 2.5 Flash Lite Preview (09/2025)", "gemini-2.5-flash-lite-preview-09-2025" },
-		{"Gemini 2.5 Flash Preview (09/2025)", "gemini-2.5-flash-preview-09-2025"},
-		{"Gemini 2.5 Pro", "gemini-2.5-pro"},
+		//{"Gemini 2.5 Pro", "gemini-2.5-pro"},
+		{"Gemini 2.0 Flash", "gemini-2.0-flash"},
+		{"Gemini 2.0 Flash Lite", "gemini-2.0-flash-lite"},
 	};
 	listNameModel = dataNameModel.keys();
 	numModelDefault = 3;

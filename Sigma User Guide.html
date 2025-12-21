@@ -318,7 +318,7 @@
 		</div>
 		<button class="menu-toggle">☰</button>
 		<div class="container">
-			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.1.9</h1>
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.2.1</h1>
 			<div class="section">
 				<h2 id="sum-intro">1. Giới thiệu</h2>
 				<p>
@@ -1296,59 +1296,48 @@
 				<h3>Các model Gemini</h3>
 				<ul>
 					<li>
-						Mỗi tác vụ AI đều cho phép bạn lựa chọn model AI riêng.</li>
-					<li>Với các tác vụ <code>đơn giản</code> (ví dụ: viết lại câu ngắn, gợi ý ý tưởng nhanh),
-						nên chọn model <code>Flash</code> hoặc các model tốc độ cao. Ưu điểm là phản hồi gần như
-						tức thì.</li>
-					<li>Với các tác vụ <code>phức tạp</code> hoặc yêu cầu <code>độ chính xác cao</code> (ví dụ:
-						phân tích nội dung dài, viết văn bản chuẩn mực), nên chọn model <code>Pro</code>. Đổi
-						lại, thời gian xử lý sẽ lâu hơn.</li>
-					<li><code>Flash/Lite</code> ưu tiên tốc độ, <code>Pro</code> ưu tiên chất lượng. Các
-						model <code>Preview</code> chỉ để thử nghiệm, có thể thay đổi.</li>
+						Phần mềm hiện hỗ trợ các model tối ưu về tốc độ và miễn phí sử dụng.</li>
+					<li><strong>Dòng Flash (Khuyên dùng):</strong> Cân bằng tốt giữa trí thông minh và tốc độ. Phù hợp
+						cho hầu hết các nhu cầu như chat, viết nội dung, tóm tắt.</li>
+					<li><strong>Dòng Flash-Lite:</strong> Phiên bản siêu nhẹ, phản hồi gần như tức thì. Chỉ nên dùng cho
+						các tác vụ rất đơn giản (sửa lỗi chính tả, dịch câu ngắn) để tiết kiệm thời gian chờ.</li>
+					<li><strong>Lưu ý:</strong> <code>Gemini 3</code> là thế hệ mới nhất (thông minh hơn),
+						<code>Gemini 2.5</code> là bản ổn định phổ biến.
+					</li>
 				</ul>
 				<table>
 					<thead>
 						<tr>
-							<th>Tên</th>
-							<th>Mô tả</th>
+							<th>Tên Model</th>
+							<th>Đặc điểm</th>
 							<th>Phù hợp cho</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>Gemini 2.0 Flash</td>
-							<td>Nhanh chất lượng khá</td>
-							<td>Tác vụ ngắn, trả lời tức thì</td>
-						</tr>
-						<tr>
-							<td>Gemini 2.0 Flash Lite</td>
-							<td>Siêu nhanh, chi phí thấp, nhẹ</td>
-							<td>Gõ tắt, xử lý văn bản đơn giản</td>
+							<td>Gemini 3 Flash (Preview)</td>
+							<td>Thế hệ mới nhất, thông minh vượt trội</td>
+							<td>Tác vụ cần suy luận tốt nhưng vẫn nhanh (Chat, lên ý tưởng)</td>
 						</tr>
 						<tr>
 							<td>Gemini 2.5 Flash</td>
-							<td>Cân bằng tốc độ & chất lượng</td>
-							<td>Tóm tắt, Q&A nhanh, dàn ý</td>
+							<td>Bản ổn định, hiệu năng cao</td>
+							<td>Xử lý hình ảnh, tài liệu dài, hoạt động ổn định nhất</td>
 						</tr>
 						<tr>
-							<td>Gemini 2.5 Flash Lite</td>
-							<td>Nhanh, nhẹ hơn Flash</td>
-							<td>Xử lý ngắn gọn, lọc thông tin</td>
+							<td>Gemini 2.5 Flash-Lite</td>
+							<td>Siêu nhanh, nhẹ nhất Gen 2.5</td>
+							<td>Tác vụ đơn giản lặp lại nhiều lần, máy cấu hình yếu</td>
 						</tr>
 						<tr>
-							<td>Gemini 2.5 Flash Lite Preview (09/2025)</td>
-							<td>Bản thử nghiệm, rất nhanh</td>
-							<td>Thử nghiệm tính năng mới</td>
+							<td>Gemini 2.0 Flash</td>
+							<td>Bản cũ (Legacy)</td>
+							<td>Dùng khi các bản mới gặp lỗi tương thích</td>
 						</tr>
 						<tr>
-							<td>Gemini 2.5 Flash Preview (09/2025)</td>
-							<td>Bản thử nghiệm, cân bằng tốt</td>
-							<td>Thử nghiệm tác vụ dài nhanh</td>
-						</tr>
-						<tr>
-							<td>Gemini 2.5 Pro</td>
-							<td>Độ chính xác cao, lý luận tốt</td>
-							<td>Phân tích phức tạp, viết chuẩn</td>
+							<td>Gemini 2.0 Flash-Lite</td>
+							<td>Bản cũ siêu nhẹ (Legacy)</td>
+							<td>Xử lý văn bản ngắn, đơn giản</td>
 						</tr>
 					</tbody>
 				</table>
@@ -1392,6 +1381,25 @@
 						</strong> để bạn xem hoặc sao chép thủ công.
 					</li>
 				</ul>
+
+				<h4>Cấu hình Bảng mã & Chuyển đổi</h4>
+				<p>
+					Sigma tự động trả về kết quả AI theo đúng <strong>Bộ mã</strong> bạn chọn trong cấu hình (Unicode,
+					VNI Windows, TCVN3(ABC)) trong cấu hình ứng dụng.
+				</p>
+				<ul>
+					<li>
+						<strong>Bước 1:</strong> Vào <strong>Cấu hình ứng dụng</strong>, tại mục <code>Bộ mã</code>,
+						chọn bảng mã bạn muốn nhận kết quả (Bảng mã đích).
+					</li>
+					<li>
+						<strong>Bước 2:</strong> Thực hiện tác vụ AI bất kỳ.
+					</li>
+				</ul>
+				<p>
+					<strong>Mẹo chuyển mã phông chữ:</strong> Để chuyển đổi phông chữ của văn bản có sẵn, hãy chọn Bảng mã đích
+					ở Bước 1, sau đó chạy tác vụ AI <code>Chuyển mã phông chữ</code> với đoạn văn bản cần chuyển.
+				</p>
 
 				<p>
 					<strong>

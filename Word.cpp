@@ -36,10 +36,6 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 
 	bool result = false;
 
-	if (charQuickVowel != std::tolower(character)) {
-		charQuickVowel = L'\0';
-	}
-
 	std::unordered_set<wchar_t>& dataAddCharSpace = variable.dataAddCharSpace;
 	bool flagCharSpace = (dataAddCharSpace.find(character) == dataAddCharSpace.end());
 
@@ -224,14 +220,24 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 	if (!variable.modeTypeSimple && (variable.dataAddCharMiddle2.find(character) != variable.dataAddCharMiddle2.end())) {
 		wchar_t stateDiacTemp = variable.dataAddCharMiddle2[character].first;
 		wchar_t charTemp = variable.dataAddCharMiddle2[character].second;
-
 		std::vector<wchar_t> listParam = { stateDiacTemp };
-		result = addCharTemplate(charTemp, flagAddBack, listCharVowel, &Word::checkCharVowel, &listParam);
-		if (result) {
-			charQuickVowel = std::tolower(character);
-			return true;
+
+		if (charQuickVowel != L'\0') {
+			charQuickVowel = L'\0';
+			result = addCharTemplate(charTemp, flagAddBack, listCharVowel, &Word::checkCharVowel);
+			if (result) {
+				return true;
+			}
+		}
+		else {
+			result = addCharTemplate(charTemp, flagAddBack, listCharVowel, &Word::checkCharVowel, &listParam);
+			if (result) {
+				charQuickVowel = std::tolower(character);
+				return true;
+			}
 		}
 	}
+	charQuickVowel = L'\0';
 
 	return false;
 }
@@ -656,6 +662,7 @@ bool Word::checkPosTone() {
 
 void Word::removeChar() {
 	Variable& variable = Variable::getInstance();
+	charQuickVowel = L'\0';
 
 	removeDataAutoChangeLang();
 
@@ -715,7 +722,7 @@ void Word::removeChar() {
 		stateD = variable.listStateBase[13];
 		stateTone = variable.listStateBase[0];
 		stateDiac = variable.listStateBase[6];
-		charQuickVowel = L'\n';
+		charQuickVowel = L'\0';
 		listCharVowel.clear();
 		listCharDisplayCurrent.clear();
 		listCharDisplayNew.clear();
