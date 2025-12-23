@@ -207,6 +207,10 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 	checkCharGI(character);
 	result = addCharTemplate(character, flagAddBack, listCharVowel, &Word::checkCharVowel);
 	if (result) {
+
+		std::wstring joined;
+		for (const auto& w : listCharVowel) joined += w;
+
 		if (listCharVietMiddle.back() != listCharVowel.back()) {
 			keyPassDiac.clear();
 			for (auto character : variable.dataAddCharMiddle1[stateDiac]) {

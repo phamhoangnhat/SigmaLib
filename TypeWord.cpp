@@ -81,6 +81,7 @@ void TypeWord::addChar(wchar_t character)
 {
 	Variable& variable = Variable::getInstance();
 	Listener& listener = Listener::getInstance();
+
 	if (listWord.empty()) {
 		variable.loadSettingsWindow();
 		listWord.push_back(Word());
@@ -162,7 +163,6 @@ void TypeWord::removeChar()
 		listener.flagRejectHook = true;
 		fixStringDisplay(numBackspaceStart, stringAdd);
 	}
-
 	if (word.listCharDisplayNew.empty()) {
 		if (word.listCharSpaceNew.empty()) {
 			removeWord();
@@ -279,6 +279,16 @@ void TypeWord::addWord(int posWordTemp)
 	wordPrevious.addDataAutoChangeLang();
 	wordPrevious.keyPassDiac.clear();
 	wordPrevious.keyPassEnd.clear();
+
+	if (wordPrevious.listCharVietInvalid.empty()) {
+		wordPrevious.stateAdd = 2;
+		if (wordPrevious.listCharVietEnd.empty()) {
+			wordPrevious.stateAdd = 1;
+			if (wordPrevious.listCharVowel.empty()) {
+				wordPrevious.stateAdd = 0;
+			}
+		}
+	}
 
 	listWord.insert(listWord.begin() + posWordTemp, Word());
 	posWord = posWordTemp;
