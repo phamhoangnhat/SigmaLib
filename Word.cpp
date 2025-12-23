@@ -330,6 +330,8 @@ bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, st
 							listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
 						}
 						else {
+							listCharVowel.pop_back();
+							listCharVietMiddle.pop_back();
 							charQuickVowel = L'\0';
 						}
 						listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
@@ -390,6 +392,7 @@ bool Word::addKeyRemoveDiacToneD(wchar_t character)
 			listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
 			listCharVietInvalid.clear();
 			addCharInvalid(character);
+
 			result = true;
 		}
 	}
