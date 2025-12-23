@@ -223,7 +223,6 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 		std::vector<wchar_t> listParam = { stateDiacTemp };
 
 		if (charQuickVowel != L'\0') {
-			charQuickVowel = L'\0';
 			result = addCharTemplate(charTemp, flagAddBack, listCharVowel, &Word::checkCharVowel);
 			if (result) {
 				return true;
@@ -237,7 +236,6 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 			}
 		}
 	}
-	charQuickVowel = L'\0';
 
 	return false;
 }
@@ -330,6 +328,9 @@ bool Word::addKeyTemplate(wchar_t character, wchar_t state, std::map<wchar_t, st
 						listCharViet.insert(listCharViet.end(), listCharVietStart.begin(), listCharVietStart.end());
 						if ((charQuickVowel != std::tolower(character)) || (!listCharVietEnd.empty())) {
 							listCharViet.insert(listCharViet.end(), listCharVietMiddle.begin(), listCharVietMiddle.end());
+						}
+						else {
+							charQuickVowel = L'\0';
 						}
 						listCharViet.insert(listCharViet.end(), listCharVietEnd.begin(), listCharVietEnd.end());
 						listCharVietInvalid.clear();
