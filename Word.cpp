@@ -221,12 +221,20 @@ bool Word::addCharMiddle(wchar_t character, bool flagAddBack) {
 		return true;
 	}
 
-	if (!variable.modeTypeSimple && (variable.dataAddCharMiddle2.find(character) != variable.dataAddCharMiddle2.end())) {
-		wchar_t stateDiacTemp = variable.dataAddCharMiddle2[character].first;
-		wchar_t charTemp = variable.dataAddCharMiddle2[character].second;
+	wchar_t charLower = tolower(character);
+	if (!variable.modeTypeSimple && (variable.dataAddCharMiddle2.find(charLower) != variable.dataAddCharMiddle2.end())) {
+		wchar_t stateDiacTemp = variable.dataAddCharMiddle2[charLower].first;
+		wchar_t charTemp;
+		if (variable.flagIsLower) {
+			charTemp = variable.dataAddCharMiddle2[charLower].second;
+		}
+		else {
+			charTemp = toupper(variable.dataAddCharMiddle2[charLower].second);
+		}
 		std::vector<wchar_t> listParam = { stateDiacTemp };
 
 		if (charQuickVowel != L'\0') {
+			if(charTemp)
 			result = addCharTemplate(charTemp, flagAddBack, listCharVowel, &Word::checkCharVowel);
 			if (result) {
 				return true;

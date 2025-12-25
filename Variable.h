@@ -60,6 +60,7 @@ public:
     bool modeTeenCode;
     bool modeUseLeftRight;
 
+    bool flagIsLower = true;
     bool flagSendingKey = false;
     int vkCodePrevious;
     int vkCodeCurrent;
@@ -80,6 +81,7 @@ public:
     std::unordered_set<std::wstring> setPunctuation;
     std::vector<std::wstring> dataOnsetStartTeenCode;
     QSet<QChar> dataValidateKeyToneDiac;
+    std::map<wchar_t, wchar_t> mapDataQuickVowel;
 
     std::map<wchar_t, std::vector<std::wstring>> characterSetBase;
     std::unordered_set<std::wstring> dataCheckCharOnsetStart;
@@ -141,6 +143,7 @@ private:
     void initSetPunctuation();
     void initDataOnsetStartTeenCode();
     void initDataValidateKeyToneDiac();
+    void initMapDataQuickVowel();
     void loadGeneralConfig();
 
     std::vector<std::wstring> createInputMethodBase();

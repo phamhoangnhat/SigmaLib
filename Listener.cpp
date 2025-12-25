@@ -114,6 +114,14 @@ bool Listener::addChar(int vkCode)
 
 		BYTE stateCapslock = (BYTE)((GetKeyState(VK_CAPITAL) & 0x0001) ? 0x01 : 0x00);
 		BYTE stateShift = (BYTE)((GetKeyState(VK_SHIFT) & 0x8000) ? 0x80 : 0x00);
+
+		if (((stateCapslock == 0x00) && (stateShift == 0x00)) || ((stateCapslock != 0x00) && (stateShift != 0x00))) {
+			variable.flagIsLower = true;
+		}
+		else {
+			variable.flagIsLower = false;
+		}
+
 		keyboardState[VK_CAPITAL] = stateCapslock;
 		keyboardState[VK_SHIFT] = stateShift;
 		keyboardState[VK_LSHIFT] = stateShift;

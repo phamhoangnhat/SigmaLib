@@ -45,6 +45,7 @@ void Variable::init()
 	initSetPunctuation();
 	initDataOnsetStartTeenCode();
 	initDataValidateKeyToneDiac();
+	initMapDataQuickVowel();
 	loadGeneralConfig();
 	loadSettingsWindow();
 }
@@ -864,6 +865,24 @@ void Variable::initDataValidateKeyToneDiac()
 	};
 }
 
+void Variable::initMapDataQuickVowel()
+{
+	mapDataQuickVowel =
+	{
+		{ L'`', L'~'},
+		{ L'-', L'_'},
+		{ L'=', L'+'},
+		{ L'[', L'{'},
+		{ L']', L'}'},
+		{ L'\\', L'|'},
+		{ L';', L':'},
+		{ L'\'', L'"'},
+		{ L',', L'<'},
+		{ L'.', L'>'},
+		{ L'/', L'?'},
+	};
+}
+
 void Variable::loadDataAutoChangeLang(QString& nameApp)
 {
 	AccountManager* accountManager = AccountManager::getInstance();
@@ -987,19 +1006,23 @@ std::map<wchar_t, std::pair<wchar_t, wchar_t>> Variable::createDataAddCharMiddle
 			wchar_t stateDiac = listStateDiac[1];
 			auto it = dataVowelQuick.find(stateDiac);
 			if (it != dataVowelQuick.end()) {
-				wchar_t keyDiacUpper = towupper(keyDiac);
-				wchar_t keyDiacLower = towlower(keyDiac);
+				wchar_t keyVowel = it->second;
+				wchar_t stringVowelLower = towlower(keyVowel);
 				if (!(keyDiac >= L'0' && keyDiac <= L'9')) {
-					wchar_t keyVowel = it->second;
-					wchar_t stringVowelUpper = towupper(keyVowel);
-					wchar_t stringVowelLower = towlower(keyVowel);
-					dataAddCharMiddle2[keyDiacUpper] = { stateDiac, stringVowelUpper };
-					dataAddCharMiddle2[keyDiacLower] = { stateDiac, stringVowelLower };
+					wchar_t keyDiac1 = towupper(keyDiac);
+					wchar_t keyDiac2 = towlower(keyDiac);
+					dataAddCharMiddle2[keyDiac1] = { stateDiac, stringVowelLower };
+					dataAddCharMiddle2[keyDiac2] = { stateDiac, stringVowelLower };
+				}
+				if (mapDataQuickVowel.find(keyDiac) != mapDataQuickVowel.end()) {
+					wchar_t keyDiac1 = keyDiac;
+					wchar_t keyDiac2 = mapDataQuickVowel[keyDiac];
+					dataAddCharMiddle2[keyDiac1] = { stateDiac, stringVowelLower };
+					dataAddCharMiddle2[keyDiac2] = { stateDiac, stringVowelLower };
 				}
 			}
 		}
 	}
-
 	return dataAddCharMiddle2;
 }
 
@@ -1193,8 +1216,15 @@ std::unordered_set<wchar_t> Variable::createDataAddNewWord()
 	{
 		for (auto& charTemp : stringTemp)
 		{
-			dataAddNewWord.insert(tolower(charTemp));
-			dataAddNewWord.insert(towupper(charTemp));
+			if (mapDataQuickVowel.find(charTemp) != mapDataQuickVowel.end()) {
+				dataAddNewWord.insert(charTemp);
+				dataAddNewWord.insert(mapDataQuickVowel[charTemp]);
+			}
+			else {
+				dataAddNewWord.insert(tolower(charTemp));
+				dataAddNewWord.insert(towupper(charTemp));
+			}
+
 		}
 	}
 
@@ -1231,6 +1261,7 @@ std::unordered_set<wchar_t> Variable::createDataAddCharSpace()
 	for (const auto& pair : dataAddCharMiddle2) {
 		wchar_t charTemp = pair.first;
 		dataAddCharSpace.insert(charTemp);
+		dataAddCharSpace.insert(towupper(charTemp));
 	}
 
 	if (modeTeenCode) {
