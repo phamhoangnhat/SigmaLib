@@ -34,6 +34,16 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 	Variable& variable = Variable::getInstance();
 	TypeWord& typeWord = TypeWord::getInstance();
 
+	if ((stateAdd > 2) && listCharVietInvalid.empty()) {
+		stateAdd = 2;
+		if ((stateAdd > 1) && listCharVietEnd.empty()) {
+			stateAdd = 1;
+			if ((stateAdd > 0) && listCharVowel.empty()) {
+				stateAdd = 0;
+			}
+		}
+	}
+
 	bool result = false;
 
 	std::unordered_set<wchar_t>& dataAddCharSpace = variable.dataAddCharSpace;
@@ -95,7 +105,7 @@ bool Word::addChar(wchar_t character, bool flagMustAdd) {
 							addKeyRemoveDiacToneD(character) ||
 							addKeyTone(character) ||
 							addKeyDiac(character) ||
-							addCharEnd(character, true) ||
+							//addCharEnd(character, true) ||
 							addKeyD(character)
 							);
 					}
