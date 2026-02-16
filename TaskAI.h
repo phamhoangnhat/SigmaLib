@@ -16,6 +16,7 @@ class TaskAI : public QObject {
 public:
     static TaskAI& getInstance();
     void run(QPair<QString, QString> dataAI, QString inputBase, bool flagShowNotice = true);
+    QSet<QString> setKeyAPIInterrupted;
     void closeWindow();
     bool flagOpenWindow = false;
     bool flagInWindow = false;

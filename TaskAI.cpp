@@ -133,9 +133,16 @@ void TaskAI::sendRequest(const QString& prompt, QString codeModel, QString input
 	Variable& variable = Variable::getInstance();
 	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(codeModel));
 
-	QStringList listKeyAPI = keyAPIManage->listKeyAPI;
+	QStringList listKeyAPITemp = keyAPIManage->listKeyAPI;
+	QStringList listKeyAPI;
+	for (auto keyAPITemp : listKeyAPITemp) {
+		if (!setKeyAPIInterrupted.contains(keyAPITemp)) {
+			listKeyAPI.append(keyAPITemp);
+		}
+	}
 	int randomIndex = QRandomGenerator::global()->bounded(listKeyAPI.size());
 	QString randomKey = listKeyAPI.at(randomIndex);
+
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=utf-8");
 	request.setRawHeader("Accept", "application/json");
@@ -265,6 +272,11 @@ void TaskAI::sendRequest(const QString& prompt, QString codeModel, QString input
 				popup2 = new MessageApiKeyBox(nullptr);
 			}
 			popup2->showWindow();
+
+			setKeyAPIInterrupted.insert(randomKey);
+			if (listKeyAPI.size() <= 1) {
+				setKeyAPIInterrupted.clear();
+			}
 		}
 		clipboard.setBaseClipboard();
 		typeWord.listWord.clear();
