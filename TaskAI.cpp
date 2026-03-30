@@ -308,7 +308,7 @@ QString TaskAI::removeMarkdownFormatting(const QString& input) {
 	output.replace(QRegularExpression(R"(\*(.*?)\*)"), "\\1");
 	output.replace(QRegularExpression(R"(__([^_]+)__)"), "\\1");
 	output.replace(QRegularExpression(R"(_([^_]+)_)"), "\\1");
-	output.replace(QRegularExpression(R"(`([^`]+)`)"), "\\1");
+	//output.replace(QRegularExpression(R"(`([^`]+)`)"), "\\1");
 	output.replace(QRegularExpression(R"(~~([^~]+)~~)"), "\\1");
 	return output;
 }
