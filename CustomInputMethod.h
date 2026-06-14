@@ -29,6 +29,7 @@ private:
     void saveChanges();
     void loadFromSettings();
     void loadDefault();
+    void checkSave();
 
     static QPointer<CustomInputMethod> m_instance;
     std::vector<QLineEdit*> inputFields;

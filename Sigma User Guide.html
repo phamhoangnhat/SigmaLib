@@ -318,7 +318,7 @@
 		</div>
 		<button class="menu-toggle">☰</button>
 		<div class="container">
-			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.2.8</h1>
+			<h1>Hướng dẫn sử dụng bộ gõ tiếng Việt Sigma 2.2.9</h1>
 			<div class="section">
 				<h2 id="sum-intro">1. Giới thiệu</h2>
 				<p>
@@ -426,8 +426,7 @@
 				<h3>Chế độ gõ</h3>
 				<ul>
 					<li><code>Tiếng Anh:</code> Gõ nguyên bản, không xử lý dấu.</li>
-					<li><code>Tiếng Việt:</code> Gõ đầy đủ theo kiểu <code>Telex</code>, <code>VNI</code> hoặc
-						<code>Tích hợp</code>.
+					<li><code>Tiếng Việt:</code> Gõ đầy đủ theo kiểu <code>Telex</code>, <code>VNI</code>, <code>Tích hợp</code>, <code>Tùy chỉnh</code>.
 					</li>
 				</ul>
 
@@ -474,9 +473,8 @@
 				<h3>Kiểu gõ</h3>
 				<ul>
 					<li><code>Telex</code>, <code>VNI</code>: Hai kiểu gõ phổ biến.</li>
-					<li><code>Tích hợp</code>: Là kiểu gõ mới của Sigma được kết hợp giữa <code>Telex</code> và
-						<code>VNI</code> đồng thời cho phép tùy biến thêm bởi cá nhân.
-					</li>
+					<li><code>Tích hợp</code>: Là kiểu gõ mới của Sigma được kết hợp giữa <code>Telex</code> và <code>VNI</code>.</li>
+					<li><code>Tích chỉnh</code>: Là kiểu gõ tùy biến bởi người dùng, người dùng có được phép tự định nghĩa quy cách bỏ dấu tiếng Việt theo cá nhân.</li>
 				</ul>
 
 				<table border="1" cellpadding="5" cellspacing="0">
@@ -550,15 +548,15 @@
 							<td><code>o → ô</code></td>
 						</tr>
 						<tr>
-							<td><code>W</code> <code>[</code></td>
+							<td><code>W</code></td>
 							<td><code>7</code></td>
-							<td><code>W</code> <code>[</code> <code>7</code> <code>...</code> </td>
+							<td><code>W</code><code>7</code> <code>...</code> </td>
 							<td><code>o → ơ</code></td>
 						</tr>
 						<tr>
-							<td><code>W</code> <code>]</code></td>
+							<td><code>W</code></td>
 							<td><code>7</code></td>
-							<td><code>W</code> <code>]</code> <code>7</code> <code>...</code> </td>
+							<td><code>W</code><code>7</code> <code>...</code> </td>
 							<td><code>u → ư</code></td>
 						</tr>
 						<tr>
@@ -569,15 +567,13 @@
 						</tr>
 					</tbody>
 				</table>
-
-				<p><strong>Ví dụ:</strong> Gõ <code>a</code> <code>F</code> hoặc <code>a</code> <code>2</code> đều cho
+				
+				<p><strong>Khuyến nghị:</strong> Nên sử dụng kiểu gõ <code>Tích hợp</code> trên các máy tính dùng
+					chung để đảm bảo tính linh hoạt cho nhiều người dùng. <strong>Ví dụ:</strong> Gõ <code>a</code> <code>F</code> hoặc <code>a</code> <code>2</code> đều cho
 					ra <code>à</code>.</p>
 
-				<p>Bạn có thể tùy biến thêm kiểu gõ <code>Tích hợp</code> bằng cách nhấp vào biểu tượng Sigma ở khay hệ
-					thống (góc dưới bên phải màn hình), sau đó chọn mục <code>Tùy chỉnh kiểu gõ tích hợp</code>.</p>
-
-				<p><strong>Khuyến nghị:</strong> Nên sử dụng kiểu gõ <code>Tích hợp</code> trên các máy tính dùng
-					chung để đảm bảo tính linh hoạt cho nhiều người dùng.</p>
+				<p>Bạn có thể tùy biến kiểu gõ <code>Tùy chỉnh</code> bằng cách nhấp vào biểu tượng Sigma ở khay hệ
+					thống (góc dưới bên phải màn hình), sau đó chọn mục <code>Trình quản lý kiểu gõ tùy chỉnh</code>.</p>
 			</div>
 
 			<div class="section">
@@ -860,20 +856,14 @@
 
 				<h4>Sử dụng kiểu gõ giản lược</h4>
 				<p>
-					Khi bật tùy chọn này, Sigma sẽ không còn áp dụng các quy tắc trong kiểu gõ
-					Telex hoặc Tích hợp như:
+					Khi bật tùy chọn này, Sigma sẽ không còn áp dụng các quy tắc khi gõ như:
 				</p>
 
 				<ul>
-					<li><code>w</code> → <code>ư</code></li>
-					<li><code>]</code> → <code>ư</code></li>
-					<li><code>[</code> → <code>ơ</code></li>
+					<li><code>w</code> → <code>ư</code> (kiểu gõ Telex hoặc Tích hợp)</li>
+					<li><code>]</code> → <code>ư</code> (khi người dùng tự định trong kiểu gõ Tùy chỉnh)</li>
+					<li><code>[</code> → <code>ơ</code> (khi người dùng tự định trong kiểu gõ Tùy chỉnh)</li>
 				</ul>
-
-				<p>
-					Khi đó, bạn cần gõ dấu theo cách thông thường của bộ gõ (ví dụ: <code>uw</code> → <code>ư</code>,
-					<code>ow</code> → <code>ơ</code>).
-				</p>
 
 				<p>
 					Tùy chọn này hữu ích trong trường hợp một số ứng dụng hoặc game dùng các phím <code>w</code>,
@@ -983,8 +973,7 @@
 
 				<h4>Kiểu gõ</h4>
 				<p>
-					Bạn có thể lựa chọn giữa các kiểu gõ phổ biến như <code>Telex</code>, <code>VNI</code>, hoặc
-					<code>Tích hợp</code>.
+					Bạn có thể lựa chọn giữa các kiểu gõ phổ biến như <code>Telex</code>, <code>VNI</code>, <code>Tích hợp</code> hoặc <code>Tùy chỉnh</code>.
 				</p>
 
 				<h4>Khởi động cùng Windows</h4>
@@ -1024,8 +1013,6 @@
 					(<code>Đắ</code> + <code>k</code> → <code>Đắk</code>). Trong trường hợp này, bạn cần gõ dấu đúng
 					lúc. Nếu đã chuyển sang từ khác, bạn sẽ <strong>không thể thêm dấu cho từ trước đó</strong> nữa.
 				</p>
-
-				<p> <em>Gợi ý:</em> Bạn nên gán phím tắt cho tùy chọn này để bật/tắt nhanh chóng khi cần.</p>
 
 				<h4>Tự động chuyển từ tiếng Anh đã ghi nhớ</h4>
 
@@ -1315,29 +1302,24 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Gemini 3 Flash (Preview)</td>
-							<td>Thế hệ mới nhất, thông minh vượt trội</td>
-							<td>Tác vụ cần suy luận tốt nhưng vẫn nhanh (Chat, lên ý tưởng)</td>
+							<td>Gemini 3.5 Flash</td>
+							<td>Thế hệ mới nhất (ra mắt T5/2026), thông minh vượt trội và tốc độ cao</td>
+							<td>Các tác vụ cần suy luận phức tạp, phản hồi nhanh, chat và lên ý tưởng cấp độ cao/td>
+						</tr>
+						<tr>
+							<td>Gemini 3.1 Flash Lite</td>
+							<td>Bản rút gọn thế hệ mới, tốc độ cực cao, tối ưu chi phí</td>
+							<td>Các tác vụ đơn giản lặp lại với tần suất lớn, cần độ trễ cực thấp</td>
 						</tr>
 						<tr>
 							<td>Gemini 2.5 Flash</td>
-							<td>Bản ổn định, hiệu năng cao</td>
-							<td>Xử lý hình ảnh, tài liệu dài, hoạt động ổn định nhất</td>
+							<td>Bản ổn định, cân bằng hoàn hảo giữa hiệu năng và tốc độ</td>
+							<td>Xử lý đa phương tiện, tài liệu dài, phục vụ đa số các tác vụ thông thường một cách ổn định nhất</td>
 						</tr>
 						<tr>
-							<td>Gemini 2.5 Flash-Lite</td>
+							<td>Gemini 2.5 Flash Lite</td>
 							<td>Siêu nhanh, nhẹ nhất Gen 2.5</td>
-							<td>Tác vụ đơn giản lặp lại nhiều lần, máy cấu hình yếu</td>
-						</tr>
-						<tr>
-							<td>Gemini 2.0 Flash</td>
-							<td>Bản cũ (Legacy)</td>
-							<td>Dùng khi các bản mới gặp lỗi tương thích</td>
-						</tr>
-						<tr>
-							<td>Gemini 2.0 Flash-Lite</td>
-							<td>Bản cũ siêu nhẹ (Legacy)</td>
-							<td>Xử lý văn bản ngắn, đơn giản</td>
+							<td>Tác vụ đơn giản lặp lại nhiều lần, tối ưu cho ứng dụng chạy trên máy cấu hình yếu</td>
 						</tr>
 					</tbody>
 				</table>
@@ -1467,7 +1449,7 @@
 							<td></td>
 						</tr>
 						<tr>
-							<td>Chuyển đổi kiểu gõ <code>Telex</code> <code>VNI</code> <code>Tích hợp</code></td>
+							<td>Chuyển đổi kiểu gõ <code>Telex</code> <code>VNI</code> <code>Tích hợp</code> <code>Tùy chỉnh</code></td>
 							<td></td>
 						</tr>
 						<tr>
@@ -1486,7 +1468,7 @@
 							<td><code>Shift → C</code></td>
 						</tr>
 						<tr>
-							<td>Gọi bảng <code>Tùy chỉnh kiểu gõ tích hợp</code></td>
+							<td>Gọi bảng <code>Trình quản lý kiểu gõ tùy chỉnh</code></td>
 							<td></td>
 						</tr>
 						<tr>

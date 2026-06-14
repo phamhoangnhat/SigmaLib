@@ -82,7 +82,7 @@ CustomInputMethod::CustomInputMethod(QWidget* parent)
     : QDialog(parent) {
     Variable& variable = Variable::getInstance();
 
-    setWindowTitle("Tùy chỉnh kiểu gõ tích hợp");
+    setWindowTitle("Trình quản lý kiểu gõ tùy chỉnh");
     setWindowIcon(QIcon(":/icon.png"));
     setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
     setAttribute(Qt::WA_DeleteOnClose, false);
@@ -273,8 +273,10 @@ void CustomInputMethod::changeInput(int index) {
 
     variable.addKeyInputMethod(stringRaw, indexChar, inputMethodTemp);
     QString stringInput = QString::fromStdWString(inputMethodTemp[indexChar]);
+
     input->setText(stringInput);
     flagUpdatingInput = false;
+    checkSave();
 }
 
 void CustomInputMethod::saveChanges() {
@@ -303,15 +305,19 @@ void CustomInputMethod::loadFromSettings() {
     AccountManager* accountManager = AccountManager::getInstance();
     flagUpdatingInput = true;
 
-    inputMethodTemp = variable.mapInputMethodBase[L"Tích hợp"];
+    inputMethodTemp.clear();
+    inputMethodTemp.resize(15);
     QSettings settings(APP_NAME, "AccountManager");
     settings.beginGroup(accountManager->currentAccount + "/InputMethodCustom");
     if (settings.contains("data")) {
         QStringList stored = settings.value("data").toStringList();
         for (int i = 0; i < std::min(15, static_cast<int>(stored.size())); ++i) {
-            QString stringRaw = QString::fromStdWString(inputMethodTemp[i]);
+            QString stringRaw;
             if (i < stored.size()) {
-                stringRaw += stored[i];
+                stringRaw = stored[i];
+            }
+            if (stringRaw.size() == 0) {
+                stringRaw = QString::fromStdWString(variable.mapInputMethodBase[L"Tùy chỉnh"][i]);
             }
             variable.addKeyInputMethod(stringRaw, i, inputMethodTemp);
         }
@@ -329,7 +335,7 @@ void CustomInputMethod::loadFromSettings() {
 void CustomInputMethod::loadDefault() {
     Variable& variable = Variable::getInstance();
     flagUpdatingInput = true;
-    inputMethodTemp = variable.mapInputMethodBase[L"Tích hợp"];
+    inputMethodTemp = variable.mapInputMethodBase[L"Tùy chỉnh"];
 
     for (int index = 0; index < inputFields.size(); ++index) {
         int indexChar = indexListChar[index];
@@ -338,4 +344,16 @@ void CustomInputMethod::loadDefault() {
         input->setText(stringInput);
     }
     flagUpdatingInput = false;
+}
+
+void CustomInputMethod::checkSave() {
+    bool flagSave = true;
+    indexListChar = { 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14 };
+    for (auto i : indexListChar) {
+        std::wstring stringTemp = inputMethodTemp[i];
+        if (stringTemp.size() == 0) {
+            flagSave = false;
+        }
+    }
+    saveBtn->setEnabled(flagSave);
 }

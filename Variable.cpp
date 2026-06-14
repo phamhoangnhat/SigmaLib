@@ -257,13 +257,16 @@ void Variable::initMapCharacterSetBase()
 void Variable::initMapInputMethodBase()
 {
 	mapInputMethodBase[L"Telex"] = {
-		L"Z",	L"S",	L"F",	L"R",	L"X",	L"J",	L"",	L"W",	L"A",	L"E",	L"O",	L"W[",	L"W]",	L"",	L"D"
+		L"Z",	L"S",	L"F",	L"R",	L"X",	L"J",	L"",	L"W",	L"A",	L"E",	L"O",	L"W",	L"W",	L"",	L"D"
 	};
 	mapInputMethodBase[L"Vni"] = {
 		L"0",	L"1",	L"2",	L"3",	L"4",	L"5",	L"",	L"8",	L"6",	L"6",	L"6",	L"7",	L"7",	L"",	L"9"
 	};
 	mapInputMethodBase[L"Tích hợp"] = {
-		L"Z0",	L"S1",	L"F2",	L"R3",	L"X4",	L"J5",	L"",	L"W8",	L"A6",	L"E6",	L"O6",	L"W7[",	L"W7]",	L"",	L"D9"
+		L"Z0",	L"S1",	L"F2",	L"R3",	L"X4",	L"J5",	L"",	L"W8",	L"A6",	L"E6",	L"O6",	L"W7",	L"W7",	L"",	L"D9"
+	};
+	mapInputMethodBase[L"Tùy chỉnh"] = {
+		L"Z0",	L"S1",	L"F2",	L"R3",	L"X4",	L"J5",	L"",	L"W8",	L"A6",	L"E6",	L"O6",	L"W7",	L"W7",	L"",	L"D9"
 	};
 }
 
@@ -904,6 +907,7 @@ void Variable::loadDataAutoChangeLang(QString& nameApp)
 
 std::vector<std::wstring> Variable::createInputMethodBase() {
 	AccountManager* accountManager = AccountManager::getInstance();
+	Variable& variable = Variable::getInstance();
 	std::vector<std::wstring> inputMethodBase;
 
 	if (mapInputMethodBase.find(inputMethod) == mapInputMethodBase.end()) {
@@ -911,16 +915,21 @@ std::vector<std::wstring> Variable::createInputMethodBase() {
 	}
 
 	inputMethodBase = mapInputMethodBase[inputMethod];
-	if (inputMethod == L"Tích hợp") {
+	if (inputMethod == L"Tùy chỉnh") {
+		inputMethodBase.clear();
+		inputMethodBase.resize(15);
 		QSettings settings(APP_NAME, "AccountManager");
 		settings.beginGroup(accountManager->currentAccount + "/InputMethodCustom");
 		if (settings.contains("data")) {
 			QStringList stored = settings.value("data").toStringList();
 
 			for (int i = 0; i < std::min(15, static_cast<int>(stored.size())); ++i) {
-				QString stringRaw = QString::fromStdWString(inputMethodBase[i]);
+				QString stringRaw;
 				if (i < stored.size()) {
-					stringRaw += stored[i];
+					stringRaw = stored[i];
+				}
+				if (stringRaw.size() == 0) {
+					stringRaw = QString::fromStdWString(variable.mapInputMethodBase[L"Tùy chỉnh"][i]);
 				}
 				addKeyInputMethod(stringRaw, i, inputMethodBase);
 			}
@@ -1438,7 +1447,7 @@ void Variable::addKeyInputMethod(const QString& stringRaw, int indexChar, std::v
 			stringSeen.insert(character);
 	}
 
-	const QString stringTemp = mapInputMethodBase[L"Tích hợp"][indexChar] +  stringRaw.toUpper();
+	const QString stringTemp = stringRaw.toUpper();
 	QString stringResult;
 	for (QChar character : stringTemp) {
 		if (dataValidateKeyToneDiac.contains(character) && !stringSeen.contains(character)) {
