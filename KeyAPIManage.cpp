@@ -71,7 +71,7 @@ KeyAPIManage::KeyAPIManage(QWidget* parent)
 	setWindowTitle("Trình quản lý khóa API Gemini");
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 	setWindowIcon(QIcon(":/icon.png"));
-	resize(350, 300);
+	resize(500, 300);
 	setAttribute(Qt::WA_DeleteOnClose, false);
 	setWindowOpacity(0.0);
 
@@ -202,9 +202,7 @@ void KeyAPIManage::loadTable()
 	listKeyAPIUser.clear();
 	for (const auto& keyAPI : listKeyAPITemp) {
 		if (!keyAPI.isEmpty() &&
-			!setKeyAPITemp.contains(keyAPI) &&
-			(keyAPI.length() == 39) &&
-			keyAPI.startsWith("AIza"))
+			!setKeyAPITemp.contains(keyAPI))
 		{
 			listKeyAPIUser.append(keyAPI);
 			setKeyAPITemp.insert(keyAPI);
@@ -280,9 +278,7 @@ void KeyAPIManage::onsaveButtonClicked()
 	listKeyAPIUser.clear();
 	for (const auto& keyAPI : listKeyAPITemp) {
 		if (!keyAPI.isEmpty() &&
-			!setKeyAPITemp.contains(keyAPI) &&
-			(keyAPI.length() == 39) &&
-			keyAPI.startsWith("AIza"))
+			!setKeyAPITemp.contains(keyAPI))
 		{
 			listKeyAPIUser.append(keyAPI);
 			setKeyAPITemp.insert(keyAPI);
