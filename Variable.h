@@ -65,6 +65,7 @@ public:
     int vkCodePrevious;
     int vkCodeCurrent;
 
+    std::set<std::wstring> setAppConfig;
     std::map<std::wstring, std::map<wchar_t, std::vector<std::wstring>>> mapCharacterSetBase;
     std::map<std::wstring, std::vector<std::wstring>> mapInputMethodBase;
     std::vector<wchar_t> listStateBase;
@@ -129,6 +130,7 @@ private:
     Variable();
     ~Variable();
 
+    void initSetAppConfig();
     void initMapCharacterSetBase();
     void initMapInputMethodBase();
     void initListStateBase();

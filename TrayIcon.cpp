@@ -9,6 +9,7 @@
 #include "SnippetEditor.h"
 #include "Feedback.h"
 #include "GeneralConfig.h"
+#include "ConfigUi.h"
 #include "AccountManager.h"
 
 #include <QMenu>
@@ -36,6 +37,7 @@ TrayIcon::TrayIcon(QObject* parent)
 	menu = new QMenu();
 
 	actionGeneralConfig = addActionToMenu("Cấu hình chung", ":/iconGeneralConfig.png", this, SLOT(onGeneralConfig()));
+	actionConfigUi = addActionToMenu("Cấu hình ứng dụng", ":/iconConfigUi.png", this, SLOT(onConfigUi()));
 	actionConfigInput = addActionToMenu("Trình quản lý kiểu gõ tùy chỉnh", ":/iconConfigInput.png", this, SLOT(onConfigInput()));
 	actionConfigTaskAI = addActionToMenu("Trình chỉnh sửa tác vụ AI", ":/iconTaskAI.png", this, SLOT(onConfigTaskAI()));
 	actionShortcutKeyEditor = addActionToMenu("Trình quản lý phím tắt", ":/iconShortcutKey.png", this, SLOT(onShortcutKeyEditor()));
@@ -125,6 +127,7 @@ void TrayIcon::updateMenuShortcutText() {
 		};
 
 	updateAction(actionGeneralConfig, "Cấu hình chung", "Gọi bảng cấu hình chung");
+	updateAction(actionConfigUi, "Cấu hình ứng dụng", "Gọi bảng cấu hình ứng dụng");
 	updateAction(actionConfigInput, "Trình quản lý kiểu gõ tùy chỉnh", "Gọi bảng tùy chỉnh kiểu gõ tích hợp");
 	updateAction(actionConfigTaskAI, "Trình chỉnh sửa tác vụ AI", "Gọi bảng trình chỉnh sửa tác vụ AI");
 	updateAction(actionShortcutKeyEditor, "Trình quản lý phím tắt", "Gọi bảng trình quản lý phím tắt");
@@ -149,6 +152,11 @@ void TrayIcon::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 
 void TrayIcon::onGeneralConfig() {
 	GeneralConfig::showWindow();
+}
+
+void TrayIcon::onConfigUi()
+{
+	ConfigUi::showWindow();
 }
 
 void TrayIcon::onConfigInput() {

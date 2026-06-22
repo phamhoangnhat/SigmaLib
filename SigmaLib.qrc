@@ -18,5 +18,6 @@
         <file>iconRenameItem.png</file>
         <file>iconSigmaGroup.png</file>
         <file>iconManagerAccount.png</file>
+        <file>iconConfigUi.png</file>
     </qresource>
 </RCC>

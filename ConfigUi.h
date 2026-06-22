@@ -8,6 +8,7 @@
 #include <QString>
 #include <QPushButton>
 #include <QLabel>
+#include <QMap>
 
 class ConfigUi : public QWidget {
     Q_OBJECT
@@ -20,9 +21,11 @@ public:
     static void closeWindow();
 
     void saveSettings(QString appNameConfig, QString nameValue, QString value);
+    void loadInterface();
     void loadSettings();
 
     bool m_isLoading = false;
+    QComboBox* comboAppConfig = nullptr;
     QComboBox* comboLangVietGlobal = nullptr;
     QComboBox* comboCharacterSet = nullptr;
     QComboBox* comboNameTaskAI = nullptr;
@@ -36,6 +39,7 @@ public:
     QCheckBox* checkBoxTeenCode = nullptr;
     QCheckBox* checkBoxUseLeftRight = nullptr;
 
+    QLabel* labelShortcutAppConfig;
     QLabel* labelShortcutLangVietGlobal;
     QLabel* labelShortcutCharacterSet;
     QLabel* labelShortcutTaskAI;
@@ -49,6 +53,8 @@ public:
     QLabel* labelShortcutTeenCode;
     QLabel* labelShortcutUseLeftRight;
     QString m_AppNameConfig;
+    QMap<QString, QString>mapAppConfig;
+
 
 protected:
     void closeEvent(QCloseEvent* event) override;

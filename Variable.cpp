@@ -31,6 +31,7 @@ Variable::~Variable() {
 
 void Variable::init()
 {
+	initSetAppConfig();
 	initMapCharacterSetBase();
 	initMapInputMethodBase();
 	initListStateBase();
@@ -155,6 +156,22 @@ void Variable::loadGeneralConfig()
 		//Ghi chú / Markdown / Quản lý nội dung
 		"notion", "obsidian", "joplin", "marktext", "typora",
 	};
+}
+
+void Variable::initSetAppConfig()
+{
+	AccountManager* accountManager = AccountManager::getInstance();
+	setAppConfig.clear();
+
+	QSettings settings(APP_NAME, "AccountManager");
+	settings.beginGroup(accountManager->currentAccount + "/ConfigUi/");
+
+	QStringList childGroups = settings.childGroups();
+
+	for (const QString& appName : childGroups) {
+		setAppConfig.insert(appName.toStdWString());
+	}
+	settings.endGroup();
 }
 
 void Variable::initMapCharacterSetBase()
@@ -1363,6 +1380,8 @@ bool Variable::loadSettingsWindow()
 		AccountManager* accountManager = AccountManager::getInstance();
 		LangRegistryWatcher& langRegistryWatcher = LangRegistryWatcher::getInstance();
 		CharsetRegistryWatcher& charsetRegistryWatcher = CharsetRegistryWatcher::getInstance();
+
+		setAppConfig.insert(nameCurrentWindow.toStdWString());
 
 		typeWord.numChangeCase = 0;
 		bool modeLangVietGlobalDefault = listAppLangVietGlobal.contains(nameCurrentWindow.toLower()) ? true : false;

@@ -18,6 +18,7 @@ public:
 
 public slots:
     void onGeneralConfig();
+    void onConfigUi();
     void onConfigInput();
     void onConfigTaskAI();
     void onShortcutKeyEditor();
@@ -48,6 +49,7 @@ private:
     QPointer<CustomConfirmBox> confirmResetConfigUi;
 
     QAction* actionGeneralConfig = nullptr;
+    QAction* actionConfigUi = nullptr;
     QAction* actionConfigInput = nullptr;
     QAction* actionConfigTaskAI = nullptr;
     QAction* actionShortcutKeyEditor = nullptr;

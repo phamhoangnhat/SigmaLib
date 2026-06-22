@@ -257,6 +257,15 @@ ConfigUi::ConfigUi(QWidget* parent)
 		layout->addLayout(row);
 		};
 
+	addComboBoxRow(comboAppConfig, labelShortcutAppConfig, "Ứng dụng");
+	connect(comboAppConfig, &QComboBox::currentTextChanged, this, [this](const QString& appConfig) {
+		if (m_isLoading) {
+			return;
+		}
+		m_AppNameConfig = mapAppConfig[appConfig];
+		loadSettings();
+		});
+
 	addComboBoxRow(comboLangVietGlobal, labelShortcutLangVietGlobal, "Chế độ");
 	connect(comboLangVietGlobal, &QComboBox::currentTextChanged, this, [this](const QString& langVietGlobal) {
 		QString strFlagLangVietGlobal = (langVietGlobal == "Tiếng Việt") ? "true" : "false";
@@ -369,9 +378,10 @@ void ConfigUi::doShow(QWidget* parent) {
 		return;
 	}
 
+	loadInterface();
 	loadSettings();
 	updateShortcutLabels();
-	setWindowTitle("Cấu hình ứng dụng -  " + toTitle(getFileName(m_AppNameConfig)));
+	setWindowTitle("Cấu hình ứng dụng");
 
 	HWND hwndFocused = GetForegroundWindow();
 	HWND hwndTop = GetAncestor(hwndFocused, GA_ROOT);
@@ -497,13 +507,14 @@ void ConfigUi::updateShortcutLabels() {
 			label->show();
 		}
 	};
-
+	
+	updateLabel(labelShortcutAppConfig, "");
 	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
 	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
 	updateLabel(labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
 	updateLabel(labelShortcutNameSnippetString, "");
 	updateLabel(labelShortcutNameSnippetWords, "");
-	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ động");
+	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ độsng");
 	updateLabel(labelShortcutTypeSimple, "Bật | tắt sử dụng kiểu gõ giản lược");
 	updateLabel(labelShortcutClipboard, "Bật | tắt sử dụng clipboard khi gửi phím");
 	updateLabel(labelShortcutFixAutoSuggest, "Bật | tắt tương thích với ứng dụng có gợi ý từ");
@@ -580,13 +591,22 @@ void ConfigUi::saveSettings(QString appNameConfig, QString nameValue, QString va
 	}
 }
 
-void ConfigUi::loadSettings() {
+void ConfigUi::loadInterface() {
 	Variable& variable = Variable::getInstance();
 	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
 	SnippetEditor* snippetEditor = SnippetEditor::getInstance();
 	AccountManager* accountManager = AccountManager::getInstance();
 
 	m_isLoading = true;
+
+	mapAppConfig.clear();
+	for (const std::wstring& appNameW : variable.setAppConfig) {
+		QString originalName = QString::fromStdWString(appNameW);
+		QString nameAppDisplay = toTitle(getFileName(originalName));
+		mapAppConfig[nameAppDisplay] = originalName;
+	}
+	comboAppConfig->clear();
+	comboAppConfig->addItems(mapAppConfig.keys());
 
 	comboLangVietGlobal->clear();
 	comboLangVietGlobal->addItem("Tiếng Anh");
@@ -618,6 +638,17 @@ void ConfigUi::loadSettings() {
 	for (const QString& item : listNameSnippetTemp) {
 		comboNameSnippetWords->addItem(item);
 	}
+	m_isLoading = false;
+}
+
+
+void ConfigUi::loadSettings() {
+	Variable& variable = Variable::getInstance();
+	TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
+	SnippetEditor* snippetEditor = SnippetEditor::getInstance();
+	AccountManager* accountManager = AccountManager::getInstance();
+
+	m_isLoading = true;
 
 	bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
@@ -657,6 +688,9 @@ void ConfigUi::loadSettings() {
 	QString nameTaskAIStr = variable.nameTaskAI;
 	QString nameSnippetStringStr = variable.nameSnippetString;
 	QString nameSnippetWordsStr = variable.nameSnippetWords;
+
+	int indexApp = comboAppConfig->findText(toTitle(getFileName(m_AppNameConfig)));
+	if (indexApp != -1) comboAppConfig->setCurrentIndex(indexApp);
 
 	int indexLang = flagLangVietGlobal ? 1 : 0;
 	comboLangVietGlobal->setCurrentIndex(indexLang);
@@ -710,7 +744,7 @@ void ConfigUi::loadSettings() {
 
 	mode = modeFixAutoSuggest;
 	checkBox = checkBoxFixAutoSuggest,
-	stringWarning = "";
+		stringWarning = "";
 	if (variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower())) {
 		if (!mode) {
 			stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong một số trường hợp";
