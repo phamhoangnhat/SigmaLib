@@ -374,9 +374,6 @@ ConfigUi::~ConfigUi() {
 void ConfigUi::doShow(QWidget* parent) {
 	Variable& variable = Variable::getInstance();
 	m_AppNameConfig = variable.nameCurrentWindow;
-	if (m_AppNameConfig == "Sigma.exe") {
-		return;
-	}
 
 	loadInterface();
 	loadSettings();
