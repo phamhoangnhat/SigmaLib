@@ -205,7 +205,10 @@ bool Listener::moveRight(int vkCode)
 
 bool Listener::switchLangGlobal(int vkCode)
 {
-	if (((vkCode == VK_LCONTROL) || (vkCode == VK_LSHIFT))
+	ShortcutKeyEditor* shortcutKeyEditor = ShortcutKeyEditor::getInstance();
+	
+	if (!shortcutKeyEditor->dataShortcutKey.contains("Chuyển đổi chế độ")
+		&& ((vkCode == VK_LCONTROL) || (vkCode == VK_LSHIFT))
 		&& ((std::chrono::steady_clock::now() - lastCallControl) < minIntervalCombine)
 		&& (keyNormalFull.size() == 0)
 		&& (keyModifier.size() == 1)
@@ -217,7 +220,6 @@ bool Listener::switchLangGlobal(int vkCode)
 		releaseKey(vkCode);
 		TypeWord& typeWord = TypeWord::getInstance();
 		typeWord.switchLangGlobal();
-		typeWord.showLanguage();
 		return true;
 	}
 	else {
@@ -235,7 +237,6 @@ bool Listener::switchLang(int vkCode)
 	{
 		releaseKey(vkCode);
 		TypeWord& typeWord = TypeWord::getInstance();
-		Word& word = typeWord.listWord[typeWord.posWord];
 		typeWord.switchLang();
 		return true;
 	}
@@ -378,19 +379,6 @@ bool Listener::checkFunction(int vkCode)
 
 	QString nameAction = shortcutKeyEditor->getAction(vkCode);
 
-	if ((nameAction == "Chuyển đổi dạng chữ viết hoa thường") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeCase();
-		if (numHotkey != -1) {
-			numHotkey = vkCode;
-		}
-		flagRejectHook = true;
-		return true;
-	}
-	if (!variable.modeClipboard) {
-		changeCase.textOrigin.clear();
-	}
-
 	if ((nameAction == "Gọi bảng cấu hình ứng dụng") && (numHotkey == 0))
 	{
 		QTimer::singleShot(0, []() {
@@ -406,6 +394,42 @@ bool Listener::checkFunction(int vkCode)
 		numHotkey = -1;
 		flagRejectHook = true;
 		return true;
+	}
+	if ((nameAction == "Chuyển đổi chế độ") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.switchLangGlobal();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeCharSet();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi kiểu gõ") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeInputMethod();
+		numHotkey = vkCode;
+		flagRejectHook = true;
+		return true;
+	}
+
+	if ((nameAction == "Chuyển đổi dạng chữ viết hoa thường") && ((numHotkey == 0) || (numHotkey == vkCode)))
+	{
+		typeWord.changeCase();
+		if (numHotkey != -1) {
+			numHotkey = vkCode;
+		}
+		flagRejectHook = true;
+		return true;
+	}
+	if (!variable.modeClipboard) {
+		changeCase.textOrigin.clear();
 	}
 
 	if ((nameAction == "Gọi bảng cấu hình chung") && (numHotkey == 0))
@@ -508,14 +532,6 @@ bool Listener::checkFunction(int vkCode)
 		return true;
 	}
 
-	if ((nameAction == "Chuyển đổi bộ mã") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeCharSet();
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
 	if ((nameAction == "Thực hiện tác vụ AI mặc định") && (numHotkey == 0))
 	{
 		TaskAIDatabase& taskAIDatabase = TaskAIDatabase::getInstance();
@@ -593,14 +609,6 @@ bool Listener::checkFunction(int vkCode)
 	if ((nameAction == "Bật | tắt dùng phím ← → để điều hướng từng từ") && ((numHotkey == 0) || (numHotkey == vkCode)))
 	{
 		typeWord.changeConfigUi("modeUseLeftRight");
-		numHotkey = vkCode;
-		flagRejectHook = true;
-		return true;
-	}
-
-	if ((nameAction == "Chuyển đổi kiểu gõ") && ((numHotkey == 0) || (numHotkey == vkCode)))
-	{
-		typeWord.changeInputMethod();
 		numHotkey = vkCode;
 		flagRejectHook = true;
 		return true;

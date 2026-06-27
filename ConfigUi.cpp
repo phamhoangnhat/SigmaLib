@@ -506,12 +506,19 @@ void ConfigUi::updateShortcutLabels() {
 	};
 	
 	updateLabel(labelShortcutAppConfig, "");
-	labelShortcutLangVietGlobal->setText("Ctrl + Shift");
+
+	if (shortcutKeyEditor->dataShortcutKey.contains("Chuyển đổi chế độ")) {
+		updateLabel(labelShortcutLangVietGlobal, "Chuyển đổi chế độ");
+	}
+	else {
+		labelShortcutLangVietGlobal->setText("Ctrl + Shift");
+	}
+
 	updateLabel(labelShortcutCharacterSet, "Chuyển đổi bộ mã");
 	updateLabel(labelShortcutTaskAI, "Thực hiện tác vụ AI mặc định");
 	updateLabel(labelShortcutNameSnippetString, "");
 	updateLabel(labelShortcutNameSnippetWords, "");
-	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ độsng");
+	updateLabel(labelShortcutUseDynamic, "Bật | tắt sử dụng chế độ tiếng Việt chủ động");
 	updateLabel(labelShortcutTypeSimple, "Bật | tắt sử dụng kiểu gõ giản lược");
 	updateLabel(labelShortcutClipboard, "Bật | tắt sử dụng clipboard khi gửi phím");
 	updateLabel(labelShortcutFixAutoSuggest, "Bật | tắt tương thích với ứng dụng có gợi ý từ");

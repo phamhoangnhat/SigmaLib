@@ -50,6 +50,7 @@ void TypeWord::switchLangGlobal()
 	else {
 		fixStringDisplay(numBackspaceStart, stringAdd);
 	}
+	showLanguage();
 }
 
 void TypeWord::switchLang()
