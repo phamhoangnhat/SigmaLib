@@ -22,11 +22,13 @@ public:
     bool flagInWindow = false;
     bool flagIsSending = false;
     bool interrupted = false;
+  
 
 private:
     explicit TaskAI(QObject* parent = nullptr);
     ~TaskAI();
 
+    QDateTime resetKeyTime;
     void sendRequest(const QString& prompt, QString codeModel, QString inputBase, int numSpace);
     void showNotice(QString& name);
     QString removeMarkdownFormatting(const QString& input);

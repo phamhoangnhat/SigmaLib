@@ -60,22 +60,23 @@ TrayIcon& TrayIcon::getInstance() {
 
 void TrayIcon::showWindow() {
 	getInstance().doShow();
+	QTimer::singleShot(500, &getInstance(), &TrayIcon::checkAndShowHelp);
 }
 
 void TrayIcon::hideWindow() {
 	TrayIcon& trayIcon = TrayIcon::getInstance();
-	if (trayIcon.confirmResetConfigUi) {
-		trayIcon.confirmResetConfigUi->closeWindow();
-		trayIcon.confirmResetConfigUi.clear();
+	if (trayIcon.confirmOnHelp) {
+		trayIcon.confirmOnHelp->closeWindow();
+		trayIcon.confirmOnHelp.clear();
 	}
 	getInstance().doHide();
 }
 
 void TrayIcon::closeWindow() {
 	TrayIcon& trayIcon = TrayIcon::getInstance();
-	if (trayIcon.confirmResetConfigUi) {
-		trayIcon.confirmResetConfigUi->closeWindow();
-		trayIcon.confirmResetConfigUi.clear();
+	if (trayIcon.confirmOnHelp) {
+		trayIcon.confirmOnHelp->closeWindow();
+		trayIcon.confirmOnHelp.clear();
 	}
 	trayIcon.doClose();
 }
@@ -102,6 +103,29 @@ void TrayIcon::doClose() {
 
 		tray->deleteLater();
 		tray = nullptr;
+	}
+}
+
+void TrayIcon::checkAndShowHelp() {
+	QSettings settingsConfig(APP_NAME, "Config");
+	bool flagOnHelp = settingsConfig.value("HelpOnStartup", true).toBool();
+
+	if (flagOnHelp) {
+		onHelp();
+		QTimer::singleShot(2000, this, [this]() {
+
+			if (!confirmOnHelp) {
+				confirmOnHelp = new CustomConfirmBox(
+					"Hướng dẫn sử dụng",
+					"Bạn có muốn hiển thị hướng dẫn sử dụng Sigma mỗi khi khởi động không?",
+					nullptr
+				);
+			}
+			confirmOnHelp->showWindow();
+
+			QSettings settingsConfig(APP_NAME, "Config");
+			settingsConfig.setValue("HelpOnStartup", (confirmOnHelp->confirm == 1));
+			});
 	}
 }
 

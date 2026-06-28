@@ -42,11 +42,12 @@ private:
     void doShow();
     void doHide();
     void doClose();
+    void checkAndShowHelp();
 
     QSystemTrayIcon* tray = nullptr;
     QMenu* menu = nullptr;
 
-    QPointer<CustomConfirmBox> confirmResetConfigUi;
+    QPointer<CustomConfirmBox> confirmOnHelp;
 
     QAction* actionGeneralConfig = nullptr;
     QAction* actionConfigUi = nullptr;

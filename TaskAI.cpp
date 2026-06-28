@@ -131,15 +131,37 @@ void TaskAI::sendRequest(const QString& prompt, QString codeModel, QString input
 	KeyAPIManage* keyAPIManage = KeyAPIManage::getInstance();
 	Clipboard& clipboard = Clipboard::getInstance();
 	Variable& variable = Variable::getInstance();
-	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(codeModel));
+	TypeWord& typeWord = TypeWord::getInstance();
 
+	const QUrl url(QString("https://generativelanguage.googleapis.com/v1beta/models/%1:generateContent").arg(codeModel));
 	QStringList listKeyAPITemp = keyAPIManage->listKeyAPI;
 	QStringList listKeyAPI;
+
+	if (!resetKeyTime.isValid() || (QDateTime::currentDateTime() >= resetKeyTime)) {
+		setKeyAPIInterrupted.clear();
+		resetKeyTime = QDateTime::currentDateTime().addDays(1);
+	}
+
 	for (auto keyAPITemp : listKeyAPITemp) {
 		if (!setKeyAPIInterrupted.contains(keyAPITemp)) {
 			listKeyAPI.append(keyAPITemp);
 		}
 	}
+
+	if (listKeyAPI.isEmpty()) {
+		if (!popup2) {
+			popup2 = new MessageApiKeyBox(nullptr);
+		}
+		popup2->showWindow();
+
+		clipboard.setBaseClipboard();
+		typeWord.reset(true);
+		flagOpenWindow = false;
+		flagIsSending = false;
+		variable.flagSendingKey = false;
+		return;
+	}
+
 	int randomIndex = QRandomGenerator::global()->bounded(listKeyAPI.size());
 	QString randomKey = listKeyAPI.at(randomIndex);
 
@@ -268,14 +290,18 @@ void TaskAI::sendRequest(const QString& prompt, QString codeModel, QString input
 			}
 		}
 		else {
-			if (!popup2) {
-				popup2 = new MessageApiKeyBox(nullptr);
-			}
-			popup2->showWindow();
-
 			setKeyAPIInterrupted.insert(randomKey);
+
 			if (listKeyAPI.size() <= 1) {
-				setKeyAPIInterrupted.clear();
+				if (!popup2) {
+					popup2 = new MessageApiKeyBox(nullptr);
+				}
+				popup2->showWindow();
+			}
+			else {
+				sendRequest(prompt, codeModel, inputBase, numSpace);
+				reply->deleteLater();
+				return;
 			}
 		}
 		clipboard.setBaseClipboard();
