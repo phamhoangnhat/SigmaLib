@@ -140,6 +140,11 @@ void Variable::loadGeneralConfig()
 		//"photoshop", "illustrator", "coreldraw", "blender", "krita", "sketchup"
 	};
 
+	listAppFixModernEditor = {
+		//Trình duyệt web — editor async (Notion code block, ...) bỏ phím xóa gửi dính chùm trong 1 lô SendInput
+		"chrome", "coccoc", "brave", "msedge", "opera", "vivaldi", "firefox",
+	};
+
 	listAppLangVietGlobal = {
 		//Trình duyệt web
 		"chrome", "coccoc", "brave", "msedge", "opera", "vivaldi", "firefox",
@@ -1387,6 +1392,7 @@ bool Variable::loadSettingsWindow()
 		bool modeLangVietGlobalDefault = listAppLangVietGlobal.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeClipboardDefault = listAppUseClipboard.contains(nameCurrentWindow.toLower()) ? true : false;
 		bool modeFixAutoSuggestDefault = listAppFixAutoSuggest.contains(nameCurrentWindow.toLower()) ? true : false;
+		bool modeFixModernEditorDefault = listAppFixModernEditor.contains(nameCurrentWindow.toLower()) ? true : false;
 		QString nameTaskAIDefault = taskAIDatabase.listNameTaskAI.value(0, QString());
 
 		QSettings settings(APP_NAME, "AccountManager");
@@ -1413,6 +1419,7 @@ bool Variable::loadSettingsWindow()
 		modeTypeSimple = settings.value("modeTypeSimple", MODETYPESIMPLE).toBool();
 		modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 		modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
+		modeFixModernEditor = settings.value("modeFixModernEditor", modeFixModernEditorDefault).toBool();
 		modeCheckCase = settings.value("modeCheckCase", MODECHECKCASE).toBool();
 		modeTeenCode = settings.value("modeTeenCode", MODETEENCODE).toBool();
 		modeUseLeftRight = settings.value("modeUseLeftRight", MODEUSELEFTRIGHT).toBool();

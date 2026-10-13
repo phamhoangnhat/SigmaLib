@@ -568,6 +568,7 @@ void TypeWord::fixStringDisplayCliboard(int numBackspaceStart, std::wstring stri
 	if (flagShiftRightPress) {
 		listener.releaseKey(VK_RSHIFT);
 	}
+
 	std::vector<INPUT> inputs;
 	if (variable.modeFixAutoSuggest) {
 		addInput(L'·', inputs);
@@ -626,28 +627,67 @@ void TypeWord::fixStringDisplay(int numBackspaceStart, std::wstring stringAdd)
 		return;
 	}
 
-	std::vector<INPUT> inputs;
-	if (variable.modeFixAutoSuggest) {
-		addInput(L'·', inputs);
-		for (size_t i = 0; i <= numBackspaceStart; ++i) {
-			addInput(VK_BACK, inputs);
+	if (variable.modeFixModernEditor) {
+		// Trình soạn thảo hiện đại (Notion code block, các editor web async...)
+		// bỏ phím xóa khi cả lô SendInput đến dính chùm trong cùng một frame —
+		// phải gửi rời rạc: mỗi phím một lô riêng, nghỉ ngắn giữa các phần tử
+		int numStep = numBackspaceStart + (variable.modeFixAutoSuggest ? 2 : 1);
+		int spacing = (numStep >= 12) ? 10 : 20;
+
+		if (variable.modeFixAutoSuggest) {
+			std::vector<INPUT> inputsDot;
+			addInput(L'·', inputsDot);
+			SendInput(static_cast<UINT>(inputsDot.size()), inputsDot.data(), sizeof(INPUT));
+			// Nghỉ ngắn hơn sau mồi: dot bị backspace đầu tiên xóa ngay,
+			// chỉ cần đủ để không rơi vào cùng một chu kỳ xử lý của editor
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+
+		int numBackspace = numBackspaceStart + (variable.modeFixAutoSuggest ? 1 : 0);
+		for (int i = 0; i < numBackspace; i++) {
+			std::vector<INPUT> inputsOne;
+			addInput(VK_BACK, inputsOne);
+			SendInput(static_cast<UINT>(inputsOne.size()), inputsOne.data(), sizeof(INPUT));
+			std::this_thread::sleep_for(std::chrono::milliseconds(spacing));
+		}
+
+		std::vector<INPUT> inputsAdd;
+		for (wchar_t character : stringAdd) {
+			if (character == L'\n') {
+				addInput(VK_RETURN, inputsAdd);
+			}
+			else {
+				addInput(character, inputsAdd);
+			}
+		}
+		if (!inputsAdd.empty()) {
+			SendInput(static_cast<UINT>(inputsAdd.size()), inputsAdd.data(), sizeof(INPUT));
 		}
 	}
 	else {
-		for (size_t i = 0; i < numBackspaceStart; ++i) {
-			addInput(VK_BACK, inputs);
-		}
-	}
-
-	for (wchar_t character : stringAdd) {
-		if (character == L'\n') {
-			addInput(VK_RETURN, inputs);
+		std::vector<INPUT> inputs;
+		if (variable.modeFixAutoSuggest) {
+			addInput(L'·', inputs);
+			for (size_t i = 0; i <= numBackspaceStart; ++i) {
+				addInput(VK_BACK, inputs);
+			}
 		}
 		else {
-			addInput(character, inputs);
+			for (size_t i = 0; i < numBackspaceStart; ++i) {
+				addInput(VK_BACK, inputs);
+			}
 		}
+
+		for (wchar_t character : stringAdd) {
+			if (character == L'\n') {
+				addInput(VK_RETURN, inputs);
+			}
+			else {
+				addInput(character, inputs);
+			}
+		}
+		SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 	}
-	SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
 
 	if (stringSnippet != L"") {
 		reset();
@@ -662,7 +702,7 @@ void TypeWord::addInput(int vkCode, std::vector<INPUT>& inputs)
 	input.ki.wVk = vkCode;
 	input.ki.dwFlags = 0;
 	input.ki.time = 0;
-	input.ki.dwExtraInfo = 0;
+	input.ki.dwExtraInfo = SIGMA_INPUT_SIGNATURE;
 	inputs.push_back(input);
 
 	ZeroMemory(&input, sizeof(INPUT));
@@ -670,7 +710,7 @@ void TypeWord::addInput(int vkCode, std::vector<INPUT>& inputs)
 	input.ki.wVk = vkCode;
 	input.ki.dwFlags = KEYEVENTF_KEYUP;
 	input.ki.time = 0;
-	input.ki.dwExtraInfo = 0;
+	input.ki.dwExtraInfo = SIGMA_INPUT_SIGNATURE;
 	inputs.push_back(input);
 }
 
@@ -682,7 +722,7 @@ void TypeWord::addInput(wchar_t character, std::vector<INPUT>& inputs)
 	input.ki.wScan = character;
 	input.ki.dwFlags = KEYEVENTF_UNICODE;
 	input.ki.time = 0;
-	input.ki.dwExtraInfo = 0;
+	input.ki.dwExtraInfo = SIGMA_INPUT_SIGNATURE;
 	inputs.push_back(input);
 
 	ZeroMemory(&input, sizeof(INPUT));
@@ -690,7 +730,7 @@ void TypeWord::addInput(wchar_t character, std::vector<INPUT>& inputs)
 	input.ki.wScan = character;
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 	input.ki.time = 0;
-	input.ki.dwExtraInfo = 0;
+	input.ki.dwExtraInfo = SIGMA_INPUT_SIGNATURE;
 	inputs.push_back(input);
 }
 

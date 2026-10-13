@@ -35,6 +35,7 @@ public:
     QCheckBox* checkBoxTypeSimple = nullptr;
     QCheckBox* checkBoxClipboard = nullptr;
     QCheckBox* checkBoxFixAutoSuggest = nullptr;
+    QCheckBox* checkBoxFixModernEditor = nullptr;
     QCheckBox* checkBoxCheckCase = nullptr;
     QCheckBox* checkBoxTeenCode = nullptr;
     QCheckBox* checkBoxUseLeftRight = nullptr;
@@ -49,6 +50,7 @@ public:
     QLabel* labelShortcutTypeSimple;
     QLabel* labelShortcutClipboard;
     QLabel* labelShortcutFixAutoSuggest;
+    QLabel* labelShortcutFixModernEditor;
     QLabel* labelShortcutCheckCase;
     QLabel* labelShortcutTeenCode;
     QLabel* labelShortcutUseLeftRight;

@@ -10,6 +10,10 @@
 #include <chrono>
 #include "TypeWord.h"
 
+// Chữ ký đánh dấu phím do Sigma tự tổng hợp qua SendInput — hook bỏ qua hẳn,
+// tránh phím của chính mình bị xử lý lại khi đến sau khi cờ flagSendingKey đã tắt
+#define SIGMA_INPUT_SIGNATURE ((ULONG_PTR)0x51696D61)
+
 class Listener {
 public:
     std::unordered_set<int> keyModifier;

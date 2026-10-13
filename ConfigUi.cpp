@@ -315,6 +315,7 @@ ConfigUi::ConfigUi(QWidget* parent)
 	addCheckboxRow(checkBoxTypeSimple, labelShortcutTypeSimple, "Sử dụng kiểu gõ giản lược");
 	addCheckboxRow(checkBoxClipboard, labelShortcutClipboard, "Sử dụng clipboard khi gửi phím");
 	addCheckboxRow(checkBoxFixAutoSuggest, labelShortcutFixAutoSuggest, "Tương thích với ứng dụng có gợi ý từ");
+	addCheckboxRow(checkBoxFixModernEditor, labelShortcutFixModernEditor, "Tương thích với trình soạn thảo hiện đại");
 	addCheckboxRow(checkBoxCheckCase, labelShortcutCheckCase, "Tự động viết hoa thông minh");
 	addCheckboxRow(checkBoxTeenCode, labelShortcutTeenCode, "Cho phép dùng phụ âm đầu \"f\" \"j\" \"w\" \"z\"");
 	addCheckboxRow(checkBoxUseLeftRight, labelShortcutUseLeftRight, "Dùng phím ← → để điều hướng từng từ");
@@ -350,6 +351,9 @@ ConfigUi::ConfigUi(QWidget* parent)
 		});
 	connect(checkBoxFixAutoSuggest, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeFixAutoSuggest", state == Qt::Checked ? "true" : "false");
+		});
+	connect(checkBoxFixModernEditor, &QCheckBox::checkStateChanged, this, [this](int state) {
+		saveSettings(m_AppNameConfig, "modeFixModernEditor", state == Qt::Checked ? "true" : "false");
 		});
 	connect(checkBoxCheckCase, &QCheckBox::checkStateChanged, this, [this](int state) {
 		saveSettings(m_AppNameConfig, "modeCheckCase", state == Qt::Checked ? "true" : "false");
@@ -590,6 +594,20 @@ void ConfigUi::saveSettings(QString appNameConfig, QString nameValue, QString va
 		}
 	}
 
+	if (nameValue == "modeFixModernEditor") {
+		checkBox = checkBoxFixModernEditor;
+		if (variable.listAppFixModernEditor.contains(m_AppNameConfig.toLower())) {
+			if (!mode) {
+				stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong code block Notion và các trình soạn thảo web tương tự";
+			}
+		}
+		else {
+			if (mode) {
+				stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này.\nNó có thể gây gõ hơi trễ hơn khi sửa từ.";
+			}
+		}
+	}
+
 	if (checkBox) {
 		updateCheckBoxStyle(checkBox, stringWarning);
 	}
@@ -657,6 +675,7 @@ void ConfigUi::loadSettings() {
 	bool modeLangVietGlobalDefault = variable.listAppLangVietGlobal.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeClipboardDefault = variable.listAppUseClipboard.contains(m_AppNameConfig.toLower()) ? true : false;
 	bool modeFixAutoSuggestDefault = variable.listAppFixAutoSuggest.contains(m_AppNameConfig.toLower()) ? true : false;
+	bool modeFixModernEditorDefault = variable.listAppFixModernEditor.contains(m_AppNameConfig.toLower()) ? true : false;
 	QString nameTaskAIDefault = taskAIDatabase.listNameTaskAI.value(0, QString());
 
 	QSettings settings(APP_NAME, "AccountManager");
@@ -670,6 +689,7 @@ void ConfigUi::loadSettings() {
 	bool modeTypeSimple = settings.value("modeTypeSimple", variable.MODETYPESIMPLE).toBool();
 	bool modeClipboard = settings.value("modeClipboard", modeClipboardDefault).toBool();
 	bool modeFixAutoSuggest = settings.value("modeFixAutoSuggest", modeFixAutoSuggestDefault).toBool();
+	bool modeFixModernEditor = settings.value("modeFixModernEditor", modeFixModernEditorDefault).toBool();
 	bool modeCheckCase = settings.value("modeCheckCase", variable.MODECHECKCASE).toBool();
 	bool modeTeenCode = settings.value("modeTeenCode", variable.MODETEENCODE).toBool();
 	bool modeUseLeftRight = settings.value("modeUseLeftRight", variable.MODEUSELEFTRIGHT).toBool();
@@ -715,6 +735,7 @@ void ConfigUi::loadSettings() {
 	checkBoxTypeSimple->setChecked(modeTypeSimple);
 	checkBoxClipboard->setChecked(modeClipboard);
 	checkBoxFixAutoSuggest->setChecked(modeFixAutoSuggest);
+	checkBoxFixModernEditor->setChecked(modeFixModernEditor);
 	checkBoxCheckCase->setChecked(modeCheckCase);
 	checkBoxTeenCode->setChecked(modeTeenCode);
 	checkBoxUseLeftRight->setChecked(modeUseLeftRight);
@@ -757,6 +778,21 @@ void ConfigUi::loadSettings() {
 	else {
 		if (mode) {
 			stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này, có thể gây trễ và giật chữ khi gõ.";
+		}
+	}
+	updateCheckBoxStyle(checkBox, stringWarning);
+
+	mode = modeFixModernEditor;
+	checkBox = checkBoxFixModernEditor;
+	stringWarning = "";
+	if (variable.listAppFixModernEditor.contains(m_AppNameConfig.toLower())) {
+		if (!mode) {
+			stringWarning = "Tắt thiết lập này có thể gây lỗi gõ trong code block Notion và các trình soạn thảo web tương tự";
+		}
+	}
+	else {
+		if (mode) {
+			stringWarning = "Bật thiết lập này là không cần thiết với ứng dụng này, có thể gây gõ hơi trễ hơn khi sửa từ.";
 		}
 	}
 	updateCheckBoxStyle(checkBox, stringWarning);

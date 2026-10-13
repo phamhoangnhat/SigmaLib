@@ -56,6 +56,7 @@ public:
     bool modeTypeSimple;
     bool modeClipboard;
     bool modeFixAutoSuggest;
+    bool modeFixModernEditor;
     bool modeCheckCase;
     bool modeTeenCode;
     bool modeUseLeftRight;
@@ -110,6 +111,7 @@ public:
     QSet<QString> listAppLangVietGlobal;
     QSet<QString> listAppUseClipboard;
     QSet<QString> listAppFixAutoSuggest;
+    QSet<QString> listAppFixModernEditor;
 
     static Variable& getInstance() {
         static Variable instance;

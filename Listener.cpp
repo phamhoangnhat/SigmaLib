@@ -915,8 +915,8 @@ LRESULT CALLBACK Listener::keyboardHookProc(int nCode, WPARAM wParam, LPARAM lPa
 	Clipboard& clipboard = Clipboard::getInstance();
 	TaskAI& taskAI = TaskAI::getInstance();
 
-	if ((nCode >= 0) && (!variable.flagSendingKey)) {
-		KBDLLHOOKSTRUCT* kbdStruct = (KBDLLHOOKSTRUCT*)lParam;
+	KBDLLHOOKSTRUCT* kbdStruct = (KBDLLHOOKSTRUCT*)lParam;
+	if ((nCode >= 0) && (!variable.flagSendingKey) && (kbdStruct->dwExtraInfo != SIGMA_INPUT_SIGNATURE)) {
 		int vkCode = kbdStruct->vkCode;
 		listener.flagRejectHook = false;
 
